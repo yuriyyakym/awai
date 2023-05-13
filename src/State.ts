@@ -1,3 +1,4 @@
+import { AwaitableEvent } from './lib';
 import { Resolver } from './types';
 
 export default class State<T> {
@@ -9,11 +10,7 @@ export default class State<T> {
 
   async setValue(newValue: T) {
     this._value = newValue;
-
-    const awaiters = [...this.changed._awaiters];
-    this.changed._awaiters = [];
-    awaiters.forEach((resolve) => resolve(newValue));
-
+    this.changed.emit(newValue);
     return Promise.resolve(newValue);
   }
 
@@ -25,10 +22,5 @@ export default class State<T> {
     resolve(this.value);
   }
 
-  changed = {
-    _awaiters: [] as Resolver<T>[],
-    then(resolve: Resolver<T>) {
-      this._awaiters.push(resolve);
-    },
-  };
+  changed = new AwaitableEvent();
 }

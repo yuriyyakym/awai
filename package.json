@@ -1,6 +1,6 @@
 {
   "name": "flow-store",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "State management library for react",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

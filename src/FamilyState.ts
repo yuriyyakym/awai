@@ -1,5 +1,5 @@
+import { AwaitableEvent } from './lib';
 import State from './State';
-import { Resolver } from './types';
 
 type FamilyMap<T> = Record<string, State<T>>;
 
@@ -15,22 +15,14 @@ export default class FamilyState<T> extends State<FamilyMap<T>> {
 
   async set(key: string, item: State<T>) {
     this.setValue({ ...this.value, [key]: item });
-
-    const awaiters = [...this.itemSet._awaiters];
-    this.itemSet._awaiters = [];
-    awaiters.forEach((resolve) => resolve([key, item.value]));
-
+    this.itemSet.emit([key, item.value]);
     return Promise.resolve(item);
   }
 
   async delete(key: string) {
     const { [key]: removedValue, ...restValue } = this.value;
     this.setValue(restValue as FamilyMap<T>);
-
-    const awaiters = [...this.itemDeleted._awaiters];
-    this.itemDeleted._awaiters = [];
-    awaiters.forEach((resolve) => resolve([key, removedValue.value]));
-
+    this.itemDeleted.emit([key, removedValue.value]);
     return Promise.resolve(removedValue);
   }
 
@@ -42,17 +34,7 @@ export default class FamilyState<T> extends State<FamilyMap<T>> {
     return Object.keys(this.value);
   }
 
-  itemSet = {
-    _awaiters: [] as Resolver<[string, T]>[],
-    then(resolve: Resolver<[string, T]>) {
-      this._awaiters.push(resolve);
-    },
-  };
+  itemSet = new AwaitableEvent();
 
-  itemDeleted = {
-    _awaiters: [] as Resolver<[string, T]>[],
-    then(resolve: Resolver<[string, T]>) {
-      this._awaiters.push(resolve);
-    },
-  };
+  itemDeleted = new AwaitableEvent();
 }

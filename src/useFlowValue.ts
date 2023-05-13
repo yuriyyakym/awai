@@ -10,6 +10,10 @@ const useFlowValue = <T>(flowState: State<T>): T => {
 
     queueMicrotask(async () => {
       while (mounted) {
+        /**
+         * @todo Cleanup on unmount
+         * @url https://github.com/yuriyyakym/flow-store/issues/1
+         */
         await flowState.changed;
         if (mounted) {
           setState(flowState.value);

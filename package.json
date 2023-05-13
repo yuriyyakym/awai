@@ -1,0 +1,37 @@
+{
+  "name": "flow-store",
+  "version": "1.0.0",
+  "description": "State management library for react",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf dist && rollup -c rollup.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuriyyakym/flow-store.git"
+  },
+  "keywords": [
+    "react",
+    "state",
+    "library"
+  ],
+  "author": "Yuriy Yakym",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yuriyyakym/flow-store/issues"
+  },
+  "homepage": "https://github.com/yuriyyakym/flow-store#readme",
+  "devDependencies": {
+    "@types/react": "^18.0.37",
+    "rollup": "^3.20.6",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "typescript": "^5.0.4"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.37"
+  }
+}

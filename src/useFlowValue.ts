@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import State from './State';
+import { State } from './state';
 
 const useFlowValue = <T>(flowState: State<T>): T => {
   const [state, setState] = useState<T>(flowState.value);
@@ -14,7 +14,7 @@ const useFlowValue = <T>(flowState: State<T>): T => {
          * @todo Cleanup on unmount
          * @url https://github.com/yuriyyakym/flow-store/issues/1
          */
-        await flowState.changed;
+        await flowState.events.changed;
         if (mounted) {
           setState(flowState.value);
         }

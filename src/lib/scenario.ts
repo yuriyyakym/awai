@@ -1,6 +1,6 @@
-const scenario = async (flowFn: () => Promise<any>) => {
+const scenario = async (scenarioFn: () => Promise<any>) => {
   while (true) {
-    await flowFn().catch(() => undefined);
+    await scenarioFn().catch(() => undefined);
   }
 };
 

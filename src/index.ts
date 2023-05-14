@@ -1,5 +1,5 @@
 export { composeState, cyclicFlow, flow } from './lib';
-export { default as Action } from './Action';
+export { default as action } from './action';
 export { default as FamilyState } from './FamilyState';
 export { default as State } from './State';
 export { default as useFlowValue } from './useFlowValue';

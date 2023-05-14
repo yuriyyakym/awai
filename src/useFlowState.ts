@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import State from './State';
+import State from './state';
 
 const useFlowState = <T>(flowState: State<T>): [T, (newValue: T) => void] => {
   const [state, setState] = useState<T>(flowState.value);

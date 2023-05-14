@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import State from './state';
+import { State } from './state';
 
 const useFlowState = <T>(flowState: State<T>): [T, (newValue: T) => void] => {
   const [state, setState] = useState<T>(flowState.value);
@@ -14,7 +14,7 @@ const useFlowState = <T>(flowState: State<T>): [T, (newValue: T) => void] => {
          * @todo Cleanup on unmount
          * @url https://github.com/yuriyyakym/flow-store/issues/1
          */
-        await flowState.changed;
+        await flowState.events.changed;
         if (mounted) {
           setState(flowState.value);
         }
@@ -28,7 +28,7 @@ const useFlowState = <T>(flowState: State<T>): [T, (newValue: T) => void] => {
 
   const setValue = useCallback(
     (newState: T) => {
-      flowState.setValue(newState);
+      flowState.set(newState);
     },
     [flowState],
   );

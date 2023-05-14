@@ -1,4 +1,4 @@
-export { composeState, flow, scenario } from './lib';
+export { composeState, scenario, scenarioOnce } from './lib';
 export { default as action } from './action';
 export { default as family } from './family';
 export { default as state } from './state';

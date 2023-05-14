@@ -1,26 +1,26 @@
-import { State } from '../src';
+import { state } from '../src';
 
 describe('state', () => {
   it('is updated asynchronously', async () => {
-    const state = new State<string>('Hello');
+    const greeting = state<string>('Hi');
 
-    state.setValue('Hello there');
-    expect(state.value).toEqual('Hello there'); // It's expected. `setValue` is async
+    greeting.set('Hey');
+    expect(greeting.get()).toEqual('Hi'); // It's expected. `setValue` is async
 
-    await state.setValue('Hello there!!!');
-    expect(state.value).toEqual('Hello there!!!');
+    await greeting.set('Hello');
+    expect(greeting.get()).toEqual('Hello');
   });
 
   it('has `changed` AwaitableEvent', async () => {
-    const state = new State<string>('Hello');
-    expect(state).toHaveProperty('changed');
-    expect(state.changed).resolves.toEqual('Hello there');
-    state.setValue('Hello there');
+    const greeting = state<string>('Hello');
+    expect(greeting).toHaveProperty('changed');
+    expect(greeting.events.changed).resolves.toEqual('Hello there');
+    greeting.set('Hello there');
   });
 
   it('is Promise-like and resolves with current value', async () => {
-    const state = new State<string>('Hello');
-    await state.setValue('Updated Hello');
-    expect(await state).toEqual('Updated Hello');
+    const greeting = state<string>('Hello');
+    await greeting.set('Hello there');
+    expect(await greeting).toEqual('Hello there');
   });
 });

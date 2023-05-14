@@ -22,7 +22,7 @@ const state = <T>(initialValue: T): State<T> => {
     resolve(value);
   };
 
-  return { events, get, set, then };
+  return { events, get, set, then, value };
 };
 
 export default state;

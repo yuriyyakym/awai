@@ -8,4 +8,5 @@ export interface State<T> {
   get: () => T;
   set: (value: T) => Promise<T>;
   then: (resolver: Resolver<T>) => void;
+  value: T;
 }

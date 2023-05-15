@@ -8,11 +8,11 @@ const family = <T, M extends FamilyMap<T> = FamilyMap<T>>(): Family<T> => {
 
   const events = {
     itemDelete: new AwaitableEvent<[string, T]>(),
-    itemSet: new AwaitableEvent(),
+    itemSet: new AwaitableEvent<[string, T]>(),
   };
 
   const get = (key: string) => {
-    const itemState = items.get()[key];
+    const itemState = getItemState(key);
     return itemState?.get();
   };
 
@@ -20,9 +20,10 @@ const family = <T, M extends FamilyMap<T> = FamilyMap<T>>(): Family<T> => {
     return items.get()[key];
   };
 
-  const set = async (key: string, item: T) => {
+  const set = async (key: string, item: T): Promise<State<T>> => {
     const value = state(item);
     items.set({ ...items.get(), [key]: value });
+    events.itemSet.emit([key, item]);
     return value;
   };
 

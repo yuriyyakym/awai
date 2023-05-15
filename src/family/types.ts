@@ -8,6 +8,6 @@ export interface Family<T> {
   get(key: string): T | undefined;
   getItemState(key: string): State<T>;
   keys(): string[];
-  set(key: string, value: T): Promise<State<T>>;
+  set(key: string, item: T): Promise<State<T>>;
   setState(key: string, state: State<T>): void;
 }

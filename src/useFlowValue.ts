@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { State } from './state';
 
 const useFlowValue = <T>(flowState: State<T>): T => {
-  const [state, setState] = useState<T>(flowState.value);
+  const [state, setState] = useState<T>(flowState.get);
 
   useEffect(() => {
     let mounted = true;
@@ -16,7 +16,7 @@ const useFlowValue = <T>(flowState: State<T>): T => {
          */
         await flowState.events.changed;
         if (mounted) {
-          setState(flowState.value);
+          setState(flowState.get());
         }
       }
     });

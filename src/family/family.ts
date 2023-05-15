@@ -10,8 +10,9 @@ const family = <T, M extends FamilyMap<T> = FamilyMap<T>>(): Family<T> => {
     itemSet: new AwaitableEvent(),
   };
 
-  const getItem = (key: string) => {
-    return items.get()[key]?.get();
+  const get = (key: string) => {
+    const itemState = items.get()[key];
+    return itemState.get();
   };
 
   const getItemState = (key: string) => {
@@ -36,11 +37,11 @@ const family = <T, M extends FamilyMap<T> = FamilyMap<T>>(): Family<T> => {
     return Promise.resolve(removedItem);
   };
 
-  const keys = () => Object.keys(items);
+  const keys = () => Object.keys(items.get());
 
   const has = (key: string) => Object.keys(items.get()).includes(key);
 
-  return { delete: deleteFn, has, getItem, getItemState, keys, set, setState };
+  return { delete: deleteFn, has, get, getItemState, keys, set, setState };
 };
 
 export default family;

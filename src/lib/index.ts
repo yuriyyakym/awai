@@ -3,3 +3,4 @@ export { default as composeState } from './composeState';
 export { default as noop } from './noop';
 export { default as scenario } from './scenario';
 export { default as scenarioOnce } from './scenarioOnce';
+export { default as timeout } from './timeout';

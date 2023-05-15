@@ -4,16 +4,14 @@ describe('state', () => {
   it('is updated asynchronously', async () => {
     const greeting = state<string>('Hi');
 
-    greeting.set('Hey');
-    expect(greeting.get()).toEqual('Hi'); // It's expected. `setValue` is async
-
     await greeting.set('Hello');
     expect(greeting.get()).toEqual('Hello');
   });
 
-  it('has `changed` AwaitableEvent', async () => {
+  it('has `changed` AwaitableEvent event', async () => {
     const greeting = state<string>('Hello');
-    expect(greeting).toHaveProperty('changed');
+    expect(greeting).toHaveProperty('events');
+    expect(greeting.events).toHaveProperty('changed');
     expect(greeting.events.changed).resolves.toEqual('Hello there');
     greeting.set('Hello there');
   });

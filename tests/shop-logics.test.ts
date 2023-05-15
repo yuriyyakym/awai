@@ -1,4 +1,4 @@
-import { action, State, composeState, cyclicFlow } from '../src';
+import { action, composeState, scenario, state } from '../src';
 
 interface Item {
   name: string;
@@ -25,8 +25,8 @@ const items = [
 const getItemByName = (name: string) => items.find((item) => item.name === name)!;
 
 const createStore = () => {
-  const voucher = new State<Voucher | null>(null);
-  const cart = new State<StateItem[]>([]);
+  const voucher = state<Voucher | null>(null);
+  const cart = state<StateItem[]>([]);
   const cartTotal = composeState([cart, voucher], (cart, voucher) => {
     const total = cart.reduce((sum, stateItem) => {
       return sum + stateItem.quantity * getItemByName(stateItem.name).price;
@@ -35,22 +35,22 @@ const createStore = () => {
   });
 
   const addItem = action(async (name: Item['name']) => {
-    await cart.setValue([...cart.value, { name, quantity: 1 }]);
+    await cart.set([...cart.get(), { name, quantity: 1 }]);
   });
 
   const changeItemQuantity = action(async (name: Item['name'], quantity: number) => {
-    const newItems = cart.value.map((stateItem) => {
+    const newItems = cart.get().map((stateItem) => {
       return stateItem.name === name ? { ...stateItem, quantity } : stateItem;
     });
-    await cart.setValue(newItems);
+    await cart.set(newItems);
   });
 
-  cyclicFlow(async () => {
+  scenario(async () => {
     // prettier-ignore
     const { args: [name, quantity] } = await changeItemQuantity.events.invoke;
 
     if (quantity === 0) {
-      await cart.setValue(cart.value.filter((cartItem) => cartItem.name !== name));
+      await cart.set(cart.get().filter((cartItem) => cartItem.name !== name));
     }
   });
 
@@ -71,7 +71,7 @@ describe('Scenario: Shop flow', () => {
     await store.addItem('apple');
     await store.addItem('mango');
 
-    await store.voucher.setValue({ code: 'test', discount, minValue: 600 });
+    await store.voucher.set({ code: 'test', discount, minValue: 600 });
     await store.changeItemQuantity('apple', 4);
 
     const expectedTotal =
@@ -85,9 +85,9 @@ describe('Scenario: Shop flow', () => {
 
     await store.addItem('apple');
     await store.addItem('mango');
-    expect(store.cart.value.length).toBe(2);
+    expect(store.cart.get().length).toBe(2);
 
     await store.changeItemQuantity('apple', 0);
-    expect(store.cart.value.length).toBe(1);
+    expect(store.cart.get().length).toBe(1);
   });
 });

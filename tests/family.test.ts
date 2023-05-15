@@ -6,7 +6,7 @@ const GREETING_1_ID = '#1';
 const GREETING_2_ID = '#2';
 
 describe('family', () => {
-  it('is keeps items map', async () => {
+  it('it keeps items map', async () => {
     await greetings.set(GREETING_1_ID, 'Hi');
     await greetings.set(GREETING_2_ID, 'Hey');
 

@@ -52,7 +52,7 @@ const createStore = () => {
 
   scenario(async () => {
     // prettier-ignore
-    const { args: [name, quantity] } = await changeItemQuantity.events.invoke;
+    const [name, quantity] = await changeItemQuantity.events.invoke;
 
     if (quantity === 0) {
       await cart.set(cart.get().filter((cartItem) => cartItem.name !== name));

@@ -7,14 +7,12 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "postinstall": "link-module-alias"
-  },
-  "_moduleAliases": {
-    "flow-store": "../.."
+    "preview": "vite preview"
   },
   "dependencies": {
+    "bootstrap": "^5.2.3",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
     "uuid": "^9.0.0"
   },

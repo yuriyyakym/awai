@@ -1,6 +1,6 @@
 import { AwaitableEvent } from '../lib';
 
-import { Callback, ActionInvokeMeta, ActionInvokedMeta } from './types';
+import { Callback } from './types';
 
 const action = <Args extends any[], Return extends any = any>(
   callback?: Callback<Args, Return>,
@@ -8,14 +8,14 @@ const action = <Args extends any[], Return extends any = any>(
   const hasCallback = typeof callback !== 'undefined';
 
   const events = {
-    invoke: new AwaitableEvent<ActionInvokeMeta<Args>>(),
-    invoked: hasCallback ? new AwaitableEvent<ActionInvokedMeta<Args, Return>>() : undefined,
+    invoke: new AwaitableEvent<Args>(),
+    invoked: hasCallback ? new AwaitableEvent<Return>() : undefined,
   };
 
   const invoke = async (...args: Args) => {
-    events.invoke.emit({ args });
+    events.invoke.emit(args);
     const result = callback ? await callback(...args) : (undefined as Return);
-    events.invoked?.emit({ args, result });
+    events.invoked?.emit(result);
     return Promise.resolve(result);
   };
 

@@ -1,4 +1,4 @@
-export { AwaitableEvent, composeState, scenario, scenarioOnce } from './lib';
+export { AwaitableEvent, composeState, delay, scenario, scenarioOnce, timeout } from './lib';
 export { default as action } from './action';
 export { default as family } from './family';
 export { default as state } from './state';

@@ -1,5 +1,6 @@
 import { AwaitableEvent } from '../lib';
 import state, { State } from '../state';
+
 import { Family, FamilyMap } from './types';
 
 const family = <T, M extends FamilyMap<T> = FamilyMap<T>>(): Family<T> => {
@@ -12,7 +13,7 @@ const family = <T, M extends FamilyMap<T> = FamilyMap<T>>(): Family<T> => {
 
   const get = (key: string) => {
     const itemState = items.get()[key];
-    return itemState.get();
+    return itemState?.get();
   };
 
   const getItemState = (key: string) => {

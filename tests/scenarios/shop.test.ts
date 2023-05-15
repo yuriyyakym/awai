@@ -1,4 +1,4 @@
-import { action, composeState, scenario, state } from '../src';
+import { action, composeState, scenario, state } from '../../src';
 
 describe('Scenario: Shop flow', () => {
   it('Manages shop cart state as expected', async () => {

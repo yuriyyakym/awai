@@ -1,4 +1,12 @@
 .category {
+  min-width: 250px;
+}
+
+.heading {
   display: flex;
   justify-content: space-between;
+}
+
+.tasks {
+  margin-top: 16px;
 }

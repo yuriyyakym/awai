@@ -1,28 +1,23 @@
 import { FunctionComponent } from 'react';
+import { Button } from 'react-bootstrap';
 
-import { createCategory, deleteCategory, useCategories } from '../../state/categories';
+import { openCreateCategoryModal, useCategories } from '../../state';
 import Category from '../category';
 
-import NewCategory from './NewCategory';
 import styles from './Categories.module.scss';
 
-interface Props {}
-
-const Categories: FunctionComponent<Props> = () => {
+const Categories: FunctionComponent = () => {
   const categories = useCategories();
 
   return (
     <div className={styles.categories}>
       {categories.map((category) => (
-        <Category
-          id={category.id}
-          key={category.id}
-          name={category.name}
-          onDelete={() => deleteCategory(category.id)}
-        />
+        <Category id={category.id} key={category.id} name={category.name} />
       ))}
 
-      <NewCategory onSubmit={createCategory} />
+      <div>
+        <Button onClick={openCreateCategoryModal}>Create category</Button>
+      </div>
     </div>
   );
 };

@@ -1,13 +1,14 @@
 import { action, scenario, state, useFlowValue } from 'flow-store';
+import { v4 as uuid } from 'uuid';
 
 import { Category, Id } from '../../types';
 import { deleteTask, tasks } from '../tasks';
 
 export const categories = state<Category[]>([]);
 
-export const createCategory = action((category: Category) => {
-  const newCategories = [...categories.get(), category];
-  categories.set(newCategories);
+export const createCategory = action((category: Omit<Category, 'id'>) => {
+  const id = uuid();
+  categories.set([...categories.get(), { ...category, id }]);
 });
 
 export const deleteCategory = action<[Id]>((id: Category['id']) => {

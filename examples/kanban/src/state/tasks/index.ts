@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import { action, state, useFlowValue } from 'flow-store';
+import { useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { Task } from '../../types';

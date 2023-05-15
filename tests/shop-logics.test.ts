@@ -1,28 +1,33 @@
 import { action, composeState, scenario, state } from '../src';
 
-interface Item {
-  name: string;
-  price: number;
-}
+describe('Scenario: Shop flow', () => {
+  it('Manages shop cart state as expected', async () => {
+    const store = createStore();
+    const discount = 100;
 
-interface StateItem {
-  name: string;
-  quantity: number;
-}
+    await store.addItem('apple');
+    await store.addItem('mango');
 
-interface Voucher {
-  code: string;
-  discount: number;
-  minValue: number;
-}
+    await store.voucher.set({ code: 'test', discount, minValue: 600 });
+    await store.changeItemQuantity('apple', 4);
 
-const items = [
-  { name: 'apple', price: 200 },
-  { name: 'durian', price: 400 },
-  { name: 'mango', price: 350 },
-];
+    const expectedTotal =
+      -discount + 4 * getItemByName('apple').price + 1 * getItemByName('mango').price;
 
-const getItemByName = (name: string) => items.find((item) => item.name === name)!;
+    expect(await store.cartTotal).toBe(expectedTotal);
+  });
+
+  it('Fires scenario when item quantity is 0', async () => {
+    const store = createStore();
+
+    await store.addItem('apple');
+    await store.addItem('mango');
+    expect(store.cart.get().length).toBe(2);
+
+    await store.changeItemQuantity('apple', 0);
+    expect(store.cart.get().length).toBe(1);
+  });
+});
 
 const createStore = () => {
   const voucher = state<Voucher | null>(null);
@@ -63,31 +68,26 @@ const createStore = () => {
   };
 };
 
-describe('Scenario: Shop flow', () => {
-  it('Manages shop cart state as expected', async () => {
-    const store = createStore();
-    const discount = 100;
+interface Item {
+  name: string;
+  price: number;
+}
 
-    await store.addItem('apple');
-    await store.addItem('mango');
+interface StateItem {
+  name: string;
+  quantity: number;
+}
 
-    await store.voucher.set({ code: 'test', discount, minValue: 600 });
-    await store.changeItemQuantity('apple', 4);
+interface Voucher {
+  code: string;
+  discount: number;
+  minValue: number;
+}
 
-    const expectedTotal =
-      -discount + 4 * getItemByName('apple').price + 1 * getItemByName('mango').price;
+const items = [
+  { name: 'apple', price: 200 },
+  { name: 'durian', price: 400 },
+  { name: 'mango', price: 350 },
+];
 
-    expect(await store.cartTotal).toBe(expectedTotal);
-  });
-
-  it('Fires scenario when item quantity is 0', async () => {
-    const store = createStore();
-
-    await store.addItem('apple');
-    await store.addItem('mango');
-    expect(store.cart.get().length).toBe(2);
-
-    await store.changeItemQuantity('apple', 0);
-    expect(store.cart.get().length).toBe(1);
-  });
-});
+const getItemByName = (name: string) => items.find((item) => item.name === name)!;

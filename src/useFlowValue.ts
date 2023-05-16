@@ -8,18 +8,18 @@ const useFlowValue = <T>(flowState: State<T>): T => {
   useEffect(() => {
     let mounted = true;
 
-    queueMicrotask(async () => {
+    (async () => {
       while (mounted) {
         /**
          * @todo Cleanup on unmount
          * @url https://github.com/yuriyyakym/flow-store/issues/1
          */
-        await flowState.events.changed;
+        const newValue = await flowState.events.changed;
         if (mounted) {
-          setState(flowState.get());
+          setState(newValue);
         }
       }
-    });
+    })();
 
     return () => {
       mounted = false;

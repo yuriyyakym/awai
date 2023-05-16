@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react';
 import { Button, Card } from 'react-bootstrap';
 
-import type { Task as TaskType } from '../../types';
-import { deleteTask, useTask } from '../../state/tasks';
 import CategorySelect from '../category-select';
+import type { Task as TaskType } from '../../types';
+import { deleteTask, moveTask, useTask } from '../../state';
 
 import styles from './Task.module.scss';
 
@@ -23,7 +23,10 @@ const Task: FunctionComponent<Props> = ({ id }) => {
           <Button size="sm" onClick={() => deleteTask(id)}>
             Delete
           </Button>
-          <CategorySelect excludedCategoriesIds={[task.categoryId]} onChange={console.log} />
+          <CategorySelect
+            excludedCategoriesIds={[task.categoryId]}
+            onSelect={(category) => moveTask(id, category.id)}
+          />
         </div>
       </Card.Body>
     </Card>

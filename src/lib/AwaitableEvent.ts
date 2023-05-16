@@ -10,9 +10,15 @@ export default class AwaitableEvent<T> {
   }
 
   emit(value: T) {
-    const awaiters = Array.from(this._awaiters);
+    const awaiters = [...this._awaiters];
     this._awaiters = [];
-    awaiters.forEach((resolve) => resolve(value));
+    (async () => {
+      for (const resolve of awaiters) {
+        try {
+          await resolve(value);
+        } catch {}
+      }
+    })();
   }
 
   async filter(predicate: FilterPredicate<T>) {

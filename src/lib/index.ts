@@ -4,4 +4,4 @@ export { default as delay } from './delay';
 export { default as noop } from './noop';
 export { default as scenario } from './scenario';
 export { default as scenarioOnce } from './scenarioOnce';
-export { default as timeout } from './timeout';
+export { default as rejectAfter } from './rejectAfter';

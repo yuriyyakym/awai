@@ -1,4 +1,4 @@
-import { action, delay, scenario, timeout } from '../../src';
+import { action, delay, scenario, rejectAfter } from '../../src';
 
 const DOUBLE_CLICK_TIMEOUT = 200;
 
@@ -8,7 +8,7 @@ describe('Scenario: Double click', () => {
 
   scenario(async () => {
     await click.events.invoke;
-    await Promise.race([click.events.invoke, timeout(DOUBLE_CLICK_TIMEOUT)]);
+    await Promise.race([click.events.invoke, rejectAfter(DOUBLE_CLICK_TIMEOUT)]);
     await doubleClick();
   });
 

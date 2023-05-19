@@ -10,7 +10,7 @@ const state = <T>(initialValue: T): State<T> => {
     changed: new AwaitableEvent<T>(),
   };
 
-  const set = async (newValue: T) => {
+  const set = (newValue: T) => {
     value = newValue;
     events.changed.emit(newValue);
     return Promise.resolve(newValue);

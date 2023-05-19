@@ -1,4 +1,4 @@
-import { AwaitableEvent } from '../lib';
+import { AwaitableEvent, isFunction } from '../lib';
 import { Resolver } from '../types';
 
 import type { State } from './types';
@@ -10,7 +10,10 @@ const state = <T>(initialValue: T): State<T> => {
     changed: new AwaitableEvent<T>(),
   };
 
-  const set = (newValue: T) => {
+  const set: State<T>['set'] = (nextValueOrResolver) => {
+    let newValue = isFunction(nextValueOrResolver)
+      ? nextValueOrResolver(value)
+      : nextValueOrResolver;
     value = newValue;
     events.changed.emit(newValue);
     return Promise.resolve(newValue);

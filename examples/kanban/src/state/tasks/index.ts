@@ -7,19 +7,20 @@ import { Category, Task } from '../../types';
 export const tasks = state<Task[]>([]);
 
 export const updateTask = (taskId: Task['id'], patch: Partial<Omit<Task, 'id'>>) => {
-  const updatedTasks = tasks.get().map((task) => {
-    return task.id === taskId ? { ...task, ...patch } : task;
-  });
-  tasks.set(updatedTasks);
+  tasks.set((currentTasks) =>
+    currentTasks.map((task) => {
+      return task.id === taskId ? { ...task, ...patch } : task;
+    }),
+  );
 };
 
 export const createTask = action(async (task: Omit<Task, 'id'>) => {
   const id = uuid();
-  tasks.set([...tasks.get(), { ...task, id }]);
+  tasks.set((current) => [...current, { ...task, id }]);
 });
 
 export const deleteTask = action((id: Task['id']) => {
-  tasks.set(tasks.get().filter((task) => task.id !== id));
+  tasks.set((current) => current.filter((task) => task.id !== id));
 });
 
 export const moveTask = action((taskId: Task['id'], categoryId: Category['id']) => {

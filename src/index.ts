@@ -2,6 +2,7 @@ export {
   AwaitableEvent,
   composeState,
   delay,
+  fork,
   rejectAfter,
   scenario,
   scenarioOnce,

@@ -8,7 +8,7 @@ const composeState = <T extends any[], U>(
   const composedState = state(predicate(...values));
   let mounted = true;
 
-  queueMicrotask(async () => {
+  (async () => {
     while (mounted) {
       /**
        * @todo Cleanup when disposed
@@ -19,7 +19,7 @@ const composeState = <T extends any[], U>(
       const values = states.map((state) => state.get()) as { [K in keyof T]: T[K] };
       composedState.set(predicate(...values));
     }
-  });
+  })();
 
   const dispose = () => {
     mounted = false;

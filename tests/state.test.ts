@@ -37,4 +37,10 @@ describe('state', () => {
 
     await expect(correctPinPromise).resolves.toBe(CODE);
   });
+
+  it('accepts setter function with current value as an argument', async () => {
+    const greeting = state<string>('Hello');
+    greeting.set((current) => current + ' World!');
+    expect(greeting.get()).toBe('Hello World!');
+  });
 });

@@ -23,10 +23,10 @@ describe('Scenario: Shop flow', () => {
 
     await store.addItem('apple');
     await store.addItem('mango');
-    expect(store.cart.get().length).toBe(2);
+    expect(store.cart.get()).toHaveLength(2);
 
     await store.changeItemQuantity('apple', 0);
-    expect(store.cart.get().length).toBe(1);
+    expect(store.cart.get()).toHaveLength(1);
     expect(store.cart.get().find((item) => item.name === 'apple')).not.toBeDefined();
   });
 });
@@ -42,19 +42,20 @@ const createStore = () => {
   });
 
   const addItem = action(async (name: Item['name']) => {
-    await cart.set([...cart.get(), { name, quantity: 1 }]);
+    await cart.set((current) => [...current, { name, quantity: 1 }]);
   });
 
   const changeItemQuantity = action((name: Item['name'], quantity: number) => {
-    const newItems = cart.get().map((stateItem) => {
-      return stateItem.name === name ? { ...stateItem, quantity } : stateItem;
-    });
-    cart.set(newItems);
+    cart.set((cart) =>
+      cart.map((cartItem) => {
+        return cartItem.name === name ? { ...cartItem, quantity } : cartItem;
+      }),
+    );
   });
 
-  scenarioOnEvery(changeItemQuantity.events.invoke, async ([name, quantity]) => {
+  scenarioOnEvery(changeItemQuantity.events.invoked, async ([name, quantity]) => {
     if (quantity === 0) {
-      cart.set(cart.get().filter((cartItem) => cartItem.name !== name));
+      cart.set((cart) => cart.filter((cartItem) => cartItem.name !== name));
     }
   });
 

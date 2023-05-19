@@ -7,9 +7,9 @@ describe('Scenario: Debounce', () => {
   const click = action();
   const debouncedFunction = jest.fn();
 
-  scenarioOnEvery(click.events.invoke, async () => {
+  scenarioOnEvery(click.events.invoked, async () => {
     const result = await Promise.race([
-      click.events.invoke,
+      click.events.invoked,
       delay(DEBOUNCE_TIMEOUT).then(() => TIMEOUT_SYMBOL),
     ]);
 

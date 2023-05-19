@@ -7,8 +7,8 @@ describe('Scenario: Double click', () => {
   const doubleClick = jest.fn();
 
   scenario(async () => {
-    await click.events.invoke;
-    await Promise.race([click.events.invoke, rejectAfter(DOUBLE_CLICK_TIMEOUT)]);
+    await click.events.invoked;
+    await Promise.race([click.events.invoked, rejectAfter(DOUBLE_CLICK_TIMEOUT)]);
     await doubleClick();
   });
 

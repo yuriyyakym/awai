@@ -1,22 +1,26 @@
-import { AwaitableEvent } from '../lib';
+import { AwaitableEvent, isFunction } from '../lib';
 
 import { Callback } from './types';
 
-const action = <Args extends any[], Return extends any = any>(
-  callback?: Callback<Args, Return>,
-) => {
-  const hasCallback = typeof callback !== 'undefined';
+const action = <Args extends any[], Return extends any>(callback?: Callback<Args, Return>) => {
+  const hasCallback = isFunction(callback);
 
   const events = {
-    invoke: new AwaitableEvent<Args>(),
-    invoked: hasCallback ? new AwaitableEvent<Return>() : undefined,
+    invoked: new AwaitableEvent<Args>(),
+    failed: hasCallback ? new AwaitableEvent<any>() : undefined,
+    completed: hasCallback ? new AwaitableEvent<Return>() : undefined,
   };
 
   const invoke = async (...args: Args) => {
-    events.invoke.emit(args);
-    const result = callback ? await callback(...args) : (undefined as Return);
-    events.invoked?.emit(result);
-    return Promise.resolve(result);
+    events.invoked.emit(args);
+    try {
+      const result = callback ? await callback(...args) : (undefined as Return);
+      events.completed?.emit(result);
+      return result;
+    } catch (error) {
+      events.failed?.emit(error);
+      throw error;
+    }
   };
 
   return Object.assign(invoke, { events });

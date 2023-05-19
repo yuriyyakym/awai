@@ -1,4 +1,4 @@
-import { action, composeState, scenario, state } from '../../src';
+import { action, composeState, scenario, scenarioOnEvery, state } from '../../src';
 
 describe('Scenario: Shop flow', () => {
   it('Manages shop cart state as expected', async () => {
@@ -14,10 +14,11 @@ describe('Scenario: Shop flow', () => {
     const expectedTotal =
       -discount + 4 * getItemByName('apple').price + 1 * getItemByName('mango').price;
 
+    expect(store.cartTotal.get()).toBe(expectedTotal);
     expect(await store.cartTotal).toBe(expectedTotal);
   });
 
-  it('Fires scenario when item quantity is 0', async () => {
+  it('scenario is executed when item quantity is 0', async () => {
     const store = createStore();
 
     await store.addItem('apple');
@@ -26,6 +27,7 @@ describe('Scenario: Shop flow', () => {
 
     await store.changeItemQuantity('apple', 0);
     expect(store.cart.get().length).toBe(1);
+    expect(store.cart.get().find((item) => item.name === 'apple')).not.toBeDefined();
   });
 });
 
@@ -43,19 +45,16 @@ const createStore = () => {
     await cart.set([...cart.get(), { name, quantity: 1 }]);
   });
 
-  const changeItemQuantity = action(async (name: Item['name'], quantity: number) => {
+  const changeItemQuantity = action((name: Item['name'], quantity: number) => {
     const newItems = cart.get().map((stateItem) => {
       return stateItem.name === name ? { ...stateItem, quantity } : stateItem;
     });
-    await cart.set(newItems);
+    cart.set(newItems);
   });
 
-  scenario(async () => {
-    // prettier-ignore
-    const [name, quantity] = await changeItemQuantity.events.invoke;
-
+  scenarioOnEvery(changeItemQuantity.events.invoke, async ([name, quantity]) => {
     if (quantity === 0) {
-      await cart.set(cart.get().filter((cartItem) => cartItem.name !== name));
+      cart.set(cart.get().filter((cartItem) => cartItem.name !== name));
     }
   });
 

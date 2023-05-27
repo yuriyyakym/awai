@@ -43,4 +43,17 @@ describe('state', () => {
     greeting.set((current) => current + ' World!');
     expect(greeting.get()).toBe('Hello World!');
   });
+
+  it('same state resolves twice', async () => {
+    const counter = state(0);
+
+    setTimeout(counter.set, 100, 1);
+    setTimeout(counter.set, 200, 2);
+
+    const value1 = await counter.events.changed;
+    const value2 = await counter.events.changed;
+
+    expect(value1).toBe(1);
+    expect(value2).toBe(2);
+  });
 });

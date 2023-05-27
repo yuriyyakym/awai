@@ -85,7 +85,7 @@ This library provides variety of syntax sugar helpers for scenarios. Like: `scen
 This is how you can implement state preserving using `scenarioOnEvery`:
 ```ts
 scenarioOnEvery(counter.events.changed, async () => {
-  // There are two ways to retrieve state value: `state.get()` and `await state`
+  // There are two ways of retrieving state value: `state.get()` and `await state`
   sessionStorage.setItem('counter', await counter);
 });
 ```
@@ -115,7 +115,7 @@ const TIMEOUT_SYMBOL = Symbol();
 
 scenarioOnEvery(increment.events.invoked, async () => {
   const result = await Promise.race([
-    click.events.invoked
+    increment.events.invoked
     delay(DEBOUNCE_TIMEOUT).then(() => TIMEOUT_SYMBOL),
   ]);
 

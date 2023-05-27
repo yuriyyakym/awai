@@ -1,13 +1,20 @@
 import { AwaitableEvent, isFunction } from '../lib';
 
-import { Callback } from './types';
+import { AsyncEvents, BaseEvents, Callback } from './types';
 
-const action = <Args extends any[], Return extends any>(callback?: Callback<Args, Return>) => {
+function action<Args extends any[]>(): Function & { events: BaseEvents<Args> };
+function action<Args extends any[], Return extends any>(
+  T: Callback<Args, Return>,
+): Callback<Args, Return> & { events: AsyncEvents<Args, Return> };
+
+function action<Args extends [], Return extends any>(
+  callback?: Callback<Args, Return>,
+): Function & { events: AsyncEvents<Args, Return> } {
   const hasCallback = isFunction(callback);
 
   const events = {
     invoked: new AwaitableEvent<Args>(),
-    failed: hasCallback ? new AwaitableEvent<any>() : undefined,
+    failed: new AwaitableEvent<any>(),
     completed: hasCallback ? new AwaitableEvent<Return>() : undefined,
   };
 
@@ -23,7 +30,7 @@ const action = <Args extends any[], Return extends any>(callback?: Callback<Args
     }
   };
 
-  return Object.assign(invoke, { events });
-};
+  return Object.assign(invoke, { events: events as any });
+}
 
 export default action;

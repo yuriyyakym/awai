@@ -1,4 +1,4 @@
-import { Disposable, ReadableAsyncState, WritableAsyncState } from '../types';
+import { ReadableAsyncState, WritableAsyncState } from '../types';
 
 export type InitialValue<T> = T | Promise<T> | (() => Promise<T>);
 

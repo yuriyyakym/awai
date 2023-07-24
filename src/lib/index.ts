@@ -5,6 +5,3 @@ export { default as fork } from './fork';
 export { default as isFunction } from './isFunction';
 export { default as noop } from './noop';
 export { default as rejectAfter } from './rejectAfter';
-export { default as scenario } from './scenario';
-export { default as scenarioOnce } from './scenarioOnce';
-export { default as scenarioOnEvery } from './scenarioOnEvery';

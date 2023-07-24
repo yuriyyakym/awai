@@ -12,7 +12,6 @@ const bundle = (config) => ({
 
 export default [
   bundle({
-    external: ['react'],
     output: [
       {
         file: `${name}.js`,
@@ -28,7 +27,6 @@ export default [
     plugins: [esbuild()],
   }),
   bundle({
-    external: ['react'],
     output: {
       file: `${name}.d.ts`,
       format: 'es',

@@ -1,4 +1,4 @@
-import { InferStateType, ReadableAsyncState, isReadableAsyncState } from '../types';
+import { InferReadableType, ReadableAsyncState, isReadableAsyncState } from '../types';
 
 import asyncSelector from './asyncSelector';
 import syncSelector from './syncSelector';
@@ -16,7 +16,7 @@ type Return<T extends any[], U> = ContainsAsync<T> extends true
 
 const selector = <T extends any[], U>(
   states: [...T],
-  predicate: (...values: { [K in keyof T]: InferStateType<T[K]> }) => U,
+  predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
 ): Return<T, U> => {
   const state = states.some((state) => isReadableAsyncState(state))
     ? asyncSelector(states, predicate)

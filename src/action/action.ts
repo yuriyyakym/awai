@@ -1,4 +1,4 @@
-import { AwaitableEvent, isFunction } from '../lib';
+import { AwaitableEvent, isFunction, isPromiseLike } from '../lib';
 
 import { AsyncEvents, BaseEvents, Callback } from './types';
 
@@ -18,12 +18,23 @@ function action<Args extends [], Return extends any>(
     completed: hasCallback ? new AwaitableEvent<Return>() : undefined,
   };
 
-  const invoke = async (...args: Args) => {
+  const invoke = (...args: Args) => {
     events.invoked.emit(args);
+
     try {
-      const result = callback ? await callback(...args) : (undefined as Return);
-      events.completed?.emit(result);
-      return result;
+      const valueOrPromise: Return | Promise<Return> = isFunction(callback)
+        ? callback(...args)
+        : (undefined as Return);
+
+      if (isPromiseLike(valueOrPromise)) {
+        return valueOrPromise.then((value: any) => {
+          events.completed?.emit(value);
+
+          return value;
+        });
+      }
+
+      return valueOrPromise;
     } catch (error) {
       events.failed?.emit(error);
       throw error;

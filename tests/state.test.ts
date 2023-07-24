@@ -1,4 +1,4 @@
-import { state } from '../src';
+import { delay, scenario, scenarioOnEvery, state } from '../src';
 
 describe('state', () => {
   it('is updated asynchronously', async () => {
@@ -55,5 +55,39 @@ describe('state', () => {
 
     expect(value1).toBe(1);
     expect(value2).toBe(2);
+  });
+
+  it('should not emit if same value set', async () => {
+    const counter = state(0);
+    const resolve = jest.fn<void, [number]>();
+
+    counter.events.changed.then(resolve);
+    counter.set(0);
+    await delay(0);
+
+    expect(resolve).not.toBeCalled();
+  });
+
+  it('should catch fast state changes', async () => {
+    const counter = state(-1);
+    const values: number[] = [];
+    const expectedValues: number[] = [];
+
+    scenarioOnEvery(counter.events.changed, async (value: any) => {
+      values.push(value);
+    });
+
+    // Wait for last scenario to be registered
+    // TODO: try on avoiding this
+    await delay(0);
+
+    for (let i = 0; i < 10; i++) {
+      expectedValues.push(i);
+      await counter.set(i);
+    }
+
+    await delay(100); // Wait for last scenario to be handled
+
+    expect(values).toEqual(expectedValues);
   });
 });

@@ -1,4 +1,4 @@
-import { action, composeState, scenario, scenarioOnEvery, state } from '../../src';
+import { action, scenarioOnEvery, selector, state } from '../../src';
 
 describe('Scenario: Shop flow', () => {
   it('Manages shop cart state as expected', async () => {
@@ -34,7 +34,7 @@ describe('Scenario: Shop flow', () => {
 const createStore = () => {
   const voucher = state<Voucher | null>(null);
   const cart = state<StateItem[]>([]);
-  const cartTotal = composeState([cart, voucher], (cart, voucher) => {
+  const cartTotal = selector([cart, voucher], (cart, voucher) => {
     const total = cart.reduce((sum, stateItem) => {
       return sum + stateItem.quantity * getItemByName(stateItem.name).price;
     }, 0);

@@ -1,4 +1,4 @@
-import { Resolver } from '../types';
+import type Resolver from '../types/Resolver';
 
 type FilterPredicate<T> = (value: T) => boolean;
 

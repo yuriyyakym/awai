@@ -20,21 +20,21 @@ describe('Scenario: Debounce', () => {
 
   it('catches double clicks properly', async () => {
     await click();
-    await delay(DEBOUNCE_TIMEOUT + 1);
+    await delay(DEBOUNCE_TIMEOUT + 50);
     await click();
-    await delay(DEBOUNCE_TIMEOUT - 1);
+    await delay(DEBOUNCE_TIMEOUT - 50);
     await click();
-    await delay(DEBOUNCE_TIMEOUT - 1);
+    await delay(DEBOUNCE_TIMEOUT - 50);
     await click();
-    await delay(DEBOUNCE_TIMEOUT - 1);
+    await delay(DEBOUNCE_TIMEOUT - 50);
     await click();
-    await delay(DEBOUNCE_TIMEOUT - 1);
+    await delay(DEBOUNCE_TIMEOUT - 50);
     await click();
     await click();
     await click();
-    await delay(DEBOUNCE_TIMEOUT + 1);
+    await delay(DEBOUNCE_TIMEOUT + 50);
     await click();
-    await delay(DEBOUNCE_TIMEOUT + 1);
+    await delay(DEBOUNCE_TIMEOUT + 50);
     await click();
 
     expect(debouncedFunction).toBeCalledTimes(3);

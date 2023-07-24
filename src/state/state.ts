@@ -14,18 +14,28 @@ const state = <T>(initialValue: T): State<T> => {
     let newValue = isFunction(nextValueOrResolver)
       ? nextValueOrResolver(value)
       : nextValueOrResolver;
-    value = newValue;
-    events.changed.emit(newValue);
-    return Promise.resolve(newValue);
+
+    if (!Object.is(newValue, value)) {
+      value = newValue;
+      events.changed.emit(newValue);
+    }
+
+    return new Promise((resolve) => queueMicrotask(() => resolve(newValue)));
   };
 
   const get = () => value;
 
-  const then = (resolve: Resolver<T>) => {
-    resolve(value);
+  const then = async (resolve: Resolver<T>): Promise<T> => {
+    const result = resolve(value);
+    return Promise.resolve(result);
   };
 
-  return { events, get, set, then };
+  return {
+    events,
+    get,
+    set,
+    then,
+  };
 };
 
 export default state;

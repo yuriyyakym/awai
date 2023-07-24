@@ -1,13 +1,5 @@
-import { AwaitableEvent } from '../lib';
-import { Resolver } from '../types';
+import { ReadableState, WritableState } from '../types';
 
-type Setter<T> = (nextValueOrResolver: T | ((current: T) => T)) => Promise<T>;
+export type Setter<T> = (nextValueOrResolver: T | ((current: T) => T)) => Promise<T>;
 
-export interface State<T> {
-  events: {
-    changed: AwaitableEvent<T>;
-  };
-  get: () => T;
-  set: Setter<T>;
-  then: (resolver: Resolver<T>) => void;
-}
+export type State<T> = ReadableState<T> & WritableState<T>;

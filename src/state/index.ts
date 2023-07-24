@@ -1,2 +1,2 @@
 export { default } from './state';
-export type { Setter, State } from './types';
+export type { State } from './types';

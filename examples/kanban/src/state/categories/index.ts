@@ -1,4 +1,4 @@
-import { action, fork, scenario, state, useFlowValue } from 'flow-store';
+import { action, fork, scenario, state, useFlowValue } from 'awai';
 import { v4 as uuid } from 'uuid';
 
 import { Category, Id } from '../../types';

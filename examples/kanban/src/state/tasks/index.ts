@@ -1,4 +1,4 @@
-import { action, state, useFlowValue } from 'flow-store';
+import { action, state, useFlowValue } from 'awai';
 import { useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 

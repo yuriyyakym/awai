@@ -1,4 +1,4 @@
-import { action, state } from 'flow-store';
+import { action, state } from 'awai';
 
 export const createCategoryModalState = state<true | null>(null);
 

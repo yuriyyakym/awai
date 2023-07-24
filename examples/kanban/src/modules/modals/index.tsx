@@ -1,4 +1,4 @@
-import { useFlowValue } from 'flow-store';
+import { useFlowValue } from 'awai';
 import { FunctionComponent } from 'react';
 
 import {

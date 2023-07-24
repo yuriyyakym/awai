@@ -1,4 +1,4 @@
-import { action, state } from 'flow-store';
+import { action, state } from 'awai';
 
 import { Category } from '../../types';
 

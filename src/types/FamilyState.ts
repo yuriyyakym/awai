@@ -1,9 +1,11 @@
 import { AwaitableEvent } from '../lib';
-import { ReadableState } from '.';
+
+import ReadableAsyncState from './ReadableAsyncState';
+import ReadableState from './ReadableState';
 
 type Key = string;
 
-type FamilyState<T extends ReadableState<any> | ReadableState<any>> = ReadableState<
+type FamilyState<T extends ReadableState<any> | ReadableAsyncState<any>> = ReadableState<
   Record<string, T>
 > & {
   events: {

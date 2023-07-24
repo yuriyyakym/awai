@@ -1,5 +1,4 @@
-import AwaitableEvent from './AwaitableEvent';
-import noop from './noop';
+import { AwaitableEvent, noop } from '../lib';
 
 const scenarioOnEvery = async <T>(
   awaitableEvent: AwaitableEvent<T>,

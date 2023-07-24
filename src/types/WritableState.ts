@@ -1,5 +1,6 @@
 import { AwaitableEvent } from '../lib';
-import { Setter } from '../state';
+
+import Setter from './Setter';
 import Resolver from './Resolver';
 
 export default interface WritableState<T> {

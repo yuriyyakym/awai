@@ -1,11 +1,11 @@
 import { AwaitableEvent } from '../lib';
-import { InferStateType, Resolver } from '../types';
+import { InferReadableType, Resolver } from '../types';
 
 import { SyncSelector } from './types';
 
 const syncSelector = <T extends any[], U>(
   states: [...T],
-  predicate: (...values: { [K in keyof T]: InferStateType<T[K]> }) => U,
+  predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
 ): SyncSelector<U> => {
   let mounted = true;
 

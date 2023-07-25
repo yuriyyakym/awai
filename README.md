@@ -6,6 +6,7 @@
   <div>
     <img src="https://github.com/yuriyyakym/awai/actions/workflows/tests.yml/badge.svg" />
     <img src="https://img.shields.io/badge/stability-experimental-blue.svg" />
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
   </div>
 
   <br />

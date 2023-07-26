@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "awai": "^0.0.1-alpha-3",
+    "awai-react": "^0.0.0",
     "bootstrap": "^5.2.3",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",

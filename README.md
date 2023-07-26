@@ -11,5 +11,5 @@
 
   <br />
   
-  <p>| <a href="https://awai.vercel.app/">Documentation</a> |</p>
+  <p>| <a href="https://awai.vercel.app/">Documentation</a> | <a href="https://github.com/yuriyyakym/awai-react">Awai-React</a> |</p>
 </div>

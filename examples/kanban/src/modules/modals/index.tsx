@@ -1,4 +1,4 @@
-import { useFlowValue } from 'awai';
+import { useStateValue } from 'awai-react';
 import { FunctionComponent } from 'react';
 
 import {
@@ -11,11 +11,9 @@ import {
 import CreateCategoryModal from './CreateCategoryModal';
 import CreateTaskModal from './CreateTaskModal';
 
-interface Props {}
-
-const Modals: FunctionComponent<Props> = ({}) => {
-  const isCreateCategoryModalOpen = useFlowValue(createCategoryModalState) !== null;
-  const isCreateTaskModalOpen = useFlowValue(createTaskModalState) !== null;
+const Modals: FunctionComponent = () => {
+  const isCreateCategoryModalOpen = useStateValue(createCategoryModalState) !== null;
+  const isCreateTaskModalOpen = useStateValue(createTaskModalState) !== null;
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useFlowValue } from 'awai';
+import { useStateValue } from 'awai-react';
 import { FormEventHandler, FunctionComponent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const CreateTaskModal: FunctionComponent<Props> = ({ isOpen, onClose }) => {
-  const data = useFlowValue(createTaskModalState);
+  const data = useStateValue(createTaskModalState);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 

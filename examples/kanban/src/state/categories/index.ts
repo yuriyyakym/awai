@@ -1,4 +1,5 @@
-import { action, fork, scenario, state, useFlowValue } from 'awai';
+import { action, fork, scenario, state } from 'awai';
+import { useStateValue } from 'awai-react';
 import { v4 as uuid } from 'uuid';
 
 import { Category, Id } from '../../types';
@@ -13,7 +14,9 @@ export const createCategory = action((partialCategory: Omit<Category, 'id'>) => 
   return category;
 });
 
-export const deleteCategory = action<[Id]>((id: Category['id']) => {
+action();
+
+export const deleteCategory = action((id: Category['id']) => {
   categories.set((categories) => {
     return categories.filter((category) => category.id !== id);
   });
@@ -46,4 +49,4 @@ scenario(async () => {
   });
 });
 
-export const useCategories = () => useFlowValue(categories);
+export const useCategories = () => useStateValue(categories);

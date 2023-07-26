@@ -1,4 +1,5 @@
-import { action, state, useFlowValue } from 'awai';
+import { action, state } from 'awai';
+import { useStateValue } from 'awai-react';
 import { useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 
@@ -28,7 +29,7 @@ export const moveTask = action((taskId: Task['id'], categoryId: Category['id']) 
 });
 
 export const useTask = (id: Task['id']) => {
-  const allTasks = useFlowValue(tasks);
+  const allTasks = useStateValue(tasks);
   const task = useMemo(() => allTasks.find((task) => task.id === id), [allTasks, id]);
 
   if (!task) {
@@ -38,4 +39,4 @@ export const useTask = (id: Task['id']) => {
   return task;
 };
 
-export const useTasks = () => useFlowValue(tasks);
+export const useTasks = () => useStateValue(tasks);

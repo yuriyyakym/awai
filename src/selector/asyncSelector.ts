@@ -69,11 +69,13 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
 
       const status = getStatus();
 
-      if (status === AsyncStatus.FAILURE) {
-        queueMicrotask(() => {
-          events.changed.emit(get()!);
-        });
+      if (status === AsyncStatus.LOADING) {
+        return;
       }
+
+      queueMicrotask(() => {
+        events.changed.emit(get()!);
+      });
     }
   })();
 

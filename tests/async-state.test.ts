@@ -26,4 +26,11 @@ describe('async-state', () => {
     const value = await greeting.events.changed;
     expect(value).toBe('Magic message');
   });
+
+  it('ignores resolved initial value if custom value was already set', async () => {
+    const state = asyncState(delay(200).then(() => 'a'));
+    state.set(Promise.resolve('b'));
+    await delay(300);
+    expect(state.get()).toBe('b');
+  });
 });

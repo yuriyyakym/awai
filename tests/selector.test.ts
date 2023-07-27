@@ -27,4 +27,12 @@ describe('selector', () => {
     expect(await state5.getPromise()).toBe(5);
   });
 
+  it('only calls callback when all async dependencies are resolved', async () => {
+    const state = asyncState(delay(100).then(() => 'test'));
+    const publicatedState = selector([state], (state) => {
+      expect(state).toBe('test');
+      return state!.repeat(2);
+    });
+    expect(await publicatedState.getPromise()).toBe('testtest');
+  });
 });

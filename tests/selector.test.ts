@@ -19,4 +19,15 @@ describe('selector', () => {
     });
     expect(await duplicatedState.getPromise()).toBe('testtest');
   });
+
+  it('Emits `changed` event properly', async () => {
+    const state1 = state<number>(1);
+    const state2 = asyncState<number>(delay(50).then(() => 2));
+    const state3 = state<number>(3);
+
+    const stateSum = selector([state1, state2, state3], (a, b, c) => a + b + c);
+
+    expect(await stateSum.events.changed).toEqual(6);
+    expect(stateSum.get()).toEqual(6);
+  });
 });

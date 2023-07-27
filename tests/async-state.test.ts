@@ -33,4 +33,20 @@ describe('async-state', () => {
     await delay(300);
     expect(state.get()).toBe('b');
   });
+
+  it('creates async composed state with any initial value', async () => {
+    const state1 = asyncState(1);
+    const state2 = asyncState(Promise.resolve(2));
+    const state3 = asyncState(() => 3);
+    const state4 = asyncState(() => Promise.resolve(4));
+    const state5 = asyncState(delay(200).then(() => 5));
+
+    expect(state1.get()).toBe(1);
+    expect(state2.get()).toBe(undefined);
+    expect(await state2).toBe(2);
+    expect(state3.get()).toBe(3);
+    expect(state4.get()).toBe(4);
+    expect(state5.get()).toBe(undefined);
+    expect(await state5.getPromise()).toBe(5);
+  });
 });

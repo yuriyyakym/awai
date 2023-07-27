@@ -28,9 +28,9 @@ describe('async-state', () => {
   });
 
   it('ignores resolved initial value if custom value was already set', async () => {
-    const state = asyncState(delay(200).then(() => 'a'));
+    const state = asyncState(delay(50).then(() => 'a'));
     state.set(Promise.resolve('b'));
-    await delay(300);
+    await delay(50);
     expect(state.get()).toBe('b');
   });
 

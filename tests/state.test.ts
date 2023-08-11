@@ -1,4 +1,4 @@
-import { delay, scenario, scenarioOnEvery, state } from '../src';
+import { delay, scenarioOnEvery, state } from '../src';
 
 describe('state', () => {
   it('is updated asynchronously', async () => {

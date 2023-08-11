@@ -2,13 +2,9 @@ import { AwaitableEvent } from '../lib';
 
 import ReadableState from './ReadableState';
 
-type FamilyState<
-  T,
-  Family extends Record<Id, T>,
-  Id extends string = string,
-> = ReadableState<Family> & {
+type FamilyState<T, Id extends string = string> = ReadableState<Record<Id, T>> & {
   events: {
-    changed: AwaitableEvent<Family>;
+    changed: AwaitableEvent<Record<Id, T>>;
   };
   getNode: (id: Id) => T;
 };

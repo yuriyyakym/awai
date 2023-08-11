@@ -9,15 +9,17 @@ type Id = string;
 const familyState = <
   T,
   Initializer extends (id: Id) => T | Promise<T>,
-  NodeType extends ReturnType<Initializer> extends PromiseLike<T> ? AsyncState<T> : State<T>,
   Family extends Record<Id, NodeType>,
+  NodeType = ReturnType<Initializer> extends PromiseLike<infer Q>
+    ? AsyncState<Q>
+    : State<ReturnType<Initializer>>,
 >(
   initializer: Initializer,
-): FamilyState<NodeType, Family> => {
+): FamilyState<NodeType> => {
   const family = state<Family>({} as Family);
 
   const events = {
-    changed: new AwaitableEvent<Family>(),
+    changed: new AwaitableEvent<Record<Id, NodeType>>(),
   };
 
   const getNode = (id: Id): NodeType => {

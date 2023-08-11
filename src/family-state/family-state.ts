@@ -1,52 +1,56 @@
+import asyncState, { AsyncState } from '../async-state';
 import { AwaitableEvent } from '../lib';
-import state from '../state';
-import { FamilyState, ReadableAsyncState, ReadableState, Resolver } from '../types';
+import { scenarioOnEvery } from '../scenario';
+import state, { State } from '../state';
+import { FamilyState, Resolver } from '../types';
 
-type Key = string;
+type Id = string;
 
-const familyState = <T extends ReadableState<any> | ReadableAsyncState<any>>(): FamilyState<T> => {
-  type Family = Record<string, T>;
-
-  const family = state<Family>({});
-  let mounted = true;
+const familyState = <
+  T,
+  Initializer extends (id: Id) => T | Promise<T>,
+  NodeType extends ReturnType<Initializer> extends PromiseLike<T> ? AsyncState<T> : State<T>,
+  Family extends Record<Id, NodeType>,
+>(
+  initializer: Initializer,
+): FamilyState<NodeType, Family> => {
+  const family = state<Family>({} as Family);
 
   const events = {
     changed: new AwaitableEvent<Family>(),
-    set: new AwaitableEvent<T>(),
   };
 
-  const get = (): Family => {
+  const getNode = (id: Id): NodeType => {
+    if (id in family.get()) {
+      return family.get()[id];
+    }
+
+    const initialValue = initializer(id);
+
+    const nodeState =
+      initialValue instanceof Promise ? asyncState(initialValue) : state(initialValue);
+
+    family.set((current) => ({ ...current, [id]: nodeState }));
+
+    events.changed.emit(family.get());
+
+    scenarioOnEvery(nodeState.events.changed, async () => {
+      events.changed.emit(family.get());
+    });
+
+    return nodeState as NodeType;
+  };
+
+  const get = () => {
     return family.get();
   };
 
-  const getNode = (id: Key): T => family.get()[id];
-
-  const set = (id: Key, stateNode: T) => {
-    family.set((current) => ({ ...current, [id]: stateNode }));
-    events.set.emit(stateNode);
-  };
-
   const then = async (resolve: Resolver<Family>): Promise<Family> => {
-    const result = await resolve(get());
+    const result = await resolve(family.get());
     return result;
   };
 
-  (async () => {
-    while (mounted) {
-      /**
-       * @todo Cleanup when disposed
-       * @see https://github.com/yuriyyakym/awai/issues/1
-       */
-      await Promise.race([
-        events.set,
-        ...Object.values(family.get()).map((stateNode) => stateNode.events.changed),
-      ]);
-
-      events.changed.emit(family.get());
-    }
-  })();
-
-  return { events, get, getNode, set, then };
+  return { events, get, getNode, then };
 };
 
 export default familyState;

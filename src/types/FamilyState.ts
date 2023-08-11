@@ -1,18 +1,16 @@
 import { AwaitableEvent } from '../lib';
 
-import ReadableAsyncState from './ReadableAsyncState';
 import ReadableState from './ReadableState';
 
-type Key = string;
-
-type FamilyState<T extends ReadableState<any> | ReadableAsyncState<any>> = ReadableState<
-  Record<string, T>
-> & {
+type FamilyState<
+  T,
+  Family extends Record<Id, T>,
+  Id extends string = string,
+> = ReadableState<Family> & {
   events: {
-    set: AwaitableEvent<T>;
+    changed: AwaitableEvent<Family>;
   };
-  getNode: (id: Key) => T;
-  set: (id: Key, value: T) => void;
+  getNode: (id: Id) => T;
 };
 
 export default FamilyState;

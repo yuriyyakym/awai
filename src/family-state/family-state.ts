@@ -29,18 +29,22 @@ const familyState = <
 
     const initialValue = initializer(id);
 
-    const nodeState =
+    const stateNode =
       initialValue instanceof Promise ? asyncState(initialValue) : state(initialValue);
 
-    family.set((current) => ({ ...current, [id]: nodeState }));
-
+    family.set((current) => ({ ...current, [id]: stateNode }));
     events.changed.emit(family.get());
 
-    scenarioOnEvery(nodeState.events.changed, async () => {
+    scenarioOnEvery(stateNode.events.changed, async () => {
       events.changed.emit(family.get());
     });
 
-    return nodeState as NodeType;
+    return stateNode as NodeType;
+  };
+
+  const setNode = (id: Id, stateNode: NodeType) => {
+    family.set((current) => ({ ...current, [id]: stateNode }));
+    events.changed.emit(family.get());
   };
 
   const get = () => {
@@ -52,7 +56,7 @@ const familyState = <
     return result;
   };
 
-  return { events, get, getNode, then };
+  return { events, get, getNode, setNode, then };
 };
 
 export default familyState;

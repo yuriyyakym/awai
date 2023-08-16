@@ -1,4 +1,5 @@
 import { AwaitableEvent } from '../lib';
+import { scenario } from '../scenario';
 import { InferReadableType, Resolver } from '../types';
 
 import { SyncSelector } from './types';
@@ -7,8 +8,6 @@ const syncSelector = <T extends any[], U>(
   states: [...T],
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
 ): SyncSelector<U> => {
-  let mounted = true;
-
   const events = {
     changed: new AwaitableEvent<U>(),
   };
@@ -23,22 +22,12 @@ const syncSelector = <T extends any[], U>(
     return Promise.resolve(result);
   };
 
-  const dispose = () => {
-    mounted = false;
-  };
+  scenario(async () => {
+    await Promise.race(states.map((state) => state.events.changed));
+    events.changed.emit(get()!);
+  });
 
-  (async () => {
-    while (mounted) {
-      /**
-       * @todo Cleanup when disposed
-       * @see https://github.com/yuriyyakym/awai/issues/1
-       */
-      await Promise.race(states.map((state) => state.events.changed));
-      events.changed.emit(get()!);
-    }
-  })();
-
-  return { events, dispose, get, then };
+  return { events, get, then };
 };
 
 export default syncSelector;

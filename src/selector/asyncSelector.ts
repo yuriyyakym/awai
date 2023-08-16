@@ -1,4 +1,5 @@
-import { AwaitableEvent } from '../lib';
+import { AwaitableEvent, fork } from '../lib';
+import { scenario } from '../scenario';
 import {
   AsyncStatus,
   InferReadableType,
@@ -17,7 +18,10 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
 ): AsyncSelector<U> => {
   type StatesValues = { [K in keyof T]: InferReadableType<T[K]> };
 
-  let mounted = true;
+  let error: AggregateError | undefined;
+  let value: any;
+  let isLoading: boolean = true;
+  let nextVersion: number = -1;
 
   const events = {
     failed: new AwaitableEvent<unknown>(),
@@ -27,26 +31,61 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
 
   const getStatus = () => getCommonStatus(states);
 
-  const get = () => {
-    const status = getStatus();
+  scenario(async () => {
+    nextVersion++;
 
-    if (status !== AsyncStatus.LOADED) {
-      return undefined;
+    const status = getStatus();
+    const asyncStates = states.filter(isReadableAsyncState);
+    const errors = asyncStates.map((state) => state.getAsync().error).filter(Boolean);
+
+    if (errors.length > 0) {
+      error = new AggregateError(errors);
+      value = undefined;
+      isLoading = status === AsyncStatus.LOADING;
+      queueMicrotask(() => events.changed.emit(value));
+      return;
     }
 
-    const values = states.map((state) => state.get()) as StatesValues;
+    if (status === AsyncStatus.LOADED) {
+      const values = states.map((state) => state.get()) as StatesValues;
 
-    return predicate(...values);
-  };
+      fork(async () => {
+        isLoading = true;
+        let version = nextVersion;
 
-  const getAsync = () => ({} as any); //({ error, isLoading, value });
+        try {
+          const newValue = await predicate(...values);
+          if (version === nextVersion && newValue !== value) {
+            error = undefined;
+            value = newValue;
+          }
+        } catch (error) {
+          if (version === nextVersion) {
+            error = undefined;
+            value = undefined;
+          }
+        } finally {
+          if (version === nextVersion) {
+            isLoading = false;
+            queueMicrotask(() => events.changed.emit(value));
+          }
+        }
+      });
+    }
+
+    await Promise.race(states.map((state) => state.events.changed));
+  });
+
+  const get = () => value;
+
+  const getAsync = () => ({ error, isLoading, value });
 
   const getPromise = async (): Promise<U> => {
     const values = (await Promise.all(
       states.map((state) => (isReadableAsyncState(state) ? state.getPromise() : state.get())),
     )) as StatesValues;
 
-    return predicate(...values);
+    return await predicate(...values);
   };
 
   const then = async (resolve: Resolver<U>): Promise<U> => {
@@ -54,34 +93,8 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
     return result;
   };
 
-  const dispose = () => {
-    // @todo Implement cleanup
-    mounted = false;
-  };
-
-  (async () => {
-    while (mounted) {
-      /**
-       * @todo Cleanup when disposed
-       * @see https://github.com/yuriyyakym/awai/issues/1
-       */
-      await Promise.race(states.map((state) => state.events.changed));
-
-      const status = getStatus();
-
-      if (status === AsyncStatus.LOADING) {
-        return;
-      }
-
-      queueMicrotask(() => {
-        events.changed.emit(get()!);
-      });
-    }
-  })();
-
   return {
     events,
-    dispose,
     get,
     getAsync,
     getPromise,

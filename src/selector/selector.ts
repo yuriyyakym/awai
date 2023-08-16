@@ -10,7 +10,9 @@ type ContainsAsync<T extends any[]> = T extends [infer First, ...infer Rest]
     : ContainsAsync<Rest>
   : false;
 
-type Return<T extends any[], U> = ContainsAsync<T> extends true
+type Return<T extends any[], U> = U extends PromiseLike<infer P>
+  ? AsyncSelector<P>
+  : ContainsAsync<T> extends true
   ? AsyncSelector<U>
   : SyncSelector<U>;
 
@@ -18,9 +20,12 @@ const selector = <T extends any[], U>(
   states: [...T],
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
 ): Return<T, U> => {
-  const state = states.some((state) => isReadableAsyncState(state))
-    ? asyncSelector(states, predicate)
-    : syncSelector(states, predicate);
+  const isAsyncPredicate = predicate.constructor.name === 'AsyncFunction';
+
+  const state =
+    isAsyncPredicate || states.some((state) => isReadableAsyncState(state))
+      ? asyncSelector(states, predicate)
+      : syncSelector(states, predicate);
   return state as Return<T, U>;
 };
 

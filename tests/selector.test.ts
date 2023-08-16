@@ -1,4 +1,4 @@
-import { asyncState, delay, selector, state } from '../src';
+import { asyncState, delay, familyState, selector, state } from '../src';
 
 describe('selector', () => {
   it('composes sync states properly', async () => {
@@ -29,5 +29,24 @@ describe('selector', () => {
 
     expect(await stateSum.events.changed).toEqual(6);
     expect(stateSum.get()).toEqual(6);
+  });
+
+  it('Handles async predicate', async () => {
+    const state1 = state<number>(1);
+    const state2 = familyState(async (id) => delay(50).then(() => Number(id) * 2));
+
+    const stateSum = selector([state1, state2], async (a) => {
+      await delay(10);
+      return state2.getNode(String(a));
+    });
+
+    expect(stateSum.getAsync().isLoading).toEqual(true);
+    expect(await stateSum.events.changed).toEqual(2);
+    expect(stateSum.getAsync().isLoading).toEqual(false);
+    expect(stateSum.getAsync().error).toEqual(undefined);
+
+    state1.set(10);
+    await stateSum.events.changed;
+    expect(stateSum.get()).toEqual(20);
   });
 });

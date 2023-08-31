@@ -1,4 +1,4 @@
-import { AwaitableEvent, isFunction, isPromiseLike } from '../lib';
+import { AwaitableEvent, flush, isFunction, isPromiseLike } from '../lib';
 import { AsyncStatus, Resolver } from '../types';
 
 import type { AsyncState, InitialValue } from './types';
@@ -65,6 +65,8 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
       error = e;
       events.failed.emit(error);
     }
+
+    await flush();
   };
 
   const get: AsyncState<T>['get'] = () => value;

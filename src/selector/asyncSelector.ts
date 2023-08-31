@@ -1,4 +1,4 @@
-import { AwaitableEvent, fork } from '../lib';
+import { AwaitableEvent, fork, getAggregatedAsyncStatus } from '../lib';
 import { scenario } from '../scenario';
 import {
   AsyncStatus,
@@ -9,7 +9,6 @@ import {
   isReadableAsyncState,
 } from '../types';
 
-import { getCommonStatus } from './lib';
 import { AsyncSelector } from './types';
 
 const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[], U>(
@@ -29,7 +28,7 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
     requested: new AwaitableEvent<void>(),
   };
 
-  const getStatus = () => getCommonStatus(states);
+  const getStatus = () => getAggregatedAsyncStatus(states);
 
   scenario(async () => {
     nextVersion++;

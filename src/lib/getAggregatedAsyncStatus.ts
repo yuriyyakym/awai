@@ -1,6 +1,11 @@
-import { AsyncStatus, ReadableAsyncState, ReadableState, isReadableAsyncState } from '../../types';
+import {
+  AsyncStatus,
+  type ReadableAsyncState,
+  type ReadableState,
+  isReadableAsyncState,
+} from '../types';
 
-const getCommonStatus = <T extends (ReadableState<any> | ReadableAsyncState<any>)[]>(
+const getAggregatedAsyncStatus = <T extends (ReadableState<any> | ReadableAsyncState<any>)[]>(
   states: T,
 ): AsyncStatus => {
   const asyncStates = states.filter(isReadableAsyncState);
@@ -20,4 +25,4 @@ const getCommonStatus = <T extends (ReadableState<any> | ReadableAsyncState<any>
   return AsyncStatus.LOADED;
 };
 
-export default getCommonStatus;
+export default getAggregatedAsyncStatus;

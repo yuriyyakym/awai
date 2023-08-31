@@ -1,5 +1,6 @@
 export { default as AwaitableEvent } from './AwaitableEvent';
 export { default as delay } from './delay';
+export { default as flush } from './flush';
 export { default as fork } from './fork';
 export { default as getAggregatedAsyncStatus } from './getAggregatedAsyncStatus';
 export { default as isFunction } from './isFunction';

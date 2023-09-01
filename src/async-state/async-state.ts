@@ -13,21 +13,7 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
   let version = 0;
   let status: AsyncStatus;
   let error: unknown = null;
-  let isLoading = false;
   let value: T | undefined = isInitialValueAsync ? undefined : initialValue;
-
-  if (isInitialValueAsync) {
-    status = AsyncStatus.LOADING;
-    const initialValuePromise = isFunction(initialValue) ? initialValue() : initialValue;
-    Promise.resolve(initialValuePromise).then((resolvedValue) => {
-      if (version === 0) {
-        value = resolvedValue;
-        version = 1;
-        status = AsyncStatus.LOADED;
-        events.changed.emit(resolvedValue);
-      }
-    });
-  }
 
   const events: AsyncState<T>['events'] = {
     changed: new AwaitableEvent<T>(),
@@ -38,7 +24,8 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
   const getStatus: AsyncState<T>['getStatus'] = () => status;
 
   const set: AsyncState<T>['set'] = async (nextValueOrResolver) => {
-    const nextVersion = ++version % Number.MAX_SAFE_INTEGER;
+    const lastVersion = version;
+    // const nextVersion = version + 1 % Number.MAX_SAFE_INTEGER;
 
     try {
       if (isPromiseOrFunction(nextValueOrResolver)) {
@@ -50,7 +37,7 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
         ? await nextValueOrResolver(value)
         : await nextValueOrResolver;
 
-      if (version !== nextVersion) {
+      if (lastVersion !== version) {
         // Emit some abortion event?
         return;
       }
@@ -66,12 +53,17 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
       events.failed.emit(error);
     }
 
+    version++;
     await flush();
   };
 
   const get: AsyncState<T>['get'] = () => value;
 
-  const getAsync: AsyncState<T>['getAsync'] = () => ({ error, isLoading, value });
+  const getAsync: AsyncState<T>['getAsync'] = () => ({
+    error,
+    isLoading: status === AsyncStatus.LOADING,
+    value,
+  });
 
   const getPromise: AsyncState<T>['getPromise'] = async () => {
     if (version > 0) {
@@ -85,6 +77,11 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
     const result = resolve(await getPromise());
     return result;
   };
+
+  if (isInitialValueAsync) {
+    const initialValuePromise = isFunction(initialValue) ? initialValue() : initialValue;
+    set(initialValuePromise);
+  }
 
   return {
     events,

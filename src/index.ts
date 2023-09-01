@@ -8,14 +8,14 @@ export { default as selector } from './selector';
 export { default as state, type State } from './state';
 export {
   type AsyncSetter,
-  type AsyncStatus,
+  AsyncStatus,
   type AsyncValue,
   type FamilyState,
   type InferReadableType,
+  isReadableAsyncState,
   type ReadableAsyncState,
   type ReadableState,
   type Setter,
   type WritableAsyncState,
   type WritableState,
-  isReadableAsyncState,
 } from './types';

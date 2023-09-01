@@ -20,6 +20,7 @@ const familyState = <
 
   const events = {
     changed: new AwaitableEvent<Record<Id, NodeType>>(),
+    stateCreated: new AwaitableEvent<Id>(),
   };
 
   const getNode = (id: Id): NodeType => {
@@ -33,6 +34,7 @@ const familyState = <
       initialValue instanceof Promise ? asyncState(initialValue) : state(initialValue);
 
     family.set((current) => ({ ...current, [id]: stateNode }));
+    events.stateCreated.emit(id);
     events.changed.emit(family.get());
 
     scenarioOnEvery(stateNode.events.changed, async () => {

@@ -11,7 +11,7 @@ const isPromiseOrFunction = <T>(
 const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
   const isInitialValueAsync = isPromiseOrFunction(initialValue);
   let version = 0;
-  let status: AsyncStatus;
+  let status: AsyncStatus = AsyncStatus.LOADED;
   let error: unknown = null;
   let value: T | undefined = isInitialValueAsync ? undefined : initialValue;
 

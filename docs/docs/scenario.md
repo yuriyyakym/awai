@@ -1,12 +1,12 @@
 ---
-sidebar_position: 4
+sidebar_position: 7
 ---
 
 # Scenario
 
-Conceptually, `Scenario`` is a sequence of events. Tt is described by a piece of  promise-based code.
+Conceptually, `Scenario` is a sequence of events, that are described by a piece of promise-based code.
 
-`scenario` as a util is just a syntax sugar replacement for [infinite loops](/re-resolvable#how-to-replace-replace-event-emitter-with-re-resolvable).
+`scenario` is a syntax sugar replacement for [infinite loops](/re-resolvable#how-to-replace-replace-event-emitter-with-re-resolvable).
 
 ```ts title="Scenario of writing every counter change into sessionStorage"
 scenario(async () => {

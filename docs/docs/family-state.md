@@ -41,7 +41,7 @@ function familyState<
 
 ## Examples
 
-```ts title="Example: family of sync states"
+```ts title="Family of sync states"
 const ID1 = 'id1';
 const ID2 = 'id2';
 

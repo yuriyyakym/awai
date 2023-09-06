@@ -29,3 +29,7 @@ scenarioOnEvery(counter.events.changed, async () => {
   sessionStorage.setItem('counter', await counter);
 });
 ```
+
+:::info
+As for now, if scenario throws an error, it is ignored.
+:::

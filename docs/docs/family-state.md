@@ -49,7 +49,7 @@ const getNameById = (id) => ({ [ID1]: 'John', [ID2]: 'Andrew' })[id];
 
 const namesFamily = familyState(getNameById);
 
-const greeting = selector(
+const greetingState = selector(
   [namesFamily],
   (namesStates) => {
     const names = Object.values(namesStates).map(state => state.get());
@@ -59,15 +59,15 @@ const greeting = selector(
   },
 );
 
-greeting.get(); // 'Nobody to greet'
+greetingState.get(); // 'Nobody to greet'
 
 namesFamily.getNode(ID1);
 namesFamily.getNode(ID2);
 
-await greeting.events.changed; // 'Hello John & Andrew'
+await greetingState.events.changed; // 'Hello John & Andrew'
 await namesFamily.getNode(ID1).set('David');
 
-greeting.get(); // 'Hello David & Andrew'
+greetingState.get(); // 'Hello David & Andrew'
 ```
 
 

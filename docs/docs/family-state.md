@@ -52,7 +52,7 @@ const namesFamily = familyState(getNameById);
 const greeting = selector(
   [namesFamily],
   (namesStates) => {
-    const names = Object.values(namesStates);
+    const names = Object.values(namesStates).map(state => state.get());
     return names.length === 0
       ? 'Nobody to greet'
       : `Hello ${names.join(' & ')}`;
@@ -92,20 +92,21 @@ const initializer = async (id) => wait(100).then(() => getNameById(id));
 const activePersonIdState = state(ID1);
 const namesFamily = familyState(initializer);
 
-const activePerson = selector(
+const activePersonState = selector(
   [activePersonIdState, namesFamily],
   (activePersonId, _namesStates) => {
     return namesFamily.getNode(activePersonId).getPromise();
   },
 );
 
-activePerson.get(); // 'John'
+activePersonState.get(); // 'John'
 
 await activePersonIdState.set(ID2);
 
-activePerson.get(); // 'Andrew'
+activePersonState.get(); // 'Andrew'
 ```
 
 :::note
-Notice how `_namesStates` is ignored in selector predicate. It is a recommended practice to access node via `getNode` method, since it is safer in case if node does not exists yet.
+Notice how `_namesStates` is ignored in selector predicate. In this example this argument is added only for clarity, that this argument is passed by selector.
+It is a recommended to access node via `getNode` method, since it is safer in case if node does not exists yet.
 :::

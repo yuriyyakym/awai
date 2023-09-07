@@ -1,7 +1,7 @@
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Awai docs',
-  tagline: 'Event-based state management',
+  tagline: 'Dependency-free state management library written in TypeScript',
   // favicon: 'img/favicon.ico',
   url: 'https://...',
   baseUrl: '/',

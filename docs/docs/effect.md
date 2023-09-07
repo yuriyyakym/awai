@@ -4,16 +4,16 @@ sidebar_position: 9
 
 # Effect
 
-Effect invokes its predicate as soon as any dependency is changed. The predicate is not invoked if any dependency is async and is not initialized yet.
+Effect invokes its predicate as soon as any dependency is changed. The predicate is not invoked if there is any unitialized async dependency.
 
-Predicate should return a function if cleanup needed.
+Predicate should return a cleanup function if cleanup needed.
 
 ## Examples
 
 ```ts title="Effect controlled by a state"
-const isMouseLogginEnabledState = state<boolean>(false);
+const isMouseLoggingEnabledState = state<boolean>(false);
 
-effect([isMouseLogginEnabledState], (isMouseLogginEnabled) => {
+effect([isMouseLoggingEnabledState], (isMouseLogginEnabled) => {
   if (!isMouseLogginEnabled) {
     return;
   }
@@ -27,6 +27,6 @@ effect([isMouseLogginEnabledState], (isMouseLogginEnabled) => {
   }
 });
 
-isMouseLogginEnabledState.set(true); // enable logging
+isMouseLoggingEnabledState.set(true); // enable logging
 ```
 

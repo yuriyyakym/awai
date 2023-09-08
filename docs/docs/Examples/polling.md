@@ -5,7 +5,7 @@
 
 In this example we will refetch user profile every `N` seconds, where `N` depends on connection type.
 
-```ts title="Create entity polling effect"
+```ts title="Create entity polling effect - alternative approach"
 const profileState = asyncState<UserProfile>(fetchUserProfile);
 
 effect([isOnlineState, syncIntervalState], (isOnline, syncInterval) => {
@@ -13,10 +13,16 @@ effect([isOnlineState, syncIntervalState], (isOnline, syncInterval) => {
     return;
   }
 
-  await wait(syncInterval);
+  const refetchEntity = () => {
+    const profilePromise = fetchUserProfile();
+    profileState.set(profilePromise);
+  };
 
-  const profilePromise = fetchUserProfile();
-  profileState.set(profilePromise);
+  const intervalId = setInterval(refetchEntity, syncInterval);
+
+  return () => {
+    clearInterval(intervalId);
+  };
 });
 ```
 
@@ -65,27 +71,6 @@ const syncIntervalState = selector(
     }
   },
 );
-```
-
-```ts title="Create entity polling effect - alternative approach"
-const profileState = asyncState<UserProfile>(fetchUserProfile);
-
-effect([isOnlineState, syncIntervalState], (isOnline, syncInterval) => {
-  if (!isOnline) {
-    return;
-  }
-
-  const refetchEntity = () => {
-    const profilePromise = fetchUserProfile();
-    profileState.set(profilePromise);
-  };
-
-  const intervalId = setInterval(refetchEntity, syncInterval);
-
-  return () => {
-    clearInterval(intervalId);
-  };
-});
 ```
 
 ```ts title="Utils"

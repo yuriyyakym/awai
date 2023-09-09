@@ -1,6 +1,6 @@
 export { default as action } from './action';
 export { default as asyncState, type AsyncState } from './async-state';
-export { AwaitableEvent, flush } from './core';
+export { AwaitableEvent, flush, Registry } from './core';
 export { default as effect } from './effect';
 export { default as familyState } from './family-state';
 export { delay, fork, getAggregatedAsyncStatus, rejectAfter } from './lib';

@@ -1,6 +1,6 @@
-import { AwaitableEvent, isFunction } from '../lib';
-import { Resolver } from '../types';
+import { AwaitableEvent } from '../core';
 import { isFunction } from '../lib';
+import { registry } from '../global';
 
 import type { State } from './types';
 
@@ -34,12 +34,11 @@ const state = <T>(initialValue: T): State<T> => {
     return resolve(value);
   };
 
-  return {
-    events,
-    get,
-    set,
-    then,
-  };
+  const stateNode = { events, get, set, then };
+
+  registry.register(stateNode);
+
+  return stateNode;
 };
 
 export default state;

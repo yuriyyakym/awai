@@ -1,8 +1,7 @@
-import { AwaitableEvent } from '../lib';
+import { type AwaitableEvent } from '../core';
 
+import Id from './Id';
 import ReadableState from './ReadableState';
-
-type Id = string;
 
 type FamilyState<T> = ReadableState<Record<Id, T>> & {
   events: {

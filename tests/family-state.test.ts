@@ -1,4 +1,4 @@
-import { delay, familyState, scenario, scenarioOnEvery, selector, state } from '../src';
+import { delay, familyState, scenarioOnEvery } from '../src';
 
 describe('familyState', () => {
   it('creates states using initializer', async () => {
@@ -46,12 +46,12 @@ describe('familyState', () => {
 
     const node1 = family.getNode('1');
     const node2 = family.getNode('2');
-    await delay(40);
+    await delay(20);
     await node1.set(3);
+    await delay(20);
     await node2.set(4);
-    await delay(100);
 
-    expect(onFamilyChanged.mock.calls.length).toBe(4);
+    expect(onFamilyChanged.mock.calls.length).toBe(5);
   });
 
   it('returns same node for the same key', async () => {

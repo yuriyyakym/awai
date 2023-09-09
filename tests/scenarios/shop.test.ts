@@ -45,8 +45,8 @@ const createStore = () => {
     await cart.set((current) => [...current, { name, quantity: 1 }]);
   });
 
-  const changeItemQuantity = action((name: Item['name'], quantity: number) => {
-    cart.set((cart) =>
+  const changeItemQuantity = action(async (name: Item['name'], quantity: number) => {
+    await cart.set((cart) =>
       cart.map((cartItem) => {
         return cartItem.name === name ? { ...cartItem, quantity } : cartItem;
       }),

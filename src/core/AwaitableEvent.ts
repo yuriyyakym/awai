@@ -12,7 +12,7 @@ export default class AwaitableEvent<T> implements PromiseLike<T> {
       return Promise.resolve<any>(undefined);
     }
 
-    return new Promise<ReturnType<typeof onfulfilled>>((localResolve) => {
+    return new Promise((localResolve) => {
       this._awaiters.push((value: T) => {
         const result = onfulfilled(value);
         localResolve(result);
@@ -24,6 +24,7 @@ export default class AwaitableEvent<T> implements PromiseLike<T> {
     queue.enqueue(async () => {
       const awaiters = [...this._awaiters];
       this._awaiters = [];
+
       for (const resolve of awaiters) {
         try {
           resolve(value);

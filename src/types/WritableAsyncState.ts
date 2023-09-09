@@ -1,7 +1,6 @@
-import { AwaitableEvent } from '../lib';
+import { type AwaitableEvent } from '../core';
 
 import AsyncSetter from './AsyncSetter';
-import Resolver from './Resolver';
 
 export default interface WritableAsyncState<T> {
   events: {
@@ -9,6 +8,6 @@ export default interface WritableAsyncState<T> {
     failed: AwaitableEvent<unknown>;
     requested: AwaitableEvent<void>;
   };
-  then: (resolver: Resolver<T>) => Promise<T>;
+  then: PromiseLike<T>['then'];
   set: AsyncSetter<T>;
 }

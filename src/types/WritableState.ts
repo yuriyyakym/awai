@@ -1,12 +1,11 @@
-import { AwaitableEvent } from '../lib';
+import { type AwaitableEvent } from '../core';
 
 import Setter from './Setter';
-import Resolver from './Resolver';
 
 export default interface WritableState<T> {
   events: {
     changed: AwaitableEvent<T>;
   };
-  then: (resolver: Resolver<T>) => Promise<T>;
+  then: PromiseLike<T>['then'];
   set: Setter<T>;
 }

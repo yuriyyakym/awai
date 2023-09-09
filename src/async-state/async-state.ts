@@ -1,5 +1,6 @@
 import { AwaitableEvent, flush, isFunction, isPromiseLike } from '../lib';
 import { AsyncStatus, Resolver } from '../types';
+import { isFunction } from '../lib';
 
 import type { AsyncState, InitialValue } from './types';
 
@@ -76,6 +77,12 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
   const then = async (resolve: Resolver<T>): Promise<T> => {
     const result = resolve(await getPromise());
     return result;
+  const then: AsyncState<T>['then'] = async (resolve) => {
+    if (!isFunction(resolve)) {
+      return undefined as any;
+    }
+
+    return resolve(await getPromise());
   };
 
   if (isInitialValueAsync) {

@@ -1,11 +1,9 @@
-import { AwaitableEvent } from '../lib';
+import { type AwaitableEvent } from '../core';
 
-import Resolver from './Resolver';
-
-export default interface ReadableState<T> {
+export default interface ReadableState<T> extends PromiseLike<T> {
   events: {
     changed: AwaitableEvent<T>;
   };
   get: () => T;
-  then: (resolver: Resolver<T>) => Promise<T>;
+  then: PromiseLike<T>['then'];
 }

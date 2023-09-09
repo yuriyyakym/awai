@@ -1,4 +1,5 @@
 import { AwaitableEvent, fork, getAggregatedAsyncStatus } from '../lib';
+import { fork, getAggregatedAsyncStatus, isFunction } from '../lib';
 import { scenario } from '../scenario';
 import {
   AsyncStatus,
@@ -87,9 +88,12 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
     return await predicate(...values);
   };
 
-  const then = async (resolve: Resolver<U>): Promise<U> => {
-    const result = resolve(await getPromise());
-    return result;
+  const then: AsyncSelector<U>['then'] = async (resolve) => {
+    if (!isFunction(resolve)) {
+      return undefined as any;
+    }
+
+    return resolve(await getPromise());
   };
 
   return {

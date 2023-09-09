@@ -1,4 +1,5 @@
 import { AwaitableEvent } from '../lib';
+import { isFunction } from '../lib';
 import { scenario } from '../scenario';
 import { InferReadableType, Resolver } from '../types';
 
@@ -17,14 +18,17 @@ const syncSelector = <T extends any[], U>(
     return predicate(...values);
   };
 
-  const then = async (resolve: Resolver<U>): Promise<U> => {
-    const result = resolve(get());
-    return Promise.resolve(result);
+  const then: SyncSelector<U>['then'] = async (resolve) => {
+    if (!isFunction(resolve)) {
+      return undefined as any;
+    }
+
+    return resolve(get());
   };
 
   scenario(async () => {
     await Promise.race(states.map((state) => state.events.changed));
-    events.changed.emit(get()!);
+    events.changed.emit(get());
   });
 
   return { events, get, then };

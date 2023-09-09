@@ -1,5 +1,6 @@
 import { AwaitableEvent, isFunction } from '../lib';
 import { Resolver } from '../types';
+import { isFunction } from '../lib';
 
 import type { State } from './types';
 
@@ -25,9 +26,12 @@ const state = <T>(initialValue: T): State<T> => {
 
   const get = () => value;
 
-  const then = async (resolve: Resolver<T>): Promise<T> => {
-    const result = resolve(value);
-    return Promise.resolve(result);
+  const then: State<T>['then'] = async (resolve) => {
+    if (!isFunction(resolve)) {
+      return undefined as any;
+    }
+
+    return resolve(value);
   };
 
   return {

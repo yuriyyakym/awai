@@ -1,8 +1,8 @@
-import { AwaitableEvent, isFunction, isObject } from '../lib';
+import { type AwaitableEvent } from '../core';
+import { isFunction, isObject } from '../lib';
 
 import AsyncStatus from './AsyncStatus';
 import AsyncValue from './AsyncValue';
-import Resolver from './Resolver';
 
 export default interface ReadableAsyncState<T> {
   events: {
@@ -14,7 +14,7 @@ export default interface ReadableAsyncState<T> {
   getAsync: () => AsyncValue<T>;
   getPromise: () => Promise<T>;
   getStatus: () => AsyncStatus;
-  then: (resolver: Resolver<T>) => Promise<T>;
+  then: PromiseLike<T>['then'];
 }
 
 export const isReadableAsyncState = <T>(value: unknown): value is ReadableAsyncState<T> =>

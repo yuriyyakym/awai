@@ -1,7 +1,8 @@
-import { AwaitableEvent } from '../lib';
+import { AwaitableEvent } from '../core';
+import { registry } from '../global';
 import { isFunction } from '../lib';
 import { scenario } from '../scenario';
-import { InferReadableType, Resolver } from '../types';
+import { type InferReadableType } from '../types';
 
 import { SyncSelector } from './types';
 
@@ -31,7 +32,11 @@ const syncSelector = <T extends any[], U>(
     events.changed.emit(get());
   });
 
-  return { events, get, then };
+  const selectorNode: SyncSelector<U> = { events, get, then };
+
+  registry.register(selectorNode);
+
+  return selectorNode;
 };
 
 export default syncSelector;

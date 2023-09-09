@@ -1,12 +1,12 @@
-import { AwaitableEvent, fork, getAggregatedAsyncStatus } from '../lib';
+import { AwaitableEvent } from '../core';
+import { registry } from '../global';
 import { fork, getAggregatedAsyncStatus, isFunction } from '../lib';
 import { scenario } from '../scenario';
 import {
   AsyncStatus,
-  InferReadableType,
-  ReadableAsyncState,
-  ReadableState,
-  Resolver,
+  type InferReadableType,
+  type ReadableAsyncState,
+  type ReadableState,
   isReadableAsyncState,
 } from '../types';
 
@@ -96,7 +96,7 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
     return resolve(await getPromise());
   };
 
-  return {
+  const selectorNode = {
     events,
     get,
     getAsync,
@@ -104,6 +104,10 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
     getStatus,
     then,
   };
+
+  registry.register(selectorNode);
+
+  return selectorNode;
 };
 
 export default asyncSelector;

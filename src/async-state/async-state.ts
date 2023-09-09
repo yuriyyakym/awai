@@ -74,9 +74,6 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
     return await events.changed;
   };
 
-  const then = async (resolve: Resolver<T>): Promise<T> => {
-    const result = resolve(await getPromise());
-    return result;
   const then: AsyncState<T>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
       return undefined as any;

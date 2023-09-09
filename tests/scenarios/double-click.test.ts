@@ -1,4 +1,4 @@
-import { action, delay, rejectAfter, scenarioOnEvery } from '../../src';
+import { action, delay, flush, rejectAfter, scenarioOnEvery } from '../../src';
 
 const DOUBLE_CLICK_TIMEOUT = 200;
 
@@ -8,7 +8,7 @@ describe('Scenario: Double click', () => {
 
   scenarioOnEvery(click.events.invoked, async () => {
     await Promise.race([click.events.invoked, rejectAfter(DOUBLE_CLICK_TIMEOUT)]);
-    await onDoubleClick();
+    onDoubleClick();
   });
 
   it('catches double clicks properly', async () => {
@@ -16,17 +16,25 @@ describe('Scenario: Double click', () => {
     await delay(DOUBLE_CLICK_TIMEOUT - 10);
     await click();
 
+    await delay(DOUBLE_CLICK_TIMEOUT + 10);
+
     await click();
     await delay(DOUBLE_CLICK_TIMEOUT + 10);
     await click();
+
+    await delay(DOUBLE_CLICK_TIMEOUT + 10);
 
     await click();
     await delay(DOUBLE_CLICK_TIMEOUT - 10);
     await click();
 
-    // Wait for the next cycle, so that scenario is finished
-    await delay(0);
+    await delay(DOUBLE_CLICK_TIMEOUT + 10);
 
-    expect(onDoubleClick).toBeCalledTimes(2);
+    await click();
+    await click();
+
+    await flush();
+
+    expect(onDoubleClick).toBeCalledTimes(3);
   });
 });

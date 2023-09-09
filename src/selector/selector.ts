@@ -26,6 +26,7 @@ const selector = <T extends any[], U>(
     isAsyncPredicate || states.some((state) => isReadableAsyncState(state))
       ? asyncSelector(states, predicate)
       : syncSelector(states, predicate);
+
   return state as Return<T, U>;
 };
 

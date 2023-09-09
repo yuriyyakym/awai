@@ -1,8 +1,10 @@
 export { default as action } from './action';
 export { default as asyncState, type AsyncState } from './async-state';
+export { AwaitableEvent, flush, Registry } from './core';
 export { default as effect } from './effect';
 export { default as familyState } from './family-state';
-export { AwaitableEvent, delay, fork, getAggregatedAsyncStatus, rejectAfter } from './lib';
+export { queue, registry } from './global';
+export { delay, fork, getAggregatedAsyncStatus, rejectAfter, SyncQueue } from './lib';
 export { scenario, scenarioOnce, scenarioOnEvery } from './scenario';
 export { default as selector } from './selector';
 export { default as state, type State } from './state';

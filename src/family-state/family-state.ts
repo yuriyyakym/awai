@@ -1,10 +1,10 @@
 import asyncState, { AsyncState } from '../async-state';
-import { AwaitableEvent } from '../lib';
+import { AwaitableEvent } from '../core';
+import { registry } from '../global';
+import { isFunction } from '../lib';
 import { scenarioOnEvery } from '../scenario';
 import state, { State } from '../state';
-import { FamilyState, Resolver } from '../types';
-
-type Id = string;
+import type { FamilyState, Id } from '../types';
 
 const familyState = <
   T,
@@ -16,7 +16,7 @@ const familyState = <
 >(
   initializer: Initializer,
 ): FamilyState<NodeType> => {
-  const family = state<Family>({} as Family);
+  let family: Family = {} as Family;
 
   const events = {
     changed: new AwaitableEvent<Record<Id, NodeType>>(),
@@ -24,8 +24,8 @@ const familyState = <
   };
 
   const getNode = (id: Id): NodeType => {
-    if (id in family.get()) {
-      return family.get()[id];
+    if (id in family) {
+      return family[id];
     }
 
     const initialValue = initializer(id);
@@ -33,32 +33,39 @@ const familyState = <
     const stateNode =
       initialValue instanceof Promise ? asyncState(initialValue) : state(initialValue);
 
-    family.set((current) => ({ ...current, [id]: stateNode }));
+    family = { ...family, [id]: stateNode };
     events.stateCreated.emit(id);
-    events.changed.emit(family.get());
+    events.changed.emit(family);
 
     scenarioOnEvery(stateNode.events.changed, async () => {
-      events.changed.emit(family.get());
+      events.changed.emit(family);
     });
 
     return stateNode as NodeType;
   };
 
   const setNode = (id: Id, stateNode: NodeType) => {
-    family.set((current) => ({ ...current, [id]: stateNode }));
-    events.changed.emit(family.get());
+    family = { ...family, [id]: stateNode };
+    events.changed.emit(family);
   };
 
   const get = () => {
-    return family.get();
+    return family;
   };
 
-  const then = async (resolve: Resolver<Family>): Promise<Family> => {
-    const result = await resolve(family.get());
-    return result;
+  const then: FamilyState<NodeType>['then'] = async (resolve) => {
+    if (!isFunction(resolve)) {
+      return undefined as any;
+    }
+
+    return resolve(family);
   };
 
-  return { events, get, getNode, setNode, then };
+  const familyStateNode: FamilyState<NodeType> = { events, get, getNode, setNode, then };
+
+  registry.register(familyStateNode);
+
+  return familyStateNode;
 };
 
 export default familyState;

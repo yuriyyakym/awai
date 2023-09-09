@@ -1,6 +1,8 @@
-import { AwaitableEvent } from '../lib';
+import { AwaitableEvent } from '../core';
+import { registry } from '../global';
+import { isFunction } from '../lib';
 import { scenario } from '../scenario';
-import { InferReadableType, Resolver } from '../types';
+import { type InferReadableType } from '../types';
 
 import { SyncSelector } from './types';
 
@@ -17,17 +19,24 @@ const syncSelector = <T extends any[], U>(
     return predicate(...values);
   };
 
-  const then = async (resolve: Resolver<U>): Promise<U> => {
-    const result = resolve(get());
-    return Promise.resolve(result);
+  const then: SyncSelector<U>['then'] = async (resolve) => {
+    if (!isFunction(resolve)) {
+      return undefined as any;
+    }
+
+    return resolve(get());
   };
 
   scenario(async () => {
     await Promise.race(states.map((state) => state.events.changed));
-    events.changed.emit(get()!);
+    events.changed.emit(get());
   });
 
-  return { events, get, then };
+  const selectorNode: SyncSelector<U> = { events, get, then };
+
+  registry.register(selectorNode);
+
+  return selectorNode;
 };
 
 export default syncSelector;

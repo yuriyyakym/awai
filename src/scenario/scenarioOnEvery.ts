@@ -1,13 +1,18 @@
-import { AwaitableEvent, noop } from '../lib';
+import { type AwaitableEvent } from '../core';
+import { noop } from '../lib';
 
 const scenarioOnEvery = async <T>(
   awaitableEvent: AwaitableEvent<T>,
-  scenarioFn: (event: T) => Promise<any>,
+  scenarioFn: (event: T) => any,
 ) => {
-  while (true) {
-    const event = await awaitableEvent;
-    scenarioFn(event).catch(noop);
-  }
+  const scenario = async () => {
+    awaitableEvent.then((event) => {
+      Promise.resolve(scenarioFn(event)).catch(noop);
+      queueMicrotask(scenario);
+    });
+  };
+
+  scenario();
 };
 
 export default scenarioOnEvery;

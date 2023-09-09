@@ -6,7 +6,6 @@ export { type default as Id } from './Id';
 export { type default as InferReadableType } from './InferReadableType';
 export { type default as ReadableAsyncState, isReadableAsyncState } from './ReadableAsyncState';
 export { type default as ReadableState } from './ReadableState';
-export { type default as Resolver } from './Resolver';
 export { type default as Setter } from './Setter';
 export { type default as WritableAsyncState } from './WritableAsyncState';
 export { type default as WritableState } from './WritableState';

@@ -1,4 +1,6 @@
-import { AwaitableEvent, isFunction, isPromiseLike } from '../lib';
+import { AwaitableEvent } from '../core';
+import { registry } from '../global';
+import { isFunction, isPromiseLike } from '../lib';
 
 import { AsyncEvents, BaseEvents, Callback } from './types';
 
@@ -29,7 +31,6 @@ function action<Args extends [], Return extends any>(
       if (isPromiseLike(valueOrPromise)) {
         return valueOrPromise.then((value: any) => {
           events.completed?.emit(value);
-
           return value;
         });
       }
@@ -41,7 +42,11 @@ function action<Args extends [], Return extends any>(
     }
   };
 
-  return Object.assign(invoke, { events: events as any });
+  const actionNode = Object.assign(invoke, { events: events as any });
+
+  registry.register(actionNode);
+
+  return actionNode;
 }
 
 export default action;

@@ -43,7 +43,7 @@ connection.addEventListener('change', () => {
 ```ts title="Create isOnlineState"
 const isOnlineState = state<boolean>(navigator.onLine);
 
-scenarioOnce(async () => {
+scenario(async () => {
   window.addEventListener('online', () => isOnlineState.set(true), { passive: true });
   window.addEventListener('offline', () => isOnlineState.set(false), { passive: true });
 
@@ -52,7 +52,7 @@ scenarioOnce(async () => {
       isOnlineState.set(navigator.onLine);
     });
   }
-});
+}, { strategy: 'once' });
 ```
 
 ```ts title="Create sync interval state"

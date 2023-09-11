@@ -2,7 +2,7 @@ import asyncState, { AsyncState } from '../async-state';
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { isFunction } from '../lib';
-import { scenarioOnEvery } from '../scenario';
+import { scenario } from '../scenario';
 import state, { State } from '../state';
 import type { FamilyState, Id } from '../types';
 
@@ -37,7 +37,7 @@ const familyState = <
     events.stateCreated.emit(id);
     events.changed.emit(family);
 
-    scenarioOnEvery(stateNode.events.changed, async () => {
+    scenario(stateNode.events.changed, async () => {
       events.changed.emit(family);
     });
 

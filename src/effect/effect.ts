@@ -1,5 +1,5 @@
 import { getAggregatedAsyncStatus, isFunction } from '../lib';
-import { scenario } from '../scenario';
+import scenario from '../scenario';
 import { AsyncStatus, InferReadableType } from '../types';
 
 import { CleanupCallback } from './types';

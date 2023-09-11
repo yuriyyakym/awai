@@ -1,7 +1,7 @@
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { isFunction } from '../lib';
-import { scenario } from '../scenario';
+import scenario from '../scenario';
 import { type InferReadableType } from '../types';
 
 import { SyncSelector } from './types';

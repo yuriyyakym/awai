@@ -6,7 +6,7 @@
  * @example
  * const state = state(0);
  *
- * scenarioOnEvery(state.events.change, () => {
+ * scenario(state.events.change, () => {
  *  // Without `SyncQueue` this scenario would only run once
  * });
  *

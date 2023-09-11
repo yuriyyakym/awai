@@ -24,11 +24,11 @@ Actions may be empty. When that's the case, they do nothing but emit `invoked` e
 const increment = action();
 const decrement = action();
 
-scenarioOnEvery(increment.events.invoked, () => {
+scenario(increment.events.invoked, () => {
   counter.set(current => current + 1);
 });
 
-scenarioOnEvery(decrement.events.invoked, () => {
+scenario(decrement.events.invoked, () => {
   counter.set(current => current - 1);
 });
 ```

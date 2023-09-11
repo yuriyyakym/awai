@@ -1,4 +1,4 @@
-import { action, scenarioOnEvery, selector, state } from '../../src';
+import { action, scenario, selector, state } from '../../src';
 
 describe('Scenario: Shop flow', () => {
   it('Manages shop cart state as expected', async () => {
@@ -26,6 +26,7 @@ describe('Scenario: Shop flow', () => {
     expect(store.cart.get()).toHaveLength(2);
 
     await store.changeItemQuantity('apple', 0);
+
     expect(store.cart.get()).toHaveLength(1);
     expect(store.cart.get().find((item) => item.name === 'apple')).not.toBeDefined();
   });
@@ -53,7 +54,7 @@ const createStore = () => {
     );
   });
 
-  scenarioOnEvery(changeItemQuantity.events.invoked, async ([name, quantity]) => {
+  scenario(changeItemQuantity.events.invoked, async ([name, quantity]) => {
     if (quantity === 0) {
       cart.set((cart) => cart.filter((cartItem) => cartItem.name !== name));
     }

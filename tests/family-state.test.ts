@@ -1,4 +1,4 @@
-import { delay, familyState, scenarioOnEvery } from '../src';
+import { delay, familyState, scenario } from '../src';
 
 describe('familyState', () => {
   it('creates states using initializer', async () => {
@@ -12,13 +12,7 @@ describe('familyState', () => {
   });
 
   it('creates async states using initializer', async () => {
-    const family = familyState(
-      (id) =>
-        new Promise(async (resolve) => {
-          await delay(30);
-          resolve(`${id}-test`);
-        }),
-    );
+    const family = familyState((id) => delay(30).then(() => `${id}-test`));
 
     const node1 = family.getNode('1');
     const node2 = family.getNode('2');
@@ -30,26 +24,20 @@ describe('familyState', () => {
   });
 
   it('emits change event when node added', async () => {
-    const family = familyState(
-      (id) =>
-        new Promise(async (resolve) => {
-          await delay(30);
-          resolve(`${id}-test`);
-        }),
-    );
+    const family = familyState((id) => delay(30).then(() => `${id}-test`));
 
     const onFamilyChanged = jest.fn();
 
-    scenarioOnEvery(family.events.changed, async () => {
+    scenario(family.events.changed, async () => {
       onFamilyChanged();
     });
 
     const node1 = family.getNode('1');
     const node2 = family.getNode('2');
     await delay(20);
-    await node1.set(3);
+    await node1.set('3');
     await delay(20);
-    await node2.set(4);
+    await node2.set('4');
 
     expect(onFamilyChanged.mock.calls.length).toBe(5);
   });

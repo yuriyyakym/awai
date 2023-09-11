@@ -1,21 +1,17 @@
-import { action, delay, scenarioOnEvery } from '../../src';
+import { action, delay, scenario } from '../../src';
 
 const DEBOUNCE_TIMEOUT = 200;
-const TIMEOUT_SYMBOL = Symbol();
 
 describe('Scenario: Debounce', () => {
   const click = action();
   const debouncedFunction = jest.fn();
 
-  scenarioOnEvery(click.events.invoked, async () => {
-    const result = await Promise.race([
-      click.events.invoked,
-      delay(DEBOUNCE_TIMEOUT).then(() => TIMEOUT_SYMBOL),
+  scenario(click.events.invoked, async () => {
+    await Promise.race([
+      delay(DEBOUNCE_TIMEOUT),
+      click.events.invoked.then(() => Promise.reject()),
     ]);
-
-    if (result === TIMEOUT_SYMBOL) {
-      debouncedFunction();
-    }
+    debouncedFunction();
   });
 
   it('catches double clicks properly', async () => {

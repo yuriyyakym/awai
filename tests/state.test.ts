@@ -1,4 +1,4 @@
-import { flush, scenarioOnEvery, state } from '../src';
+import { flush, scenario, state } from '../src';
 
 describe('state', () => {
   it('is updated asynchronously', async () => {
@@ -72,7 +72,7 @@ describe('state', () => {
     const values: number[] = [];
     const expectedValues: number[] = [];
 
-    scenarioOnEvery(counter.events.changed, async (value: any) => {
+    scenario(counter.events.changed, (value) => {
       values.push(value);
     });
 

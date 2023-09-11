@@ -23,15 +23,16 @@ const effect = <T extends any[], V extends { [K in keyof T]: InferReadableType<T
 
   cleanup = runEffect();
 
-  scenario(async () => {
-    await Promise.race(states.map((state) => state.events.changed));
+  scenario(
+    () => Promise.race(states.map((state) => state.events.changed)),
+    () => {
+      if (isFunction(cleanup)) {
+        cleanup();
+      }
 
-    if (isFunction(cleanup)) {
-      cleanup();
-    }
-
-    cleanup = runEffect();
-  });
+      cleanup = runEffect();
+    },
+  );
 };
 
 export default effect;

@@ -2,19 +2,18 @@ import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { isFunction } from '../lib';
 
-import { Config, Scenario } from './types';
+import { Callback, Config, Scenario, Trigger } from './types';
 
-type Callback<T, R> = (event: T) => R;
-
-const getDefaultConfig = (hasDependencies: boolean): Config => ({
+const getDefaultConfig = (hasDependencies: boolean): Partial<Config> => ({
   strategy: hasDependencies ? 'fork' : 'cyclic',
 });
 
-function scenario<T, R>(scenarioFn: Callback<T, R>, config?: Config): Scenario<T, R>;
+function scenario<T, R>(callback: Callback<T, R>, config?: Partial<Config>): Scenario<T, R>;
+
 function scenario<T, R>(
-  promiseLikeOrFunction: PromiseLike<T> | (() => PromiseLike<T>),
-  scenarioFn: Callback<T, R>,
-  config?: Config,
+  trigger: Trigger<T>,
+  callback: Callback<T, R>,
+  config?: Partial<Config>,
 ): Scenario<T, R>;
 
 function scenario() {
@@ -23,8 +22,8 @@ function scenario() {
 
   const [arg1, arg2, arg3] = arguments;
   const hasDependencies = arguments.length === 3 || isFunction(arg2);
-  const [promiseLikeOrFunction, scenarioFn, customConfig] = hasDependencies
-    ? [arg1 as PromiseLike<T> | (() => PromiseLike<T>), arg2 as Callback<T, R>, arg3 as Config]
+  const [trigger, callback, customConfig] = hasDependencies
+    ? [arg1 as Trigger<T>, arg2 as Callback<T, R>, arg3 as Config]
     : [, arg1 as Callback<T, R>, arg2 as Config];
 
   const defaultConfig = getDefaultConfig(hasDependencies);
@@ -37,18 +36,18 @@ function scenario() {
   };
 
   const getEventPromise = () => {
-    if (!promiseLikeOrFunction) {
+    if (!trigger) {
       return Promise.resolve();
     }
 
-    return isFunction(promiseLikeOrFunction) ? promiseLikeOrFunction() : promiseLikeOrFunction;
+    return isFunction(trigger) ? trigger() : trigger;
   };
 
   const run = async () => {
-    getEventPromise().then((event: unknown) => {
+    getEventPromise().then((event: T) => {
       events.started.emit({ config, event });
 
-      Promise.resolve(scenarioFn(event))
+      Promise.resolve(callback(event))
         .then((result) => {
           events.completed.emit({ config, event, result });
         })

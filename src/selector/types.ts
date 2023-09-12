@@ -1,4 +1,4 @@
-import { ReadableAsyncState, ReadableState } from '../types';
+import { type ReadableAsyncState, type ReadableState } from '../types';
 
 export type SyncSelector<T> = ReadableState<T>;
 

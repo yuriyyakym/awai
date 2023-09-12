@@ -2,9 +2,14 @@ import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { getAggregatedAsyncStatus, isFunction } from '../lib';
 import scenario from '../scenario';
-import { AsyncStatus, InferReadableType, ReadableAsyncState, ReadableState } from '../types';
+import {
+  AsyncStatus,
+  type InferReadableType,
+  type ReadableAsyncState,
+  type ReadableState,
+} from '../types';
 
-import { CleanupCallback, Effect } from './types';
+import type { CleanupCallback, Effect } from './types';
 
 const effect = <
   T extends (ReadableState<any> | ReadableAsyncState<any>)[],

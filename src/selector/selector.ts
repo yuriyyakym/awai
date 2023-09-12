@@ -1,8 +1,8 @@
-import { InferReadableType, ReadableAsyncState, isReadableAsyncState } from '../types';
+import { type InferReadableType, type ReadableAsyncState, isReadableAsyncState } from '../types';
 
 import asyncSelector from './asyncSelector';
 import syncSelector from './syncSelector';
-import { AsyncSelector, SyncSelector } from './types';
+import type { AsyncSelector, SyncSelector } from './types';
 
 type ContainsAsync<T extends any[]> = T extends [infer First, ...infer Rest]
   ? First extends ReadableAsyncState<any>

@@ -1,13 +1,12 @@
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
-import { fork, getAggregatedAsyncStatus, isFunction } from '../lib';
+import { fork, getAggregatedAsyncStatus, isFunction, isReadableAsyncState } from '../lib';
 import scenario from '../scenario';
 import {
   AsyncStatus,
   type InferReadableType,
   type ReadableAsyncState,
   type ReadableState,
-  isReadableAsyncState,
 } from '../types';
 
 import { AsyncSelector } from './types';

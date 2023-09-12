@@ -16,10 +16,3 @@ export default interface ReadableAsyncState<T = any> {
   getStatus: () => AsyncStatus;
   then: PromiseLike<T>['then'];
 }
-
-export const isReadableAsyncState = <T>(value: unknown): value is ReadableAsyncState<T> =>
-  isObject(value) &&
-  isFunction(value.get) &&
-  isFunction(value.getAsync) &&
-  isFunction(value.getPromise) &&
-  isFunction(value.then);

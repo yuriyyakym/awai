@@ -1,4 +1,5 @@
-import { type InferReadableType, type ReadableAsyncState, isReadableAsyncState } from '../types';
+import { isReadableAsyncState } from '../lib';
+import { type InferReadableType, type ReadableAsyncState } from '../types';
 
 import asyncSelector from './asyncSelector';
 import syncSelector from './syncSelector';

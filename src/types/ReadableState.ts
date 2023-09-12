@@ -1,6 +1,6 @@
 import { type AwaitableEvent } from '../core';
 
-export default interface ReadableState<T> extends PromiseLike<T> {
+export default interface ReadableState<T = any> extends PromiseLike<T> {
   events: {
     changed: AwaitableEvent<T>;
   };

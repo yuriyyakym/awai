@@ -5,7 +5,7 @@ export { default as effect } from './effect';
 export { default as familyState } from './family-state';
 export { queue, registry } from './global';
 export { delay, fork, getAggregatedAsyncStatus, rejectAfter, SyncQueue } from './lib';
-export { default as scenario, Config as ScenarioConfig } from './scenario';
+export { default as scenario, type Config as ScenarioConfig } from './scenario';
 export { default as selector } from './selector';
 export { default as state, type State } from './state';
 export {

@@ -4,7 +4,7 @@ import { isFunction, isObject } from '../lib';
 import AsyncStatus from './AsyncStatus';
 import AsyncValue from './AsyncValue';
 
-export default interface ReadableAsyncState<T> {
+export default interface ReadableAsyncState<T = any> {
   events: {
     changed: AwaitableEvent<T>;
     failed: AwaitableEvent<unknown>;

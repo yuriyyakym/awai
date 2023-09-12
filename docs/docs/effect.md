@@ -8,6 +8,16 @@ Effect invokes its predicate as soon as any dependency is changed. The predicate
 
 Predicate should return a cleanup function if cleanup needed.
 
+```ts
+function effect<
+  T extends (ReadableState | ReadableAsyncState)[],
+  V extends { [K in keyof T]: InferReadableType<T[K]> },
+>(
+  states: [...T],
+  effect: (...values: V) => CleanupCallback | void
+): Effect<T, V>;
+```
+
 ## Examples
 
 ```ts title="Effect controlled by a state"
@@ -30,3 +40,30 @@ effect([isMouseLoggingEnabledState], (isMouseLogginEnabled) => {
 isMouseLoggingEnabledState.set(true); // enable logging
 ```
 
+## Types
+
+```ts
+type CleanupCallback = () => void;
+
+export interface RunEvent<
+  T extends (ReadableState | ReadableAsyncState)[],
+  V extends { [K in keyof T]: InferReadableType<T[K]> },
+> {
+  states: T;
+  values: V;
+}
+
+export interface ClearedEvent<T extends (ReadableState | ReadableAsyncState)[]> {
+  states: T;
+}
+
+export interface Effect<
+  T extends (ReadableState | ReadableAsyncState)[],
+  V extends { [K in keyof T]: InferReadableType<T[K]> },
+> {
+  events: {
+    cleared: AwaitableEvent<ClearedEvent<T>>;
+    run: AwaitableEvent<RunEvent<T, V>>;
+  };
+}
+```

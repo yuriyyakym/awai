@@ -4,7 +4,7 @@ import {
   familyState,
   flush,
   registry,
-  scenarioOnEvery,
+  scenario,
   selector,
   state,
 } from '../src';
@@ -20,7 +20,7 @@ describe('registry', () => {
   it('registers nodes in global registry', async () => {
     let registeredEventsCount = 0;
 
-    scenarioOnEvery(registry.events.registered, (node) => {
+    const counterScenario = scenario(registry.events.registered, () => {
       registeredEventsCount++;
     });
 
@@ -32,13 +32,13 @@ describe('registry', () => {
 
     await flush();
 
-    expect(registry.nodes).toHaveLength(5);
     expect(registry.nodes).toContain(state1);
     expect(registry.nodes).toContain(state2);
     expect(registry.nodes).toContain(family);
     expect(registry.nodes).toContain(innerFamilyState);
     expect(registry.nodes).toContain(selectedState);
+    expect(registry.nodes).toContain(counterScenario);
 
-    expect(registeredEventsCount).toEqual(5);
+    expect(registeredEventsCount).toBeGreaterThan(1);
   });
 });

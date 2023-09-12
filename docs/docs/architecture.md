@@ -17,7 +17,7 @@ When writing code, consider splitting logics into smaller scenarios. For example
 ```ts title="Scenario handles tracking only"
 const logout = action(async () => { /* ... */ });
 
-scenarioOnEvery(logout.events.invoked, () => {
+scenario(logout.events.invoked, () => {
   console.log('User logged out');
 });
 ```

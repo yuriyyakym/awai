@@ -1,7 +1,7 @@
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { fork, getAggregatedAsyncStatus, isFunction } from '../lib';
-import { scenario } from '../scenario';
+import scenario from '../scenario';
 import {
   AsyncStatus,
   type InferReadableType,

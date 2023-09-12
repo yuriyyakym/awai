@@ -1,4 +1,4 @@
-import { action, delay, flush, rejectAfter, scenarioOnEvery } from '../../src';
+import { action, delay, flush, rejectAfter, scenario } from '../../src';
 
 const DOUBLE_CLICK_TIMEOUT = 200;
 
@@ -6,7 +6,7 @@ describe('Scenario: Double click', () => {
   const click = action();
   const onDoubleClick = jest.fn();
 
-  scenarioOnEvery(click.events.invoked, async () => {
+  scenario(click.events.invoked, async () => {
     await Promise.race([click.events.invoked, rejectAfter(DOUBLE_CLICK_TIMEOUT)]);
     onDoubleClick();
   });

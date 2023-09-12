@@ -1,4 +1,4 @@
-import { AwaitableEvent } from '../core';
+import { AwaitableEvent, flush } from '../core';
 import { isFunction } from '../lib';
 import { registry } from '../global';
 
@@ -11,7 +11,7 @@ const state = <T>(initialValue: T): State<T> => {
     changed: new AwaitableEvent<T>(),
   };
 
-  const set: State<T>['set'] = (nextValueOrResolver) => {
+  const set: State<T>['set'] = async (nextValueOrResolver) => {
     let newValue = isFunction(nextValueOrResolver)
       ? nextValueOrResolver(value)
       : nextValueOrResolver;
@@ -21,7 +21,9 @@ const state = <T>(initialValue: T): State<T> => {
       events.changed.emit(newValue);
     }
 
-    return new Promise((resolve) => queueMicrotask(() => resolve(newValue)));
+    await flush();
+
+    return newValue;
   };
 
   const get = () => value;

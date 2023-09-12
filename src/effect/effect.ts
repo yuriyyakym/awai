@@ -1,14 +1,24 @@
+import { AwaitableEvent } from '../core';
+import { registry } from '../global';
 import { getAggregatedAsyncStatus, isFunction } from '../lib';
 import scenario from '../scenario';
-import { AsyncStatus, InferReadableType } from '../types';
+import { AsyncStatus, InferReadableType, ReadableAsyncState, ReadableState } from '../types';
 
-import { CleanupCallback } from './types';
+import { CleanupCallback, Effect } from './types';
 
-const effect = <T extends any[], V extends { [K in keyof T]: InferReadableType<T[K]> }>(
+const effect = <
+  T extends (ReadableState<any> | ReadableAsyncState<any>)[],
+  V extends { [K in keyof T]: InferReadableType<T[K]> },
+>(
   states: [...T],
   effect: (...values: V) => CleanupCallback | void,
-) => {
+): Effect<T, V> => {
   let cleanup: ReturnType<typeof effect>;
+
+  const events: Effect<T, V>['events'] = {
+    cleared: new AwaitableEvent(),
+    run: new AwaitableEvent(),
+  };
 
   const runEffect = () => {
     const values = states.map((state) => state.get()) as V;
@@ -18,21 +28,32 @@ const effect = <T extends any[], V extends { [K in keyof T]: InferReadableType<T
       return;
     }
 
-    return effect(...values);
+    events.run.emit({ states, values });
+
+    cleanup = effect(...values);
   };
 
-  cleanup = runEffect();
+  queueMicrotask(() => {
+    scenario(
+      () => Promise.race(states.map((state) => state.events.changed)),
+      () => {
+        if (isFunction(cleanup)) {
+          cleanup();
+          events.cleared.emit({ states });
+        }
 
-  scenario(
-    () => Promise.race(states.map((state) => state.events.changed)),
-    () => {
-      if (isFunction(cleanup)) {
-        cleanup();
-      }
+        runEffect();
+      },
+    );
 
-      cleanup = runEffect();
-    },
-  );
+    queueMicrotask(runEffect);
+  });
+
+  const effectNode: Effect<T, V> = { events };
+
+  registry.register(effectNode);
+
+  return effectNode;
 };
 
 export default effect;

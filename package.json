@@ -13,8 +13,9 @@
   ],
   "scripts": {
     "build": "rm -rf dist && rollup -c rollup.config.js",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest --coverage"
   },
   "repository": {
     "type": "git",

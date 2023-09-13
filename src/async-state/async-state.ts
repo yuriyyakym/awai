@@ -27,7 +27,6 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
 
   const set: AsyncState<T>['set'] = async (nextValueOrResolver) => {
     const lastVersion = version;
-    // const nextVersion = version + 1 % Number.MAX_SAFE_INTEGER;
 
     try {
       if (isPromiseOrFunction(nextValueOrResolver)) {
@@ -55,7 +54,7 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
       events.failed.emit(error);
     }
 
-    version++;
+    version = (version + 1) % Number.MAX_SAFE_INTEGER;
     await flush();
   };
 

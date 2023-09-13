@@ -1,40 +1,40 @@
+import { expect, test, vi } from 'vitest';
+
 import { action, delay, flush, rejectAfter, scenario } from '../../src';
 
 const DOUBLE_CLICK_TIMEOUT = 200;
 
-describe('Scenario: Double click', () => {
+test('[Scenario] Double click', async () => {
   const click = action();
-  const onDoubleClick = jest.fn();
+  const onDoubleClick = vi.fn();
 
   scenario(click.events.invoked, async () => {
     await Promise.race([click.events.invoked, rejectAfter(DOUBLE_CLICK_TIMEOUT)]);
     onDoubleClick();
   });
 
-  it('catches double clicks properly', async () => {
-    await click();
-    await delay(DOUBLE_CLICK_TIMEOUT - 10);
-    await click();
+  await click();
+  await delay(DOUBLE_CLICK_TIMEOUT - 10);
+  await click();
 
-    await delay(DOUBLE_CLICK_TIMEOUT + 10);
+  await delay(DOUBLE_CLICK_TIMEOUT + 10);
 
-    await click();
-    await delay(DOUBLE_CLICK_TIMEOUT + 10);
-    await click();
+  await click();
+  await delay(DOUBLE_CLICK_TIMEOUT + 10);
+  await click();
 
-    await delay(DOUBLE_CLICK_TIMEOUT + 10);
+  await delay(DOUBLE_CLICK_TIMEOUT + 10);
 
-    await click();
-    await delay(DOUBLE_CLICK_TIMEOUT - 10);
-    await click();
+  await click();
+  await delay(DOUBLE_CLICK_TIMEOUT - 10);
+  await click();
 
-    await delay(DOUBLE_CLICK_TIMEOUT + 10);
+  await delay(DOUBLE_CLICK_TIMEOUT + 10);
 
-    await click();
-    await click();
+  await click();
+  await click();
 
-    await flush();
+  await flush();
 
-    expect(onDoubleClick).toBeCalledTimes(3);
-  });
+  expect(onDoubleClick).toBeCalledTimes(3);
 });

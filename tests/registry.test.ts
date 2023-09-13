@@ -1,3 +1,5 @@
+import { expect, test, vi } from 'vitest';
+
 import {
   Registry,
   asyncState,
@@ -9,36 +11,32 @@ import {
   state,
 } from '../src';
 
-describe('registry', () => {
-  it('has `events` and `nodes` property', () => {
-    const registry = new Registry();
+test('has `events` and `nodes` property', () => {
+  const registry = new Registry();
 
-    expect(registry).toHaveProperty('events');
-    expect(registry).toHaveProperty('nodes');
-  });
+  expect(registry).toHaveProperty('events');
+  expect(registry).toHaveProperty('nodes');
+});
 
-  it('registers nodes in global registry', async () => {
-    let registeredEventsCount = 0;
+test('registers nodes in global registry', async () => {
+  const onRegister = vi.fn();
 
-    const counterScenario = scenario(registry.events.registered, () => {
-      registeredEventsCount++;
-    });
+  const counterScenario = scenario(registry.events.registered, onRegister);
 
-    const state1 = state<string>('Hi');
-    const state2 = asyncState<string>('Hi');
-    const family = familyState(() => 'test');
-    const innerFamilyState = family.getNode('some-id');
-    const selectedState = selector([state1, state2], (value1, value2) => value1 + value2);
+  const state1 = state<string>('Hi');
+  const state2 = asyncState<string>('Hi');
+  const family = familyState(() => 'test');
+  const innerFamilyState = family.getNode('some-id');
+  const selectedState = selector([state1, state2], (value1, value2) => value1 + value2);
 
-    await flush();
+  await flush();
 
-    expect(registry.nodes).toContain(state1);
-    expect(registry.nodes).toContain(state2);
-    expect(registry.nodes).toContain(family);
-    expect(registry.nodes).toContain(innerFamilyState);
-    expect(registry.nodes).toContain(selectedState);
-    expect(registry.nodes).toContain(counterScenario);
+  expect(registry.nodes).toContain(state1);
+  expect(registry.nodes).toContain(state2);
+  expect(registry.nodes).toContain(family);
+  expect(registry.nodes).toContain(innerFamilyState);
+  expect(registry.nodes).toContain(selectedState);
+  expect(registry.nodes).toContain(counterScenario);
 
-    expect(registeredEventsCount).toBeGreaterThan(1);
-  });
+  expect(onRegister.mock.calls.length).toBeGreaterThan(1);
 });

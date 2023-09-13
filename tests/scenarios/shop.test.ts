@@ -1,35 +1,35 @@
+import { expect, test } from 'vitest';
+
 import { action, scenario, selector, state } from '../../src';
 
-describe('Scenario: Shop flow', () => {
-  it('Manages shop cart state as expected', async () => {
-    const store = createStore();
-    const discount = 100;
+test('manages shop cart state as expected', async () => {
+  const store = createStore();
+  const discount = 100;
 
-    await store.addItem('apple');
-    await store.addItem('mango');
+  await store.addItem('apple');
+  await store.addItem('mango');
 
-    await store.voucher.set({ code: 'test', discount, minValue: 600 });
-    await store.changeItemQuantity('apple', 4);
+  await store.voucher.set({ code: 'test', discount, minValue: 600 });
+  await store.changeItemQuantity('apple', 4);
 
-    const expectedTotal =
-      -discount + 4 * getItemByName('apple').price + 1 * getItemByName('mango').price;
+  const expectedTotal =
+    -discount + 4 * getItemByName('apple').price + 1 * getItemByName('mango').price;
 
-    expect(store.cartTotal.get()).toBe(expectedTotal);
-    expect(await store.cartTotal).toBe(expectedTotal);
-  });
+  expect(store.cartTotal.get()).toBe(expectedTotal);
+  expect(await store.cartTotal).toBe(expectedTotal);
+});
 
-  it('scenario is executed when item quantity is 0', async () => {
-    const store = createStore();
+test('scenario is executed when item quantity is 0', async () => {
+  const store = createStore();
 
-    await store.addItem('apple');
-    await store.addItem('mango');
-    expect(store.cart.get()).toHaveLength(2);
+  await store.addItem('apple');
+  await store.addItem('mango');
+  expect(store.cart.get()).toHaveLength(2);
 
-    await store.changeItemQuantity('apple', 0);
+  await store.changeItemQuantity('apple', 0);
 
-    expect(store.cart.get()).toHaveLength(1);
-    expect(store.cart.get().find((item) => item.name === 'apple')).not.toBeDefined();
-  });
+  expect(store.cart.get()).toHaveLength(1);
+  expect(store.cart.get().find((item) => item.name === 'apple')).not.toBeDefined();
 });
 
 const createStore = () => {

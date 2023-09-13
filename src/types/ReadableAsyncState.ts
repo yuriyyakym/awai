@@ -1,7 +1,6 @@
+import { AsyncStatus } from '../constants';
 import { type AwaitableEvent } from '../core';
-import { isFunction, isObject } from '../lib';
 
-import AsyncStatus from './AsyncStatus';
 import AsyncValue from './AsyncValue';
 
 export default interface ReadableAsyncState<T = any> {

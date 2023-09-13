@@ -2,7 +2,7 @@ import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { isFunction, isPromiseLike } from '../lib';
 
-import { AsyncEvents, BaseEvents, Callback } from './types';
+import type { AsyncEvents, BaseEvents, Callback } from './types';
 
 function action<Args extends any[]>(): Function & { events: BaseEvents<Args> };
 function action<Args extends any[], Return extends any>(

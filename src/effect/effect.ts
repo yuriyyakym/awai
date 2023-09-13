@@ -1,13 +1,9 @@
+import { AsyncStatus } from '../constants';
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { getAggregatedAsyncStatus, isFunction } from '../lib';
 import scenario from '../scenario';
-import {
-  AsyncStatus,
-  type InferReadableType,
-  type ReadableAsyncState,
-  type ReadableState,
-} from '../types';
+import { type InferReadableType, type ReadableAsyncState, type ReadableState } from '../types';
 
 import type { CleanupCallback, Effect } from './types';
 

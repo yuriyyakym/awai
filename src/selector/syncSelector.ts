@@ -2,9 +2,9 @@ import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { isFunction } from '../lib';
 import scenario from '../scenario';
-import { type InferReadableType } from '../types';
+import type { InferReadableType } from '../types';
 
-import { SyncSelector } from './types';
+import type { SyncSelector } from './types';
 
 const syncSelector = <T extends any[], U>(
   states: [...T],

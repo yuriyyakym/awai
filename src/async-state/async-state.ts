@@ -1,7 +1,7 @@
+import { AsyncStatus } from '../constants';
 import { AwaitableEvent, flush } from '../core';
 import { registry } from '../global';
 import { isFunction, isPromiseLike } from '../lib';
-import { AsyncStatus } from '../types';
 
 import type { AsyncState, InitialValue } from './types';
 

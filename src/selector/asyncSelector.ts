@@ -1,15 +1,11 @@
+import { AsyncStatus } from '../constants';
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { fork, getAggregatedAsyncStatus, isFunction, isReadableAsyncState } from '../lib';
 import scenario from '../scenario';
-import {
-  AsyncStatus,
-  type InferReadableType,
-  type ReadableAsyncState,
-  type ReadableState,
-} from '../types';
+import type { InferReadableType, ReadableAsyncState, ReadableState } from '../types';
 
-import { AsyncSelector } from './types';
+import type { AsyncSelector } from './types';
 
 const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[], U>(
   states: T,

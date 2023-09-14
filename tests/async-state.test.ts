@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { asyncState, delay } from '../src';
+import { asyncState, delay, SystemTag } from '../src';
 
 test('resolves immediately if non-async value is set', async () => {
   const greeting = asyncState<string>('Async state');
@@ -48,4 +48,16 @@ test('creates async composed state with any initial value', async () => {
   expect(state4.get()).toBe(4);
   expect(state5.get()).toBe(undefined);
   expect(await state5.getPromise()).toBe(5);
+});
+
+test('automatically assigns id when not provided', () => {
+  expect(asyncState().config.id).not.toBeUndefined();
+});
+
+test('applies custom config', () => {
+  const { config } = asyncState(undefined, { id: 'test', tags: ['awai'] });
+
+  expect(config.id).toBe('test');
+  expect(config.tags).toContain('awai');
+  expect(config.tags).toContain(SystemTag.ASYNC_STATE);
 });

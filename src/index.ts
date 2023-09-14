@@ -3,7 +3,7 @@ export { default as asyncState, type AsyncState } from './async-state';
 export { AsyncStatus } from './constants';
 export { AwaitableEvent, flush, Registry } from './core';
 export { default as effect } from './effect';
-export { default as familyState } from './family-state';
+export { default as familyState, type FamilyState } from './family-state';
 export { queue, registry } from './global';
 export {
   delay,
@@ -20,7 +20,6 @@ export { default as state, type State } from './state';
 export type {
   AsyncSetter,
   AsyncValue,
-  FamilyState,
   InferReadableType,
   ReadableAsyncState,
   ReadableState,

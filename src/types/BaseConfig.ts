@@ -1,4 +1,4 @@
 export default interface BaseConfig {
-  id?: string;
-  tags?: string[];
+  id: string;
+  tags: string[];
 }

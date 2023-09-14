@@ -54,7 +54,7 @@ const createStore = () => {
     );
   });
 
-  scenario(changeItemQuantity.events.invoked, async ([name, quantity]) => {
+  scenario(changeItemQuantity.events.invoked, ({ arguments: [name, quantity] }) => {
     if (quantity === 0) {
       cart.set((cart) => cart.filter((cartItem) => cartItem.name !== name));
     }

@@ -1,14 +1,9 @@
 import { AsyncStatus, SystemTag } from '../constants';
 import { AwaitableEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isPromiseLike } from '../lib';
+import { getUniqueId, isFunction, isPromiseOrFunction } from '../lib';
 
 import type { AsyncState, Config, InitialValue } from './types';
-
-const isPromiseOrFunction = <T>(
-  value: unknown,
-): value is Promise<T> | ((...args: any) => Promise<T>) =>
-  isFunction(value) || isPromiseLike<T>(value);
 
 const getConfig = (customConfig: Partial<Config> = {}): Config => ({
   ...customConfig,

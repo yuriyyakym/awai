@@ -1,6 +1,6 @@
 export { default as action } from './action';
 export { default as asyncState, type AsyncState } from './async-state';
-export { AsyncStatus } from './constants';
+export { AsyncStatus, SystemTag } from './constants';
 export { AwaitableEvent, flush, Registry } from './core';
 export { default as effect } from './effect';
 export { default as familyState, type FamilyState } from './family-state';

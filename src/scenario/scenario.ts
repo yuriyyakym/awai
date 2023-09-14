@@ -17,15 +17,13 @@ function scenario<T, R>(
   config?: Partial<Config>,
 ): Scenario<T, R>;
 
-function scenario() {
-  type T = unknown;
-  type R = unknown;
-
-  const [arg1, arg2, arg3] = arguments;
-  const hasDependencies = arguments.length === 3 || isFunction(arg2);
+function scenario<T, R>(
+  ...args: [Trigger<T>, Callback<T, R>, Partial<Config>?] | [Callback<T, R>, Partial<Config>?]
+) {
+  const hasDependencies = arguments.length === 3 || isFunction(args[1]);
   const [trigger, callback, customConfig] = hasDependencies
-    ? [arg1 as Trigger<T>, arg2 as Callback<T, R>, arg3 as Config]
-    : [, arg1 as Callback<T, R>, arg2 as Config];
+    ? (args as [Trigger<T>, Callback<T, R>, Partial<Config>])
+    : ([, ...args] as [undefined, Callback<T, R>, Partial<Config>]);
 
   const defaultConfig = getDefaultConfig(hasDependencies);
   const config = { ...defaultConfig, ...customConfig };

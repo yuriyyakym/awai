@@ -1,36 +1,47 @@
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
-import { isFunction, isPromiseLike } from '../lib';
+import { getUniqueId, isFunction, isPromiseLike } from '../lib';
+import type { BaseConfig } from '../types';
 
-import type { AsyncEvents, BaseEvents, Callback } from './types';
+import type { Action, AnyCallback } from './types';
 
-function action<Args extends any[]>(): Function & { events: BaseEvents<Args> };
-function action<Args extends any[], Return extends any>(
-  T: Callback<Args, Return>,
-): Callback<Args, Return> & { events: AsyncEvents<Args, Return> };
+const getDefaultConfig = (): BaseConfig => ({ id: getUniqueId() });
 
-function action<Args extends [], Return extends any>(
-  callback?: Callback<Args, Return>,
-): Function & { events: AsyncEvents<Args, Return> } {
-  const hasCallback = isFunction(callback);
+function action(): Action<void>;
+function action<C extends AnyCallback>(config?: Partial<BaseConfig>): Action<C>;
+function action<C extends AnyCallback>(callback: C, config?: Partial<BaseConfig>): Action<C>;
+
+function action<Callback extends AnyCallback | void>(
+  ...args: [Partial<BaseConfig>?] | [Callback, Partial<BaseConfig>?]
+): Action<Callback> {
+  type Args = Parameters<Action<Callback>>;
+  type Return = ReturnType<Action<Callback>>;
+
+  const hasCallback = isFunction(args[0]);
+  const [callback, customConfig] = hasCallback
+    ? (args as [Callback, Partial<BaseConfig>?])
+    : ([, ...args] as [undefined, Partial<BaseConfig>?]);
+
+  const defaultConfig = getDefaultConfig();
+  const config = { ...defaultConfig, ...customConfig };
 
   const events = {
-    invoked: new AwaitableEvent<Args>(),
-    failed: new AwaitableEvent<any>(),
-    completed: hasCallback ? new AwaitableEvent<Return>() : undefined,
-  };
+    invoked: new AwaitableEvent(),
+    failed: new AwaitableEvent(),
+    completed: hasCallback ? new AwaitableEvent() : undefined,
+  } satisfies Action<Callback>['events'];
 
-  const invoke = (...args: Args) => {
-    events.invoked.emit(args);
+  const invoke = (...invokeArgs: [...Args]) => {
+    events.invoked.emit({ arguments: invokeArgs, config });
 
     try {
       const valueOrPromise: Return | Promise<Return> = isFunction(callback)
-        ? callback(...args)
+        ? callback(...invokeArgs)
         : (undefined as Return);
 
       if (isPromiseLike(valueOrPromise)) {
-        return valueOrPromise.then((value: any) => {
-          events.completed?.emit(value);
+        return valueOrPromise.then((value) => {
+          events.completed?.emit({ arguments: invokeArgs, config, result: value });
           return value;
         });
       }
@@ -42,7 +53,7 @@ function action<Args extends [], Return extends any>(
     }
   };
 
-  const actionNode = Object.assign(invoke, { events: events as any });
+  const actionNode = Object.assign(invoke, { config, events }) as Action<Callback>;
 
   registry.register(actionNode);
 

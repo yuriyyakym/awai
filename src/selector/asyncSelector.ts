@@ -22,7 +22,7 @@ const getConfig = (customConfig: Partial<AsyncConfig> = {}): AsyncConfig => ({
 const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[], U>(
   states: T,
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
-  customConfig: AsyncConfig,
+  customConfig?: Partial<AsyncConfig>,
 ): AsyncSelector<U> => {
   type StatesValues = { [K in keyof T]: InferReadableType<T[K]> };
 

@@ -16,7 +16,7 @@ const getConfig = (customConfig: Partial<SyncConfig> = {}): SyncConfig => ({
 const syncSelector = <T extends any[], U>(
   states: [...T],
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
-  customConfig?: SyncConfig,
+  customConfig?: Partial<SyncConfig>,
 ): SyncSelector<U> => {
   const config = getConfig(customConfig);
 

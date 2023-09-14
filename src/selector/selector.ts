@@ -8,7 +8,7 @@ import type { Config, Selector } from './types';
 const selector = <T extends any[], U>(
   states: [...T],
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
-  customConfig: Partial<Config<T, U>>,
+  customConfig?: Partial<Config<T, U>>,
 ): Selector<T, U> => {
   const isAsyncPredicate = predicate.constructor.name === 'AsyncFunction';
 

@@ -1,10 +1,11 @@
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
-import { isFunction } from '../lib';
+import { getUniqueId, isFunction } from '../lib';
 
 import { Callback, Config, Scenario, Trigger } from './types';
 
 const getDefaultConfig = (hasDependencies: boolean): Partial<Config> => ({
+  id: getUniqueId(),
   strategy: hasDependencies ? 'fork' : 'cyclic',
 });
 
@@ -66,7 +67,7 @@ function scenario() {
     });
   };
 
-  const scenarioNode: Scenario<T, R> = { events };
+  const scenarioNode: Scenario<T, R> = { config, events };
 
   registry.register(scenarioNode);
 

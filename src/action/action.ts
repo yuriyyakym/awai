@@ -15,7 +15,7 @@ const getConfig = (customConfig: Partial<Config> = {}): Config => ({
 function action(): Action<void>;
 function action<Callback extends AnyCallback>(config?: Partial<BaseConfig>): Action<Callback>;
 function action<Callback extends AnyCallback>(
-  callback: C,
+  callback: Callback,
   config?: Partial<BaseConfig>,
 ): Action<Callback>;
 

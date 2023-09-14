@@ -95,8 +95,8 @@ const asyncState = <T>(initialValue?: InitialValue<T>, customConfig?: Config): A
   }
 
   const asyncStateNode: AsyncState<T> = {
-    config: Object.freeze(config),
-    events: Object.freeze(events),
+    config,
+    events,
     get,
     getAsync,
     getPromise,

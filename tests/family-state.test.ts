@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 
-import { delay, familyState, scenario } from '../src';
+import { SystemTag, delay, familyState, scenario } from '../src';
 
 test('creates states using initializer', async () => {
   const family = familyState((id) => `${id}-test`);
@@ -45,4 +45,19 @@ test('returns same node for the same key', async () => {
   const node1 = family.getNode('1');
   const node2 = family.getNode('1');
   expect(node1).toEqual(node2);
+});
+
+test('automatically assigns id when not provided', () => {
+  expect(familyState(() => undefined).config.id).not.toBeUndefined();
+});
+
+test('applies custom config', () => {
+  const { config } = familyState(() => undefined, {
+    id: 'family-test',
+    tags: ['awai', 'family-test'],
+  });
+
+  expect(config.id).toBe('family-test');
+  expect(config.tags).toEqual(['family-state', 'awai', 'family-test']);
+  expect(config.tags).toContain(SystemTag.FAMILY_STATE);
 });

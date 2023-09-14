@@ -1,7 +1,9 @@
 import { type AwaitableEvent } from '../core';
-import type { InferReadableType, ReadableAsyncState, ReadableState } from '../types';
+import type { BaseConfig, InferReadableType, ReadableAsyncState, ReadableState } from '../types';
 
 export type CleanupCallback = () => void;
+
+export type Config = BaseConfig;
 
 export interface RunEvent<
   T extends (ReadableState | ReadableAsyncState)[],
@@ -19,6 +21,7 @@ export interface Effect<
   T extends (ReadableState | ReadableAsyncState)[],
   V extends { [K in keyof T]: InferReadableType<T[K]> },
 > {
+  config: Config;
   events: {
     cleared: AwaitableEvent<ClearedEvent<T>>;
     run: AwaitableEvent<RunEvent<T, V>>;

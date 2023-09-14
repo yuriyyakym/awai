@@ -1,21 +1,32 @@
+import { AsyncStatus, SystemTag } from '../constants';
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
-import { fork, getAggregatedAsyncStatus, isFunction, isReadableAsyncState } from '../lib';
-import scenario from '../scenario';
 import {
-  AsyncStatus,
-  type InferReadableType,
-  type ReadableAsyncState,
-  type ReadableState,
-} from '../types';
+  fork,
+  getAggregatedAsyncStatus,
+  getUniqueId,
+  isFunction,
+  isReadableAsyncState,
+} from '../lib';
+import scenario from '../scenario';
+import type { InferReadableType, ReadableAsyncState, ReadableState } from '../types';
 
-import { AsyncSelector } from './types';
+import type { AsyncConfig, AsyncSelector } from './types';
+
+const getConfig = (customConfig: Partial<AsyncConfig> = {}): AsyncConfig => ({
+  ...customConfig,
+  id: customConfig.id ?? getUniqueId(asyncSelector.name),
+  tags: [SystemTag.ASYNC_SELECTOR, ...(customConfig.tags ?? [])],
+});
 
 const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[], U>(
   states: T,
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
+  customConfig?: Partial<AsyncConfig>,
 ): AsyncSelector<U> => {
   type StatesValues = { [K in keyof T]: InferReadableType<T[K]> };
+
+  const config = getConfig(customConfig);
 
   let error: AggregateError | undefined;
   let value: any;
@@ -96,6 +107,7 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
   };
 
   const selectorNode = {
+    config,
     events,
     get,
     getAsync,

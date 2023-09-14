@@ -1,16 +1,18 @@
+import { AsyncStatus, SystemTag } from '../constants';
 import { AwaitableEvent, flush } from '../core';
 import { registry } from '../global';
-import { isFunction, isPromiseLike } from '../lib';
-import { AsyncStatus } from '../types';
+import { getUniqueId, isFunction, isPromiseOrFunction } from '../lib';
 
-import type { AsyncState, InitialValue } from './types';
+import type { AsyncState, Config, InitialValue } from './types';
 
-const isPromiseOrFunction = <T>(
-  value: unknown,
-): value is Promise<T> | ((...args: any) => Promise<T>) =>
-  isFunction(value) || isPromiseLike<T>(value);
+const getConfig = (customConfig: Partial<Config> = {}): Config => ({
+  ...customConfig,
+  id: customConfig.id ?? getUniqueId(asyncState.name),
+  tags: [SystemTag.ASYNC_STATE, ...(customConfig.tags ?? [])],
+});
 
-const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
+const asyncState = <T>(initialValue?: InitialValue<T>, customConfig?: Config): AsyncState<T> => {
+  const config = getConfig(customConfig);
   const isInitialValueAsync = isPromiseOrFunction(initialValue);
   let version = 0;
   let status: AsyncStatus = AsyncStatus.LOADED;
@@ -88,6 +90,7 @@ const asyncState = <T>(initialValue?: InitialValue<T>): AsyncState<T> => {
   }
 
   const asyncStateNode: AsyncState<T> = {
+    config,
     events,
     get,
     getAsync,

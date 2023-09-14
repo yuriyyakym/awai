@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 
-import { asyncState, delay, effect, flush, registry, scenario, state } from '../src';
+import { SystemTag, asyncState, delay, effect, flush, registry, scenario, state } from '../src';
 
 test('runs effect immediately with sync states', async () => {
   const state1 = state<number>(1);
@@ -93,4 +93,19 @@ test('registers effect before running', async () => {
   await flush();
 
   expect(history).toEqual(['registration-scenario', 'effect-callback', 'sub-scenario']);
+});
+
+test('automatically assigns id when not provided', () => {
+  expect(effect([], () => undefined).config.id).not.toBeUndefined();
+});
+
+test('applies custom config', () => {
+  const { config } = effect([], () => undefined, {
+    id: 'effect-test',
+    tags: ['awai', 'effect-test'],
+  });
+
+  expect(config.id).toBe('effect-test');
+  expect(config.tags).toEqual(['effect', 'awai', 'effect-test']);
+  expect(config.tags).toContain(SystemTag.EFFECT);
 });

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { asyncState, delay, familyState, selector, state } from '../src';
+import { SystemTag, asyncState, delay, familyState, selector, state } from '../src';
 
 test('composes sync states properly', async () => {
   const state1 = state<number>(1);
@@ -32,7 +32,7 @@ test('Emits `changed` event properly', async () => {
   expect(stateSum.get()).toEqual(6);
 });
 
-test('Handles async predicate', async () => {
+test('handles async predicate', async () => {
   const state1 = state<number>(1);
   const state2 = familyState(async (id) => delay(50).then(() => Number(id) * 2));
 
@@ -49,4 +49,30 @@ test('Handles async predicate', async () => {
   state1.set(10);
   await stateSum.events.changed;
   expect(stateSum.get()).toEqual(20);
+});
+
+test('automatically assigns id when not provided', () => {
+  expect(selector([], () => undefined).config.id).not.toBeUndefined();
+});
+
+test('applies custom config to sync selector', () => {
+  const { config } = selector([], () => undefined, {
+    id: 'selector-id',
+    tags: ['awai', 'selector-test'],
+  });
+
+  expect(config.id).toBe('selector-id');
+  expect(config.tags).toEqual(['selector', 'awai', 'selector-test']);
+  expect(config.tags).toContain(SystemTag.SELECTOR);
+});
+
+test('applies custom config to async selector', () => {
+  const { config } = selector([asyncState(Promise.resolve('test'))], () => undefined, {
+    id: 'async-selector-id',
+    tags: ['awai', 'async-selector-test'],
+  });
+
+  expect(config.id).toBe('async-selector-id');
+  expect(config.tags).toEqual(['async-selector', 'awai', 'async-selector-test']);
+  expect(config.tags).toContain(SystemTag.ASYNC_SELECTOR);
 });

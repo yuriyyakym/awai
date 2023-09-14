@@ -1,4 +1,6 @@
-import { AsyncStatus, type ReadableAsyncState, type ReadableState } from '../types';
+import { AsyncStatus } from '../constants';
+import type { ReadableAsyncState, ReadableState } from '../types';
+
 import isReadableAsyncState from './isReadableAsyncState';
 
 const getAggregatedAsyncStatus = <T extends (ReadableState<any> | ReadableAsyncState<any>)[]>(

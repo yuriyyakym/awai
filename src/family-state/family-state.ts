@@ -1,10 +1,19 @@
-import asyncState, { AsyncState } from '../async-state';
+import asyncState, { type AsyncState } from '../async-state';
+import { SystemTag } from '../constants';
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
-import { isFunction } from '../lib';
+import { getUniqueId, isFunction } from '../lib';
 import scenario from '../scenario';
-import state, { State } from '../state';
-import type { FamilyState, Id } from '../types';
+import state, { type State } from '../state';
+import type { Id } from '../types';
+
+import type { Config, FamilyState } from './types';
+
+const getConfig = (customConfig: Partial<Config> = {}): Config => ({
+  ...customConfig,
+  id: customConfig.id ?? getUniqueId(familyState.name),
+  tags: [SystemTag.FAMILY_STATE, ...(customConfig.tags ?? [])],
+});
 
 const familyState = <
   T,
@@ -15,7 +24,10 @@ const familyState = <
     : State<ReturnType<Initializer>>,
 >(
   initializer: Initializer,
+  customConfig?: Config,
 ): FamilyState<NodeType> => {
+  const config = getConfig(customConfig);
+
   let family: Family = {} as Family;
 
   const events = {
@@ -61,7 +73,7 @@ const familyState = <
     return resolve(family);
   };
 
-  const familyStateNode: FamilyState<NodeType> = { events, get, getNode, setNode, then };
+  const familyStateNode: FamilyState<NodeType> = { config, events, get, getNode, setNode, then };
 
   registry.register(familyStateNode);
 

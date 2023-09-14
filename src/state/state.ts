@@ -1,10 +1,19 @@
+import { SystemTag } from '../constants';
 import { AwaitableEvent, flush } from '../core';
-import { isFunction } from '../lib';
+import { getUniqueId, isFunction } from '../lib';
 import { registry } from '../global';
 
-import type { State } from './types';
+import type { Config, State } from './types';
 
-const state = <T>(initialValue: T): State<T> => {
+const getConfig = (customConfig: Partial<Config> = {}): Config => ({
+  ...customConfig,
+  id: customConfig.id ?? getUniqueId(state.name),
+  tags: [SystemTag.STATE, ...(customConfig.tags ?? [])],
+});
+
+const state = <T>(initialValue: T, customConfig?: Config): State<T> => {
+  const config = getConfig(customConfig);
+
   let value = initialValue;
 
   const events = {
@@ -36,7 +45,7 @@ const state = <T>(initialValue: T): State<T> => {
     return resolve(value);
   };
 
-  const stateNode = { events, get, set, then };
+  const stateNode: State<T> = { config, events, get, set, then };
 
   registry.register(stateNode);
 

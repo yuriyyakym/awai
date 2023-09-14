@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 
-import { flush, scenario, state } from '../src';
+import { SystemTag, flush, scenario, state } from '../src';
 
 test('is updated asynchronously', async () => {
   const greeting = state<string>('Hi');
@@ -85,4 +85,19 @@ test('should catch fast state changes', async () => {
   await flush();
 
   expect(values).toEqual(expectedValues);
+});
+
+test('automatically assigns id when not provided', () => {
+  expect(state(() => undefined).config.id).not.toBeUndefined();
+});
+
+test('applies custom config to sync selector', () => {
+  const { config } = state(() => undefined, {
+    id: 'state-test-id',
+    tags: ['awai', 'state-test'],
+  });
+
+  expect(config.id).toBe('state-test-id');
+  expect(config.tags).toEqual(['state', 'awai', 'state-test']);
+  expect(config.tags).toContain(SystemTag.STATE);
 });

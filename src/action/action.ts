@@ -1,15 +1,23 @@
+import { SystemTag } from '../constants';
 import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction, isPromiseLike } from '../lib';
 import type { BaseConfig } from '../types';
 
-import type { Action, AnyCallback } from './types';
+import type { Action, AnyCallback, Config } from './types';
 
-const getDefaultConfig = (): BaseConfig => ({ id: getUniqueId() });
+const getConfig = (customConfig: Partial<Config> = {}): Config => ({
+  ...customConfig,
+  id: customConfig.id ?? getUniqueId(action.name),
+  tags: [SystemTag.ACTION, ...(customConfig.tags ?? [])],
+});
 
 function action(): Action<void>;
-function action<C extends AnyCallback>(config?: Partial<BaseConfig>): Action<C>;
-function action<C extends AnyCallback>(callback: C, config?: Partial<BaseConfig>): Action<C>;
+function action<Callback extends AnyCallback>(config?: Partial<BaseConfig>): Action<Callback>;
+function action<Callback extends AnyCallback>(
+  callback: C,
+  config?: Partial<BaseConfig>,
+): Action<Callback>;
 
 function action<Callback extends AnyCallback | void>(
   ...args: [Partial<BaseConfig>?] | [Callback, Partial<BaseConfig>?]
@@ -22,8 +30,7 @@ function action<Callback extends AnyCallback | void>(
     ? (args as [Callback, Partial<BaseConfig>?])
     : ([, ...args] as [undefined, Partial<BaseConfig>?]);
 
-  const defaultConfig = getDefaultConfig();
-  const config = { ...defaultConfig, ...customConfig };
+  const config = getConfig(customConfig);
 
   const events = {
     invoked: new AwaitableEvent(),

@@ -2,7 +2,7 @@ import { type AwaitableEvent } from '../core';
 import { type noop } from '../lib';
 import type { BaseConfig } from '../types';
 
-type Config = BaseConfig;
+export type Config = BaseConfig;
 
 export type AnyCallback = (...args: any) => any;
 

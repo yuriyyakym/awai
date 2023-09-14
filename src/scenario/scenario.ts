@@ -6,10 +6,9 @@ import { getUniqueId, isFunction } from '../lib';
 import { Callback, Config, Scenario, Trigger } from './types';
 
 const getConfig = (hasDependencies: boolean, customConfig: Partial<Config> = {}): Config => ({
-  ...customConfig,
   id: customConfig.id ?? getUniqueId(scenario.name),
+  strategy: customConfig.strategy ?? (hasDependencies ? 'fork' : 'cyclic'),
   tags: [SystemTag.SCENARIO, ...(customConfig.tags ?? [])],
-  strategy: hasDependencies ? 'fork' : 'cyclic',
 });
 
 function scenario<T, R>(callback: Callback<T, R>, config?: Partial<Config>): Scenario<T, R>;

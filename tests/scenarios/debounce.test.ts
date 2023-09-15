@@ -2,7 +2,7 @@ import { expect, test, vi } from 'vitest';
 
 import { action, delay, scenario } from '../../src';
 
-const DEBOUNCE_TIMEOUT = 200;
+const DEBOUNCE_TIMEOUT = 20;
 
 test('[Flow]: Debounce', async () => {
   const click = action();
@@ -17,21 +17,21 @@ test('[Flow]: Debounce', async () => {
   });
 
   await click();
-  await delay(DEBOUNCE_TIMEOUT + 50);
+  await delay(DEBOUNCE_TIMEOUT + 10);
   await click();
-  await delay(DEBOUNCE_TIMEOUT - 50);
+  await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
-  await delay(DEBOUNCE_TIMEOUT - 50);
+  await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
-  await delay(DEBOUNCE_TIMEOUT - 50);
+  await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
-  await delay(DEBOUNCE_TIMEOUT - 50);
+  await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
   await click();
   await click();
-  await delay(DEBOUNCE_TIMEOUT + 50);
+  await delay(DEBOUNCE_TIMEOUT + 10);
   await click();
-  await delay(DEBOUNCE_TIMEOUT + 50);
+  await delay(DEBOUNCE_TIMEOUT + 10);
   await click();
 
   expect(debouncedFunction.mock.calls.length).toEqual(3);

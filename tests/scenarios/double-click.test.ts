@@ -2,7 +2,7 @@ import { expect, test, vi } from 'vitest';
 
 import { action, delay, flush, rejectAfter, scenario } from '../../src';
 
-const DOUBLE_CLICK_TIMEOUT = 200;
+const DOUBLE_CLICK_TIMEOUT = 20;
 
 test('[Scenario] Double click', async () => {
   const click = action();

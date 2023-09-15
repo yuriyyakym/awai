@@ -13,7 +13,7 @@ test('composes sync states properly', async () => {
 });
 
 test('only calls callback when all async dependencies are resolved', async () => {
-  const state = asyncState(delay(100).then(() => 'test'));
+  const state = asyncState(delay(10).then(() => 'test'));
   const duplicatedState = selector([state], (state) => {
     expect(state).toBe('test');
     return state!.repeat(2);
@@ -23,7 +23,7 @@ test('only calls callback when all async dependencies are resolved', async () =>
 
 test('Emits `changed` event properly', async () => {
   const state1 = state<number>(1);
-  const state2 = asyncState<number>(delay(50).then(() => 2));
+  const state2 = asyncState<number>(delay(10).then(() => 2));
   const state3 = state<number>(3);
 
   const stateSum = selector([state1, state2, state3], (a, b, c) => a + b + c);
@@ -34,7 +34,7 @@ test('Emits `changed` event properly', async () => {
 
 test('handles async predicate', async () => {
   const state1 = state<number>(1);
-  const state2 = familyState(async (id) => delay(50).then(() => Number(id) * 2));
+  const state2 = familyState(async (id) => delay(10).then(() => Number(id) * 2));
 
   const stateSum = selector([state1, state2], async (a) => {
     await delay(10);

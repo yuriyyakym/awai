@@ -1,3 +1,4 @@
+import { isCoreNode } from '../lib';
 import type { BaseNode } from '../types';
 
 import AwaitableEvent from './AwaitableEvent';
@@ -9,6 +10,10 @@ export default class Registry<T extends BaseNode> {
   };
 
   public async register(node: T) {
+    if (isCoreNode(node)) {
+      return;
+    }
+
     this._nodes.push(node);
     this.events.registered.emit(node);
   }

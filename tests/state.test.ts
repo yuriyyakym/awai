@@ -98,6 +98,5 @@ test('applies custom config to sync selector', () => {
   });
 
   expect(config.id).toBe('state-test-id');
-  expect(config.tags).toEqual(['state', 'awai', 'state-test']);
-  expect(config.tags).toContain(SystemTag.STATE);
+  expect(config.tags).toEqual([SystemTag.STATE, 'awai', 'state-test']);
 });

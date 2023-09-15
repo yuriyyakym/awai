@@ -41,8 +41,8 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
 
   const getStatus = () => getAggregatedAsyncStatus(states);
 
-  scenario(async () => {
-    nextVersion++;
+  const determineNextVersion = async () => {
+    nextVersion = (nextVersion + 1) % Number.MAX_SAFE_INTEGER;
 
     const status = getStatus();
     const asyncStates = states.filter(isReadableAsyncState);
@@ -82,8 +82,10 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
         }
       });
     }
+  };
 
-    await Promise.race(states.map((state) => state.events.changed));
+  scenario(() => Promise.race(states.map((state) => state.events.changed)), determineNextVersion, {
+    tags: [SystemTag.CORE_NODE],
   });
 
   const get = () => value;
@@ -115,6 +117,8 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
     getStatus,
     then,
   };
+
+  determineNextVersion();
 
   registry.register(selectorNode);
 

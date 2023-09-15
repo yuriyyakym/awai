@@ -62,8 +62,7 @@ test('applies custom config to sync selector', () => {
   });
 
   expect(config.id).toBe('selector-id');
-  expect(config.tags).toEqual(['selector', 'awai', 'selector-test']);
-  expect(config.tags).toContain(SystemTag.SELECTOR);
+  expect(config.tags).toEqual([SystemTag.SELECTOR, 'awai', 'selector-test']);
 });
 
 test('applies custom config to async selector', () => {
@@ -73,6 +72,5 @@ test('applies custom config to async selector', () => {
   });
 
   expect(config.id).toBe('async-selector-id');
-  expect(config.tags).toEqual(['async-selector', 'awai', 'async-selector-test']);
-  expect(config.tags).toContain(SystemTag.ASYNC_SELECTOR);
+  expect(config.tags).toEqual([SystemTag.ASYNC_SELECTOR, 'awai', 'async-selector-test']);
 });

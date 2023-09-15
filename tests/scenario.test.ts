@@ -127,6 +127,5 @@ test('applies custom config', () => {
   });
 
   expect(config.id).toBe('scenario-test');
-  expect(config.tags).toEqual(['scenario', 'awai', 'scenario-test']);
-  expect(config.tags).toContain(SystemTag.SCENARIO);
+  expect(config.tags).toEqual([SystemTag.SCENARIO, 'awai', 'scenario-test']);
 });

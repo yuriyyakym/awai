@@ -37,10 +37,13 @@ const syncSelector = <T extends any[], U>(
     return resolve(get());
   };
 
-  scenario(async () => {
-    await Promise.race(states.map((state) => state.events.changed));
-    events.changed.emit(get());
-  });
+  scenario(
+    async () => {
+      await Promise.race(states.map((state) => state.events.changed));
+      events.changed.emit(get());
+    },
+    { tags: [SystemTag.CORE_NODE] },
+  );
 
   const selectorNode: SyncSelector<U> = { config, events, get, then };
 

@@ -54,6 +54,7 @@ const effect = <
 
         runEffect();
       },
+      { tags: [SystemTag.CORE_NODE] },
     );
 
     queueMicrotask(runEffect);

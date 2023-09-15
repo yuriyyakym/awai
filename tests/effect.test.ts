@@ -106,6 +106,5 @@ test('applies custom config', () => {
   });
 
   expect(config.id).toBe('effect-test');
-  expect(config.tags).toEqual(['effect', 'awai', 'effect-test']);
-  expect(config.tags).toContain(SystemTag.EFFECT);
+  expect(config.tags).toEqual([SystemTag.EFFECT, 'awai', 'effect-test']);
 });

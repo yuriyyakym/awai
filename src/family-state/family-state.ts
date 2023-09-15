@@ -43,15 +43,21 @@ const familyState = <
     const initialValue = initializer(id);
 
     const stateNode =
-      initialValue instanceof Promise ? asyncState(initialValue) : state(initialValue);
+      initialValue instanceof Promise
+        ? asyncState(initialValue, { tags: [SystemTag.CORE_NODE] })
+        : state(initialValue, { tags: [SystemTag.CORE_NODE] });
 
     family = { ...family, [id]: stateNode };
     events.stateCreated.emit(id);
     events.changed.emit(family);
 
-    scenario(stateNode.events.changed, async () => {
-      events.changed.emit(family);
-    });
+    scenario(
+      stateNode.events.changed,
+      async () => {
+        events.changed.emit(family);
+      },
+      { tags: [SystemTag.CORE_NODE] },
+    );
 
     return stateNode as NodeType;
   };

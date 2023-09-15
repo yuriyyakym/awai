@@ -58,6 +58,5 @@ test('applies custom config', () => {
   });
 
   expect(config.id).toBe('family-test');
-  expect(config.tags).toEqual(['family-state', 'awai', 'family-test']);
-  expect(config.tags).toContain(SystemTag.FAMILY_STATE);
+  expect(config.tags).toEqual([SystemTag.FAMILY_STATE, 'awai', 'family-test']);
 });

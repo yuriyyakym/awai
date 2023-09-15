@@ -1,13 +1,8 @@
-import type { BaseConfig } from '../types';
+import type { BaseNode } from '../types';
 
 import AwaitableEvent from './AwaitableEvent';
 
-export type Node = {
-  config: BaseConfig;
-  events: Record<string, AwaitableEvent<any>>;
-};
-
-export default class Registry<T extends Node> {
+export default class Registry<T extends BaseNode> {
   private _nodes: T[] = [];
   public readonly events = {
     registered: new AwaitableEvent<T>(),

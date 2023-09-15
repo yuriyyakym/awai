@@ -3,7 +3,7 @@ import type { BaseConfig } from '../types';
 
 export type Trigger<T> = PromiseLike<T> | (() => PromiseLike<T>);
 
-export type Callback<T, R> = (value: T) => R;
+export type Callback<T = never, R = any> = (value: T) => R;
 
 export interface Config extends BaseConfig {
   strategy: 'fork' | 'cyclic' | 'once';

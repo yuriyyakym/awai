@@ -11,7 +11,10 @@ const getConfig = (customConfig: Partial<Config> = {}): Config => ({
   tags: [SystemTag.ASYNC_STATE, ...(customConfig.tags ?? [])],
 });
 
-const asyncState = <T>(initialValue?: InitialValue<T>, customConfig?: Config): AsyncState<T> => {
+const asyncState = <T>(
+  initialValue?: InitialValue<T>,
+  customConfig?: Partial<Config>,
+): AsyncState<T> => {
   const config = getConfig(customConfig);
   const isInitialValueAsync = isPromiseOrFunction(initialValue);
   let version = 0;

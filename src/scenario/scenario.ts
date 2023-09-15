@@ -3,7 +3,7 @@ import { AwaitableEvent } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction } from '../lib';
 
-import { Callback, Config, Scenario, Trigger } from './types';
+import type { Callback, Config, Scenario, Trigger } from './types';
 
 const getConfig = (hasDependencies: boolean, customConfig: Partial<Config> = {}): Config => ({
   id: customConfig.id ?? getUniqueId(scenario.name),
@@ -11,7 +11,7 @@ const getConfig = (hasDependencies: boolean, customConfig: Partial<Config> = {})
   tags: [SystemTag.SCENARIO, ...(customConfig.tags ?? [])],
 });
 
-function scenario<T, R>(callback: Callback<T, R>, config?: Partial<Config>): Scenario<T, R>;
+function scenario<T, R>(callback: Callback, config?: Partial<Config>): Scenario<T, R>;
 
 function scenario<T, R>(
   trigger: Trigger<T>,
@@ -20,7 +20,7 @@ function scenario<T, R>(
 ): Scenario<T, R>;
 
 function scenario<T, R>(
-  ...args: [Trigger<T>, Callback<T, R>, Partial<Config>?] | [Callback<T, R>, Partial<Config>?]
+  ...args: [Trigger<T>, Callback<T, R>, Partial<Config>?] | [Callback, Partial<Config>?]
 ) {
   const hasDependencies = arguments.length === 3 || isFunction(args[1]);
   const [trigger, callback, customConfig] = hasDependencies

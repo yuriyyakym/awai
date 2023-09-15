@@ -11,7 +11,7 @@ const getConfig = (customConfig: Partial<Config> = {}): Config => ({
   tags: [SystemTag.STATE, ...(customConfig.tags ?? [])],
 });
 
-const state = <T>(initialValue: T, customConfig?: Config): State<T> => {
+const state = <T>(initialValue: T, customConfig?: Partial<Config>): State<T> => {
   const config = getConfig(customConfig);
 
   let value = initialValue;

@@ -24,7 +24,7 @@ const familyState = <
     : State<ReturnType<Initializer>>,
 >(
   initializer: Initializer,
-  customConfig?: Config,
+  customConfig?: Partial<Config>,
 ): FamilyState<NodeType> => {
   const config = getConfig(customConfig);
 

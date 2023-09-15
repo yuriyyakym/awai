@@ -2,6 +2,7 @@ import { expect, test, vi } from 'vitest';
 
 import {
   Registry,
+  SystemTag,
   asyncState,
   familyState,
   flush,
@@ -26,7 +27,6 @@ test('registers nodes in global registry', async () => {
   const state1 = state<string>('Hi');
   const state2 = asyncState<string>('Hi');
   const family = familyState(() => 'test');
-  const innerFamilyState = family.getNode('some-id');
   const selectedState = selector([state1, state2], (value1, value2) => value1 + value2);
 
   await flush();
@@ -34,9 +34,18 @@ test('registers nodes in global registry', async () => {
   expect(registry.nodes).toContain(state1);
   expect(registry.nodes).toContain(state2);
   expect(registry.nodes).toContain(family);
-  expect(registry.nodes).toContain(innerFamilyState);
   expect(registry.nodes).toContain(selectedState);
   expect(registry.nodes).toContain(counterScenario);
 
   expect(onRegister.mock.calls.length).toBeGreaterThan(1);
+});
+
+test('does not register nodes with SystemTag.CORE_NODE tag in registry', async () => {
+  const previousRegistryNodes = registry.nodes;
+
+  state<string>('Hi', { tags: [SystemTag.CORE_NODE] });
+  asyncState<string>('Hi', { tags: [SystemTag.CORE_NODE] });
+  await flush();
+
+  expect(registry.nodes).toStrictEqual(previousRegistryNodes);
 });

@@ -2,6 +2,7 @@ export { default as delay } from './delay';
 export { default as fork } from './fork';
 export { default as getAggregatedAsyncStatus } from './getAggregatedAsyncStatus';
 export { default as getUniqueId } from './getUniqueId';
+export { default as isCoreNode } from './isCoreNode';
 export { default as isFunction } from './isFunction';
 export { default as isObject } from './isObject';
 export { default as isPromiseLike } from './isPromiseLike';

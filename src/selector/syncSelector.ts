@@ -1,5 +1,5 @@
 import { SystemTag } from '../constants';
-import { AwaitableEvent } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction } from '../lib';
 import scenario from '../scenario';
@@ -21,7 +21,7 @@ const syncSelector = <T extends any[], U>(
   const config = getConfig(customConfig);
 
   const events = {
-    changed: new AwaitableEvent<U>(),
+    changed: new AwaiEvent<U>(),
   };
 
   const get = () => {

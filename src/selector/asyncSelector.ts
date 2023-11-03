@@ -1,5 +1,5 @@
 import { AsyncStatus, SystemTag } from '../constants';
-import { AwaitableEvent } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import {
   fork,
@@ -34,9 +34,9 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
   let nextVersion: number = -1;
 
   const events = {
-    failed: new AwaitableEvent<unknown>(),
-    changed: new AwaitableEvent<U>(),
-    requested: new AwaitableEvent<void>(),
+    failed: new AwaiEvent<unknown>(),
+    changed: new AwaiEvent<U>(),
+    requested: new AwaiEvent<void>(),
   };
 
   const getStatus = () => getAggregatedAsyncStatus(states);

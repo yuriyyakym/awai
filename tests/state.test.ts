@@ -9,7 +9,7 @@ test('is updated asynchronously', async () => {
   expect(greeting.get()).toEqual('Hello');
 });
 
-test('has `changed` AwaitableEvent event', async () => {
+test('has `changed` AwaiEvent event', async () => {
   const greeting = state<string>('Hello');
   expect(greeting).toHaveProperty('events');
   expect(greeting.events).toHaveProperty('changed');

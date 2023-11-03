@@ -10,10 +10,10 @@ Re-resolvables play role of event-emitters, and their interface lead to a unique
 
 ### Example of usage
 
-In this library, re-resolvable is called `AwaitableEvent`.
+In this library, re-resolvable is called `AwaiEvent`.
 
-```ts title="Example of AwaitableEvent usage"
-const event = new AwaitableEvent();
+```ts title="Example of AwaiEvent usage"
+const event = new AwaiEvent();
 
 setTimeout(event.emit, 100, 'hello');
 setTimeout(event.emit, 200, 'awai');

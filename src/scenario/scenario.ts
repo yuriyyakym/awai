@@ -1,5 +1,5 @@
 import { SystemTag } from '../constants';
-import { AwaitableEvent } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction } from '../lib';
 
@@ -30,9 +30,9 @@ function scenario<T, R>(
   const config = getConfig(hasDependencies, customConfig);
 
   const events: Scenario<T, R>['events'] = {
-    completed: new AwaitableEvent(),
-    failed: new AwaitableEvent(),
-    started: new AwaitableEvent(),
+    completed: new AwaiEvent(),
+    failed: new AwaiEvent(),
+    started: new AwaiEvent(),
   };
 
   const getEventPromise = () => {

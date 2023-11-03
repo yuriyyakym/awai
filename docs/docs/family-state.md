@@ -16,8 +16,8 @@ type Id = string;
 
 type FamilyState<T> = ReadableState<Record<Id, T>> & {
   events: {
-    changed: AwaitableEvent<Record<Id, T>>; // emits when any inner state emits `changed` event
-    stateCreated: AwaitableEvent<Id>; // emits when new state is created with `getNode` method
+    changed: AwaiEvent<Record<Id, T>>; // emits when any inner state emits `changed` event
+    stateCreated: AwaiEvent<Id>; // emits when new state is created with `getNode` method
   };
   getNode: (id: Id) => T;
   setNode: (id: Id, stateNode: T) => void;

@@ -1,10 +1,10 @@
-import { type AwaitableEvent } from '../core';
+import { type AwaiEvent } from '../core';
 
 import Setter from './Setter';
 
 export default interface WritableState<T> {
   events: {
-    changed: AwaitableEvent<T>;
+    changed: AwaiEvent<T>;
   };
   then: PromiseLike<T>['then'];
   set: Setter<T>;

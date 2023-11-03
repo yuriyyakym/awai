@@ -1,12 +1,12 @@
 import { isCoreNode } from '../lib';
 import type { BaseNode } from '../types';
 
-import AwaitableEvent from './AwaitableEvent';
+import AwaiEvent from './AwaiEvent';
 
 export default class Registry<T extends BaseNode> {
   private _nodes: T[] = [];
   public readonly events = {
-    registered: new AwaitableEvent<T>(),
+    registered: new AwaiEvent<T>(),
   };
 
   public async register(node: T) {

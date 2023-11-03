@@ -77,9 +77,9 @@ export interface StartedEvent<T> {
 
 export interface Scenario<T, R> {
   events: {
-    completed: AwaitableEvent<CompletedEvent<T, R>>;
-    failed: AwaitableEvent<unknown>;
-    started: AwaitableEvent<StartedEvent<T>>;
+    completed: AwaiEvent<CompletedEvent<T, R>>;
+    failed: AwaiEvent<unknown>;
+    started: AwaiEvent<StartedEvent<T>>;
   };
 }
 ```

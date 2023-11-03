@@ -10,7 +10,7 @@ The library was written using a concept of a promise-like object which has no te
 
 Such re-resolvable can be used instead of event emitters, and when you try to do so, you are naturally forced into a different way of writing algorithms.
 
-State, async-state, family-state, selector and action have `events` property, which is an object of AwaitableEvents (re-resolvables). Those events may be used to control scenarios.
+State, async-state, family-state, selector and action have `events` property, which is an object of AwaiEvents (re-resolvables). Those events may be used to control scenarios.
 
 When writing code, consider splitting logics into smaller scenarios. For example, if you got a requirement to add tracking when user logs out, you may not pollute existing logout logics, and just create a separate scenario instead:
 

@@ -1,7 +1,7 @@
-import type { AwaitableEvent } from '../core';
+import type { AwaiEvent } from '../core';
 import type { BaseConfig } from '../types';
 
-export type Trigger<T> = PromiseLike<T> | (() => PromiseLike<T>);
+export type Trigger<T> = AwaiEvent<T> | PromiseLike<T> | (() => PromiseLike<T>);
 
 export type Callback<T = never, R = any> = (value: T) => R;
 
@@ -22,9 +22,9 @@ export interface StartedEvent<T> {
 
 export interface Scenario<T, R> {
   events: {
-    completed: AwaitableEvent<CompletedEvent<T, R>>;
-    failed: AwaitableEvent<unknown>;
-    started: AwaitableEvent<StartedEvent<T>>;
+    completed: AwaiEvent<CompletedEvent<T, R>>;
+    failed: AwaiEvent<unknown>;
+    started: AwaiEvent<StartedEvent<T>>;
   };
   get config(): Config;
 }

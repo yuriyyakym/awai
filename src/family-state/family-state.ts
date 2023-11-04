@@ -1,6 +1,6 @@
 import asyncState, { type AsyncState } from '../async-state';
 import { SystemTag } from '../constants';
-import { AwaitableEvent } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction } from '../lib';
 import scenario from '../scenario';
@@ -31,8 +31,8 @@ const familyState = <
   let family: Family = {} as Family;
 
   const events = {
-    changed: new AwaitableEvent<Record<Id, NodeType>>(),
-    stateCreated: new AwaitableEvent<Id>(),
+    changed: new AwaiEvent<Record<Id, NodeType>>(),
+    stateCreated: new AwaiEvent<Id>(),
   };
 
   const getNode = (id: Id): NodeType => {

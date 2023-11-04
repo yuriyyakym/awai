@@ -1,5 +1,5 @@
 import { AsyncStatus, SystemTag } from '../constants';
-import { AwaitableEvent, flush } from '../core';
+import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction, isPromiseOrFunction } from '../lib';
 
@@ -23,9 +23,9 @@ const asyncState = <T>(
   let value: T | undefined = isInitialValueAsync ? undefined : initialValue;
 
   const events: AsyncState<T>['events'] = {
-    changed: new AwaitableEvent<T>(),
-    failed: new AwaitableEvent<unknown>(),
-    requested: new AwaitableEvent<void>(),
+    changed: new AwaiEvent<T>(),
+    failed: new AwaiEvent<unknown>(),
+    requested: new AwaiEvent<void>(),
   };
 
   const getStatus: AsyncState<T>['getStatus'] = () => status;

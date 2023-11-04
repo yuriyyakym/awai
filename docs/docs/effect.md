@@ -62,8 +62,8 @@ export interface Effect<
   V extends { [K in keyof T]: InferReadableType<T[K]> },
 > {
   events: {
-    cleared: AwaitableEvent<ClearedEvent<T>>;
-    run: AwaitableEvent<RunEvent<T, V>>;
+    cleared: AwaiEvent<ClearedEvent<T>>;
+    run: AwaiEvent<RunEvent<T, V>>;
   };
 }
 ```

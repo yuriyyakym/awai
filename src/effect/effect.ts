@@ -1,5 +1,5 @@
 import { AsyncStatus, SystemTag } from '../constants';
-import { AwaitableEvent } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import { getAggregatedAsyncStatus, getUniqueId, isFunction } from '../lib';
 import scenario from '../scenario';
@@ -26,8 +26,8 @@ const effect = <
   let cleanup: ReturnType<typeof effect>;
 
   const events: Effect<T, V>['events'] = {
-    cleared: new AwaitableEvent(),
-    run: new AwaitableEvent(),
+    cleared: new AwaiEvent(),
+    run: new AwaiEvent(),
   };
 
   const runEffect = () => {

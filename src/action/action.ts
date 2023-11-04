@@ -1,5 +1,5 @@
 import { SystemTag } from '../constants';
-import { AwaitableEvent } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction, isPromiseLike } from '../lib';
 import type { BaseConfig } from '../types';
@@ -33,9 +33,9 @@ function action<Callback extends AnyCallback | void>(
   const config = getConfig(customConfig);
 
   const events = {
-    invoked: new AwaitableEvent(),
-    failed: new AwaitableEvent(),
-    completed: hasCallback ? new AwaitableEvent() : undefined,
+    invoked: new AwaiEvent(),
+    failed: new AwaiEvent(),
+    completed: hasCallback ? new AwaiEvent() : undefined,
   } satisfies Action<Callback>['events'];
 
   const invoke = (...invokeArgs: [...Args]) => {

@@ -1,9 +1,9 @@
 import { expect, test } from 'vitest';
 
-import { AwaitableEvent } from '../src';
+import { AwaiEvent } from '../src';
 
 test('filters out non-applicable events', async () => {
-  const number = new AwaitableEvent<number>();
+  const number = new AwaiEvent<number>();
   const awaitedNumber = 2;
 
   queueMicrotask(async () => {

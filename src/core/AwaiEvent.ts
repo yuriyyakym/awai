@@ -4,21 +4,32 @@ import { isFunction } from '../lib';
 type Resolver<T> = (value: T) => any;
 type FilterPredicate<T> = (value: T) => boolean;
 
-export default class AwaitableEvent<T> implements PromiseLike<T> {
+export default class AwaiEvent<T> {
   private _awaiters: Resolver<T>[] = [];
 
   then: PromiseLike<T>['then'] = (onfulfilled) => {
-    if (!isFunction(onfulfilled)) {
-      return Promise.resolve<any>(undefined);
-    }
-
-    return new Promise((localResolve) => {
+    return new Promise<any>((resolve) => {
       this._awaiters.push((value: T) => {
-        const result = onfulfilled(value);
-        localResolve(result);
+        const result = isFunction(onfulfilled) ? onfulfilled(value) : value;
+        resolve(result);
       });
     });
   };
+
+  getAbortablePromise(abortSignal: AbortSignal): PromiseLike<T> {
+    return new Promise<T>((resolve, reject) => {
+      this._awaiters.push(resolve);
+
+      const abortionHandler = () => {
+        this._awaiters.filter((awaiter) => awaiter !== resolve);
+        reject('Aborted');
+
+        abortSignal.removeEventListener('abort', abortionHandler);
+      };
+
+      abortSignal.addEventListener('abort', abortionHandler);
+    });
+  }
 
   emit(value: T) {
     queue.enqueue(async () => {

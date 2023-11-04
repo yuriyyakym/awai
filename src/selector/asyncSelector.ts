@@ -1,5 +1,5 @@
 import { AsyncStatus, SystemTag } from '../constants';
-import { AwaitableEvent } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import {
   fork,
@@ -19,7 +19,7 @@ const getConfig = (customConfig: Partial<AsyncConfig> = {}): AsyncConfig => ({
   tags: [SystemTag.ASYNC_SELECTOR, ...(customConfig.tags ?? [])],
 });
 
-const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[], U>(
+const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   states: T,
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
   customConfig?: Partial<AsyncConfig>,
@@ -34,9 +34,9 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
   let nextVersion: number = -1;
 
   const events = {
-    failed: new AwaitableEvent<unknown>(),
-    changed: new AwaitableEvent<U>(),
-    requested: new AwaitableEvent<void>(),
+    failed: new AwaiEvent<unknown>(),
+    changed: new AwaiEvent<U>(),
+    requested: new AwaiEvent<void>(),
   };
 
   const getStatus = () => getAggregatedAsyncStatus(states);
@@ -84,9 +84,17 @@ const asyncSelector = <T extends (ReadableState<any> | ReadableAsyncState<any>)[
     }
   };
 
-  scenario(() => Promise.race(states.map((state) => state.events.changed)), determineNextVersion, {
-    tags: [SystemTag.CORE_NODE],
-  });
+  scenario(
+    async () => {
+      const abortController = new AbortController();
+      await Promise.race(
+        states.map((state) => state.events.changed.getAbortablePromise(abortController.signal)),
+      );
+      abortController.abort();
+    },
+    determineNextVersion,
+    { tags: [SystemTag.CORE_NODE] },
+  );
 
   const get = () => value;
 

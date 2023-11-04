@@ -1,5 +1,5 @@
 import { SystemTag } from '../constants';
-import { AwaitableEvent, flush } from '../core';
+import { AwaiEvent, flush } from '../core';
 import { getUniqueId, isFunction } from '../lib';
 import { registry } from '../global';
 
@@ -17,7 +17,7 @@ const state = <T>(initialValue: T, customConfig?: Partial<Config>): State<T> => 
   let value = initialValue;
 
   const events = {
-    changed: new AwaitableEvent<T>(),
+    changed: new AwaiEvent<T>(),
   };
 
   const set: State<T>['set'] = async (nextValueOrResolver) => {

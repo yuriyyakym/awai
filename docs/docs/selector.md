@@ -9,7 +9,7 @@ Selector is used to combine multiple states into a single value. It is read-only
 ```ts title="ReadableState - returned when all state dependencies are sync"
 interface ReadableState<T> {
   events: {
-    changed: AwaitableEvent<T>;
+    changed: AwaiEvent<T>;
   };
   get: () => T;
   then: (resolver: Resolver<T>) => Promise<T>;
@@ -19,9 +19,9 @@ interface ReadableState<T> {
 ```ts title="ReadableAsyncState - returned when any dependency is async"
 interface ReadableAsyncState<T> {
   events: {
-    changed: AwaitableEvent<T>;
-    failed: AwaitableEvent<unknown>;
-    requested: AwaitableEvent<void>;
+    changed: AwaiEvent<T>;
+    failed: AwaiEvent<unknown>;
+    requested: AwaiEvent<void>;
   };
   get: () => T | undefined;
   getAsync: () => AsyncValue<T>; // { isLoading, error, value }

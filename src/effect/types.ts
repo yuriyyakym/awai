@@ -1,4 +1,4 @@
-import { type AwaitableEvent } from '../core';
+import { type AwaiEvent } from '../core';
 import type { BaseConfig, InferReadableType, ReadableAsyncState, ReadableState } from '../types';
 
 export type CleanupCallback = () => void;
@@ -23,7 +23,7 @@ export interface Effect<
 > {
   config: Config;
   events: {
-    cleared: AwaitableEvent<ClearedEvent<T>>;
-    run: AwaitableEvent<RunEvent<T, V>>;
+    cleared: AwaiEvent<ClearedEvent<T>>;
+    run: AwaiEvent<RunEvent<T, V>>;
   };
 }

@@ -1,4 +1,4 @@
-import { type AwaitableEvent } from '../core';
+import { type AwaiEvent } from '../core';
 import { type noop } from '../lib';
 import type { BaseConfig } from '../types';
 
@@ -18,12 +18,12 @@ export type ActionCompletedEvent<Args, Return> = {
 };
 
 export type BaseEvents<Args> = {
-  invoked: AwaitableEvent<ActionInvokedEvent<Args>>;
-  failed: AwaitableEvent<unknown>;
+  invoked: AwaiEvent<ActionInvokedEvent<Args>>;
+  failed: AwaiEvent<unknown>;
 };
 
 export type EventsWithCallback<Args, Return> = BaseEvents<Args> & {
-  completed: AwaitableEvent<ActionCompletedEvent<Args, Return>>;
+  completed: AwaiEvent<ActionCompletedEvent<Args, Return>>;
 };
 
 type EmptyAction = typeof noop & {

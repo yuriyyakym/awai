@@ -10,26 +10,30 @@ First create state nodes and actions, then we create a scenario which executes a
 
 ```ts
 type SearchResult = string;
-type SortDirection = 'asc' | 'desc';
+type SortDirection = 'ascending' | 'descending';
 
 const DEBOUNCE_TIMEOUT = 200;
 
 const searchQuery = state('');
+const setSearchQuery = action(searchQuery.set);
+const resetSearch = action(() => setSearchQuery(''));
+
 const searchResults = asyncState<SearchResult[]>([]);
-const sortDirection = state<SortDirection>('asc');
+const setSearchResults = action(searchResults.set);
+
+const sortDirection = state<SortDirection>('ascending');
+const setSortDirection = action(sortDirection.set);
 
 const sortedSearchResults = selector(
   [searchResults, sortDirection],
   (results, direction) => {
     return results.toSorted(
-      (a, b) => direction === 'asc' ? a.localCompare(b) : b.localCompare(a)
+      (a, b) => direction === 'ascending' ? a.localCompare(b) : b.localCompare(a)
     );
   }
 );
 
-const setSearchQuery = action(searchQuery.set);
-const resetSearch = action(() => setSearchQuery(''));
-const setSortDirection = action(sortDirection.set);
+
 
 scenario(
   searchQuery.events.changed,
@@ -44,7 +48,8 @@ scenario(
       return;
     }
 
-    const resultsPromise = fetch(`/search?query={query}`).then(response => response.json());
+    const encodedQuery = encodeURIComponent(query);
+    const resultsPromise = fetch(`/search?query={${encodedQuery}}`).then(response => response.json());
     setSearchResults(resultsPromise);
   }
 );

@@ -1,5 +1,6 @@
 ---
 sidebar_position: 100
+slug: /re-resolvable
 ---
 
 # Re-resolvable

@@ -7,7 +7,7 @@ slug: /
 
 Dependency-free state management library written in TypeScript.
 
-This library suggests unique [architectural approach](/architecture) which is based on the concept of [re-resolvable](/re-resolvable) objects.
+This library suggests unique [architectural approach](/architecture) which is based on the concept of promise-like [re-resolvable](/re-resolvable) objects.
 
 ```bash title="Installation"
 npm install awai

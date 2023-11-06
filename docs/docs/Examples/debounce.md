@@ -4,19 +4,17 @@
 # Debounce
 
 ```ts title="Debounced scenario"
-const TIMEOUT_SYMBOL = Symbol();
+const DEBOUNCE_TIMEOUT = 300;
 
 const counterState = state(0);
-const increment = action(() => counter.set(current => current + 1));
+const increment = action();
 
-scenarioOnEvery(increment.events.invoked, async () => {
+scenario(increment.events.invoked, async () => {
   const result = await Promise.race([
-    increment.events.invoked,
-    delay(DEBOUNCE_TIMEOUT).then(() => TIMEOUT_SYMBOL),
+    delay(DEBOUNCE_TIMEOUT),
+    increment.events.invoked.then(() => Promise.reject()),
   ]);
 
-  if (result === TIMEOUT_SYMBOL) {
-    // Some debounced functionality here
-  }
+  counterState.set(value => value + 1)
 });
 ```

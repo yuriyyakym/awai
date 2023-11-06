@@ -16,18 +16,18 @@ export default class AwaiEvent<T> {
     });
   };
 
-  getAbortablePromise(abortSignal: AbortSignal): PromiseLike<T> {
+  abortable(abortController: AbortController): PromiseLike<T> {
     return new Promise<T>((resolve, reject) => {
       this._awaiters.push(resolve);
 
       const abortionHandler = () => {
-        this._awaiters.filter((awaiter) => awaiter !== resolve);
+        this._awaiters = this._awaiters.filter((awaiter) => awaiter !== resolve);
         reject('Aborted');
 
-        abortSignal.removeEventListener('abort', abortionHandler);
+        abortController.signal.removeEventListener('abort', abortionHandler);
       };
 
-      abortSignal.addEventListener('abort', abortionHandler);
+      abortController.signal.addEventListener('abort', abortionHandler);
     });
   }
 

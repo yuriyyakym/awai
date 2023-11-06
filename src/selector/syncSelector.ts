@@ -42,9 +42,7 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   scenario(
     async () => {
       const abortController = new AbortController();
-      await Promise.race(
-        states.map((state) => state.events.changed.getAbortablePromise(abortController.signal)),
-      );
+      await Promise.race(states.map((state) => state.events.changed.abortable(abortController)));
       abortController.abort();
 
       events.changed.emit(get());

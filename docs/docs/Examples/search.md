@@ -3,7 +3,7 @@
 
 # Search
 
-In this example we will implement debounced search with sorting.
+Example of how to implement debounced search with sorting.
 
 First create state nodes and actions, then we create a scenario which executes a callback on every searchQuery state change. Inside of the callback we start a two promises race - if delay promise is resolved first, we are safe to perform a search request. Notice how we used `searchQuery.events.changed` as a promise, in case it resolves before the delay, we just reject, which stops current callback execution; meanwhile new scenario callback with updated query is executed in parallel and starts the same flow.
 

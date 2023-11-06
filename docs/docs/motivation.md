@@ -15,4 +15,4 @@ After implementing basic re-resolvable functionality and creating a few proof of
 
 As for now I've rewritten state management of two of my private project using Awai:
 - [Type2Learn](https://github.com/yuriyyakym/type2learn)
-- [Websktop](https://websktop.com) (opened an experimental PR).
+- [Websktop](https://websktop.com) (opened an experimental PR)

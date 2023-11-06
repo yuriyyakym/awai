@@ -16,12 +16,17 @@ type Id = string;
 
 type FamilyState<T> = ReadableState<Record<Id, T>> & {
   events: {
-    changed: AwaiEvent<Record<Id, T>>; // emits when any inner state emits `changed` event
+    changed: AwaiEvent<Record<Id, T>>; // emits when state is created or any inner state emits `changed` event
     stateCreated: AwaiEvent<Id>; // emits when new state is created with `getNode` method
   };
   getNode: (id: Id) => T;
   setNode: (id: Id, stateNode: T) => void;
 };
+
+interface Config {
+  id: string;
+  tags: string[];
+}
 
 function familyState<
   T,
@@ -30,7 +35,7 @@ function familyState<
   NodeType = ReturnType<Initializer> extends PromiseLike<infer Q>
     ? AsyncState<Q>
     : State<ReturnType<Initializer>>,
->(initializer: Initializer): FamilyState<NodeType>;
+>(initializer: Initializer, config?: Partial<Config>): FamilyState<NodeType>;
 ```
 
 ---
@@ -108,5 +113,5 @@ activePersonState.get(); // 'Andrew'
 
 :::note
 Notice how `_namesStates` is ignored in selector predicate. In this example this argument is added only for clarity, that this argument is passed by selector.
-It is a recommended to access node via `getNode` method, since it is safer in case if node does not exists yet.
+It is recommended to access node via `getNode` method, since it is safer in case if node does not exists yet.
 :::

@@ -44,8 +44,8 @@ scenario(
       return;
     }
 
-    const results = await fetch(`/search?query={query}`).then(response => response.json());
-    setSearchResults(results);
+    const resultsPromise = fetch(`/search?query={query}`).then(response => response.json());
+    setSearchResults(resultsPromise);
   }
 );
 

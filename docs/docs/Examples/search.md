@@ -33,8 +33,6 @@ const sortedSearchResults = selector(
   }
 );
 
-
-
 scenario(
   searchQuery.events.changed,
   async (query) => {

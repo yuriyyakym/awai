@@ -33,7 +33,7 @@ export default class AwaiEvent<T> {
 
   emit(value: T) {
     queue.enqueue(async () => {
-      const awaiters = [...this._awaiters];
+      const awaiters = this._awaiters;
       this._awaiters = [];
 
       for (const resolve of awaiters) {

@@ -7,14 +7,17 @@ sidebar_position: 4
 State that handles asynchronous values and emits events required for async management.
 
 ```ts 
+const asyncState = <T>(
+  initialValue?: InitialValue<T>,
+  config?: Partial<Config>
+): AsyncState<T> => { /* ... */ };
+
 type InitialValue<T> = T | Promise<T> | (() => Promise<T>);
 
-interface BaseConfig {
+interface Config {
   id: string;
   tags: string[];
 }
-
-const asyncState = <T>(initialValue?: InitialValue<T>, config?: Config): AsyncState<T> => { /* ... */ };
 ```
 
 Properties and methods:

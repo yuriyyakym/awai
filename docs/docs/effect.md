@@ -14,8 +14,14 @@ function effect<
   V extends { [K in keyof T]: InferReadableType<T[K]> },
 >(
   states: [...T],
-  effect: (...values: V) => CleanupCallback | void
+  effect: (...values: V) => CleanupCallback | void,
+  config?: Partial<Config>
 ): Effect<T, V>;
+
+interface Config {
+  id: string;
+  tags: string[];
+}
 ```
 
 ## Examples

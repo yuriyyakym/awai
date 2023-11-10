@@ -33,7 +33,7 @@ function action<Args extends any[], Return = void>(
 
   const events = {
     invoked: new AwaiEvent(),
-    failed: new AwaiEvent(),
+    failed: hasCallback ? new AwaiEvent() : undefined,
     completed: hasCallback ? new AwaiEvent() : undefined,
   } satisfies Action['events'];
 

@@ -1,5 +1,4 @@
 import { type AwaiEvent } from '../core';
-import { type noop } from '../lib';
 import type { BaseConfig } from '../types';
 
 export type Config = BaseConfig;
@@ -19,23 +18,19 @@ export type ActionCompletedEvent<Args, Return> = {
 
 export type BaseEvents<Args> = {
   invoked: AwaiEvent<ActionInvokedEvent<Args>>;
-  failed: AwaiEvent<unknown>;
 };
 
 export type EventsWithCallback<Args, Return> = BaseEvents<Args> & {
   completed: AwaiEvent<ActionCompletedEvent<Args, Return>>;
+  failed: AwaiEvent<unknown>;
 };
 
-type EmptyAction = typeof noop & {
+export type EmptyAction<Args extends any[]> = ((...args: Args) => void) & {
   config: Config;
-  events: BaseEvents<[]>;
+  events: BaseEvents<Args>;
 };
 
-type CallbackAction<Callback extends AnyCallback> = Callback & {
+export type CallbackAction<Args extends any[], Return = void> = ((...args: Args) => Return) & {
   config: Config;
-  events: EventsWithCallback<Parameters<Callback>, ReturnType<Callback>>;
+  events: EventsWithCallback<Args, Return>;
 };
-
-export type Action<Callback extends AnyCallback | void> = Callback extends AnyCallback
-  ? CallbackAction<Callback>
-  : EmptyAction;

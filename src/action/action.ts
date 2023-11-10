@@ -4,7 +4,7 @@ import { registry } from '../global';
 import { getUniqueId, isFunction, isPromiseLike } from '../lib';
 import type { BaseConfig } from '../types';
 
-import type { Action, AnyCallback, Config } from './types';
+import type { CallbackAction, Config, EmptyAction } from './types';
 
 const getConfig = (customConfig: Partial<Config> = {}): Config => ({
   ...customConfig,
@@ -12,22 +12,21 @@ const getConfig = (customConfig: Partial<Config> = {}): Config => ({
   tags: [SystemTag.ACTION, ...(customConfig.tags ?? [])],
 });
 
-function action(): Action<void>;
-function action<Callback extends AnyCallback>(config?: Partial<BaseConfig>): Action<Callback>;
-function action<Callback extends AnyCallback>(
-  callback: Callback,
+function action<Args extends any[] = []>(): EmptyAction<Args>;
+function action<Args extends any[] = []>(config?: Partial<BaseConfig>): EmptyAction<Args>;
+function action<Args extends any[], Return = void>(
+  callback: (...args: Args) => Return,
   config?: Partial<BaseConfig>,
-): Action<Callback>;
+): CallbackAction<Args, Return>;
 
-function action<Callback extends AnyCallback | void>(
-  ...args: [Partial<BaseConfig>?] | [Callback, Partial<BaseConfig>?]
-): Action<Callback> {
-  type Args = Parameters<Action<Callback>>;
-  type Return = ReturnType<Action<Callback>>;
+function action<Args extends any[], Return = void>(
+  ...args: [Partial<BaseConfig>?] | [(...args: Args) => Return, Partial<BaseConfig>?]
+): EmptyAction<Args> | CallbackAction<Args, Return> {
+  type Action = EmptyAction<Args> | CallbackAction<Args, Return>;
 
   const hasCallback = isFunction(args[0]);
   const [callback, customConfig] = hasCallback
-    ? (args as [Callback, Partial<BaseConfig>?])
+    ? (args as [(...args: Args) => Return, Partial<BaseConfig>?])
     : ([, ...args] as [undefined, Partial<BaseConfig>?]);
 
   const config = getConfig(customConfig);
@@ -36,9 +35,9 @@ function action<Callback extends AnyCallback | void>(
     invoked: new AwaiEvent(),
     failed: new AwaiEvent(),
     completed: hasCallback ? new AwaiEvent() : undefined,
-  } satisfies Action<Callback>['events'];
+  } satisfies Action['events'];
 
-  const invoke = (...invokeArgs: [...Args]) => {
+  const invoke = (...invokeArgs: Args) => {
     events.invoked.emit({ arguments: invokeArgs, config });
 
     try {
@@ -60,7 +59,7 @@ function action<Callback extends AnyCallback | void>(
     }
   };
 
-  const actionNode = Object.assign(invoke, { config, events }) as Action<Callback>;
+  const actionNode = Object.assign(invoke, { config, events }) as Action;
 
   registry.register(actionNode);
 

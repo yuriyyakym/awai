@@ -1,7 +1,9 @@
 <div align="center">
-  <h1>Awai</h1>
-  
-  <p>Dependency-free state management library</p>
+  <h1 align="center">Awai</h1>
+
+  <img width="64px" src="https://github.com/yuriyyakym/awai/blob/master/logo.svg" />
+
+  <p style="margin-right: -20px;">Dependency-free state management library</p>
 
   <div>
     <img src="https://github.com/yuriyyakym/awai/actions/workflows/tests.yml/badge.svg" />

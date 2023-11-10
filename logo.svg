@@ -1,0 +1,19 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920" width="1920" height="1920">
+	<title>Awai Logo</title>
+
+	<style>
+		.s0 { fill: none; stroke: #555; stroke-width: 150; } 
+		.s1 { fill: none; stroke: #469eb3; stroke-width: 50; }
+	</style>
+
+	<path class="s0" d="m292.2 56.7c0 57-77.6 385 651.3 886.6 749.5 515.8 690.8 878.6 690.6 919.1" />
+	<path class="s0" d="m1630.6 56.7c0.5 57 75.8 384-653.1 885.6-749.5 515.8-690.6 879.6-690.6 920.1" />
+
+	<path class="s1" d="m532 167c17.7 0 755.6 0 856.8 0" />
+	<path class="s1" d="m735.8 365c17.7 0 346.1 0 447.2 0" />
+	<path class="s1" d="m839 564c17.7 0 141.3 0 242.4 0" />
+
+	<path class="s1" d="m839 1356c17.7 0 141.3 0 242.4 0" />
+	<path class="s1" d="m735.8 1554c17.7 0 346.1 0 447.2 0" />
+	<path class="s1" d="m532 1753c17.7 0 755.6 0 856.8 0" />
+</svg>

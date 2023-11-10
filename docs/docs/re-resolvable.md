@@ -50,8 +50,3 @@ while (true) {
   /* handle event */
 }
 ```
-
-### Memory cleanup
-
-Whereas in traditional approach we have a `removeEventListener`, in async-await approach it's more complex to free memory up. Let's leave this topic for later.
-

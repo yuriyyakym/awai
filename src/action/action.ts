@@ -45,7 +45,7 @@ function action<Args extends any[], Return = void>(
         ? callback(...invokeArgs)
         : (undefined as Return);
 
-      if (isPromiseLike(valueOrPromise)) {
+      if (isPromiseLike<Return>(valueOrPromise)) {
         return valueOrPromise.then((value) => {
           events.completed?.emit({ arguments: invokeArgs, config, result: value });
           return value;

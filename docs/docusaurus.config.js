@@ -24,6 +24,14 @@ const config = {
         width: 32,
         height: 32,
       },
+      items: [
+        {
+          href: 'https://github.com/yuriyyakym/awai',
+          position: 'right',
+          className: 'header--github-link',
+          'aria-label': 'GitHub repository',
+        },
+      ],
     },
   },
   plugins: [require.resolve('docusaurus-lunr-search')],
@@ -35,6 +43,9 @@ const config = {
           routeBasePath: '/',
         },
         blog: false,
+        theme: {
+          customCss: ['./styles/custom.css'],
+        },
       },
     ],
   ],

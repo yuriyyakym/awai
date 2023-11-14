@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 
-import { action, delay, flush, rejectAfter, scenario } from '../../src';
+import { action, delay, rejectAfter, scenario } from '../../src';
 
 const DOUBLE_CLICK_TIMEOUT = 20;
 
@@ -16,25 +16,20 @@ test('[Scenario] Double click', async () => {
   await click();
   await delay(DOUBLE_CLICK_TIMEOUT - 10);
   await click();
-
-  await delay(DOUBLE_CLICK_TIMEOUT + 10);
-
-  await click();
+  expect(onDoubleClick).toBeCalledTimes(1);
   await delay(DOUBLE_CLICK_TIMEOUT + 10);
   await click();
-
   await delay(DOUBLE_CLICK_TIMEOUT + 10);
-
+  await click();
+  expect(onDoubleClick).toBeCalledTimes(1);
+  await delay(DOUBLE_CLICK_TIMEOUT + 10);
   await click();
   await delay(DOUBLE_CLICK_TIMEOUT - 10);
   await click();
-
+  expect(onDoubleClick).toBeCalledTimes(2);
   await delay(DOUBLE_CLICK_TIMEOUT + 10);
-
   await click();
+  expect(onDoubleClick).toBeCalledTimes(2);
   await click();
-
-  await flush();
-
   expect(onDoubleClick).toBeCalledTimes(3);
 });

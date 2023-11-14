@@ -19,20 +19,26 @@ test('[Flow]: Debounce', async () => {
   await click();
   await delay(DEBOUNCE_TIMEOUT + 10);
   await click();
+  expect(debouncedFunction.mock.calls.length).toEqual(1);
   await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
+  expect(debouncedFunction.mock.calls.length).toEqual(1);
   await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
+  expect(debouncedFunction.mock.calls.length).toEqual(1);
   await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
+  expect(debouncedFunction.mock.calls.length).toEqual(1);
   await delay(DEBOUNCE_TIMEOUT - 10);
   await click();
+  expect(debouncedFunction.mock.calls.length).toEqual(1);
   await click();
   await click();
+  expect(debouncedFunction.mock.calls.length).toEqual(1);
   await delay(DEBOUNCE_TIMEOUT + 10);
   await click();
+  expect(debouncedFunction.mock.calls.length).toEqual(2);
   await delay(DEBOUNCE_TIMEOUT + 10);
   await click();
-
   expect(debouncedFunction.mock.calls.length).toEqual(3);
 });

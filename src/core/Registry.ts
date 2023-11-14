@@ -1,5 +1,5 @@
 import { isCoreNode } from '../lib';
-import type { BaseNode } from '../types';
+import type BaseNode from '../types/BaseNode';
 
 import AwaiEvent from './AwaiEvent';
 

@@ -1,4 +1,4 @@
-import type { AwaiEvent } from '../core';
+import type AwaiEvent from '../core/AwaiEvent';
 
 import type BaseConfig from './BaseConfig';
 

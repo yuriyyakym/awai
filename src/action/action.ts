@@ -1,7 +1,7 @@
 import { SystemTag } from '../constants';
-import { AwaiEvent } from '../core';
+import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isPromiseLike } from '../lib';
+import { getUniqueId, isFunction } from '../lib';
 import type { BaseConfig } from '../types';
 
 import type { CallbackAction, Config, EmptyAction } from './types';
@@ -33,11 +33,11 @@ function action<Args extends any[], Return = void>(
 
   const events = {
     invoked: new AwaiEvent(),
-    failed: hasCallback ? new AwaiEvent() : undefined,
-    completed: hasCallback ? new AwaiEvent() : undefined,
+    rejected: hasCallback ? new AwaiEvent() : undefined,
+    resolved: hasCallback ? new AwaiEvent() : undefined,
   } satisfies Action['events'];
 
-  const invoke = (...invokeArgs: Args) => {
+  const invoke = async (...invokeArgs: Args) => {
     events.invoked.emit({ arguments: invokeArgs, config });
 
     try {
@@ -45,16 +45,12 @@ function action<Args extends any[], Return = void>(
         ? callback(...invokeArgs)
         : (undefined as Return);
 
-      if (isPromiseLike<Return>(valueOrPromise)) {
-        return valueOrPromise.then((value) => {
-          events.completed?.emit({ arguments: invokeArgs, config, result: value });
-          return value;
-        });
-      }
-
-      return valueOrPromise;
+      const value = await valueOrPromise;
+      await flush();
+      events.resolved?.emit({ arguments: invokeArgs, config, result: value });
+      return value;
     } catch (error) {
-      events.failed?.emit(error);
+      events.rejected?.emit(error);
       throw error;
     }
   };

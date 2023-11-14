@@ -10,7 +10,7 @@ export type ActionInvokedEvent<Args> = {
   config: Config;
 };
 
-export type ActionCompletedEvent<Args, Return> = {
+export type ActionResolvedEvent<Args, Return> = {
   arguments: Args;
   config: Config;
   result: Return;
@@ -21,16 +21,18 @@ export type BaseEvents<Args> = {
 };
 
 export type EventsWithCallback<Args, Return> = BaseEvents<Args> & {
-  completed: AwaiEvent<ActionCompletedEvent<Args, Return>>;
-  failed: AwaiEvent<unknown>;
+  resolved: AwaiEvent<ActionResolvedEvent<Args, Return>>;
+  rejected: AwaiEvent<unknown>;
 };
 
-export type EmptyAction<Args extends any[]> = ((...args: Args) => void) & {
+export type EmptyAction<Args extends any[]> = ((...args: Args) => Promise<void>) & {
   config: Config;
   events: BaseEvents<Args>;
 };
 
-export type CallbackAction<Args extends any[], Return = void> = ((...args: Args) => Return) & {
+export type CallbackAction<Args extends any[], Return = void> = ((
+  ...args: Args
+) => Promise<Return>) & {
   config: Config;
   events: EventsWithCallback<Args, Return>;
 };

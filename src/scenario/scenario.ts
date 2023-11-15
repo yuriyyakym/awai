@@ -67,18 +67,22 @@ function scenario<T, R>(
     getEventPromise().then((event) => {
       events.started.emit({ config, event });
 
-      Promise.resolve(callback(event))
-        .then((result) => {
-          events.completed.emit({ config, event, result });
-        })
-        .catch((error) => {
-          events.failed.emit(error);
-        })
-        .finally(() => {
-          if (config.strategy === 'cyclic') {
-            queueMicrotask(run);
-          }
-        });
+      try {
+        Promise.resolve(callback(event))
+          .then((result) => {
+            events.completed.emit({ config, event, result });
+          })
+          .catch((error) => {
+            events.failed.emit(error);
+          })
+          .finally(() => {
+            if (config.strategy === 'cyclic') {
+              queueMicrotask(run);
+            }
+          });
+      } catch (error) {
+        events.failed.emit(error);
+      }
 
       if (config.strategy === 'fork') {
         queueMicrotask(run);

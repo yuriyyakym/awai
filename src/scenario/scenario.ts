@@ -5,9 +5,28 @@ import { getUniqueId, isFunction } from '../lib';
 
 import type { Callback, Config, Scenario, Trigger } from './types';
 
-const getConfig = (hasDependencies: boolean, customConfig: Partial<Config> = {}): Config => ({
+const getDefaultStrategy = (
+  isPlainPromiseTrigger: boolean,
+  hasDependencies: boolean,
+): Config['strategy'] => {
+  if (isPlainPromiseTrigger) {
+    return 'once';
+  }
+
+  if (hasDependencies) {
+    return 'fork';
+  }
+
+  return 'cyclic';
+};
+
+const getConfig = (
+  isPlainPromiseTrigger: boolean,
+  hasDependencies: boolean,
+  customConfig: Partial<Config> = {},
+): Config => ({
   id: customConfig.id ?? getUniqueId(scenario.name),
-  strategy: customConfig.strategy ?? (hasDependencies ? 'fork' : 'cyclic'),
+  strategy: customConfig.strategy ?? getDefaultStrategy(isPlainPromiseTrigger, hasDependencies),
   tags: [SystemTag.SCENARIO, ...(customConfig.tags ?? [])],
 });
 
@@ -23,11 +42,12 @@ function scenario<T, R>(
   ...args: [Trigger<T>, Callback<T, R>, Partial<Config>?] | [Callback, Partial<Config>?]
 ) {
   const hasDependencies = arguments.length === 3 || isFunction(args[1]);
+  const isPlainPromiseTrigger = hasDependencies && arguments[0].constructor === Promise;
   const [trigger, callback, customConfig] = hasDependencies
     ? (args as [Trigger<T>, Callback<T, R>, Partial<Config>])
     : ([, ...args] as [undefined, Callback<T, R>, Partial<Config>]);
 
-  const config = getConfig(hasDependencies, customConfig);
+  const config = getConfig(isPlainPromiseTrigger, hasDependencies, customConfig);
 
   const events: Scenario<T, R>['events'] = {
     completed: new AwaiEvent(),

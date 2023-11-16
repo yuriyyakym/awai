@@ -31,7 +31,7 @@ function scenario<T, R>(trigger: Trigger<T>, callback: Callback<T, R>, config?: 
 - **once** - run scenario only one time
 
 :::info Default strategy
-By default instant scenarios use `cyclic` strategy, whereas scenarios with trigger use `fork` strategy.
+By default instant scenarios use `cyclic` strategy, whereas scenarios with trigger use `fork` strategy. Exceptionally, if a trigger is a plain promise, default strategy is `once`, but this is a very unlikely case.
 :::
 
 ## Examples

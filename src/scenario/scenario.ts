@@ -1,7 +1,7 @@
 import { SystemTag } from '../constants';
 import { AwaiEvent } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction } from '../lib';
+import { getUniqueId, isFunction, isObject } from '../lib';
 
 import type { Callback, Config, Scenario, Trigger } from './types';
 
@@ -41,8 +41,9 @@ function scenario<T, R>(
 function scenario<T, R>(
   ...args: [Trigger<T>, Callback<T, R>, Partial<Config>?] | [Callback, Partial<Config>?]
 ) {
-  const hasDependencies = arguments.length === 3 || isFunction(args[1]);
-  const isPlainPromiseTrigger = hasDependencies && arguments[0].constructor === Promise;
+  const hasDependencies = args.length === 3 || isFunction(args[1]);
+  const isPlainPromiseTrigger =
+    hasDependencies && isObject(args[0]) && args[0].constructor === Promise;
   const [trigger, callback, customConfig] = hasDependencies
     ? (args as [Trigger<T>, Callback<T, R>, Partial<Config>])
     : ([, ...args] as [undefined, Callback<T, R>, Partial<Config>]);

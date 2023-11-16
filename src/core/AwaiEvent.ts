@@ -4,7 +4,7 @@ import { isFunction } from '../lib';
 type Resolver<T> = (value: T) => any;
 type FilterPredicate<T> = (value: T) => boolean;
 
-export default class AwaiEvent<T> {
+export default class AwaiEvent<T = void> {
   private _awaiters: Resolver<T>[] = [];
 
   then: PromiseLike<T>['then'] = (onfulfilled) => {

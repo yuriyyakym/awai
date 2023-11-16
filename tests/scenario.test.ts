@@ -36,6 +36,26 @@ test('handles trigger factory', async () => {
   expect(onTick.mock.calls.length).toEqual(3);
 });
 
+test('continues handling scenario with after trigger rejected', async () => {
+  const tick = vi.fn();
+  const resolve = action();
+  const reject = action();
+
+  scenario(() => {
+    return Promise.race([
+      resolve.events.invoked,
+      reject.events.invoked.then(() => Promise.reject()),
+    ]);
+  }, tick);
+
+  await resolve();
+  expect(tick.mock.calls.length).toEqual(1);
+  await reject();
+  expect(tick.mock.calls.length).toEqual(1);
+  await resolve();
+  expect(tick.mock.calls.length).toEqual(2);
+});
+
 test('handles strategies properly', async () => {
   const click = action();
 

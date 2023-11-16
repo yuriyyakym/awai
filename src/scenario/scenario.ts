@@ -64,30 +64,37 @@ function scenario<T, R>(
   };
 
   const run = async () => {
-    getEventPromise().then((event) => {
-      events.started.emit({ config, event });
+    getEventPromise().then(
+      (event) => {
+        events.started.emit({ config, event });
 
-      try {
-        Promise.resolve(callback(event))
-          .then((result) => {
-            events.completed.emit({ config, event, result });
-          })
-          .catch((error) => {
-            events.failed.emit(error);
-          })
-          .finally(() => {
-            if (config.strategy === 'cyclic') {
-              queueMicrotask(run);
-            }
-          });
-      } catch (error) {
-        events.failed.emit(error);
-      }
+        try {
+          Promise.resolve(callback(event))
+            .then((result) => {
+              events.completed.emit({ config, event, result });
+            })
+            .catch((error) => {
+              events.failed.emit(error);
+            })
+            .finally(() => {
+              if (config.strategy === 'cyclic') {
+                queueMicrotask(run);
+              }
+            });
+        } catch (error) {
+          events.failed.emit(error);
+        }
 
-      if (config.strategy === 'fork') {
-        queueMicrotask(run);
-      }
-    });
+        if (config.strategy === 'fork') {
+          queueMicrotask(run);
+        }
+      },
+      () => {
+        if (config.strategy !== 'once') {
+          run();
+        }
+      },
+    );
   };
 
   const scenarioNode: Scenario<T, R> = { config, events };

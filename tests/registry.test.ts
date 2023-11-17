@@ -49,3 +49,21 @@ test('does not register nodes with SystemTag.CORE_NODE tag in registry', async (
 
   expect(registry.nodes).toStrictEqual(previousRegistryNodes);
 });
+
+test('supports node deregistration', async () => {
+  const state1 = state(0);
+  await flush();
+  expect(registry.nodes).include(state1);
+  registry.deregister(state1.config.id);
+  expect(registry.nodes).not.includes(state1);
+});
+
+test('emits `deregistered` event', async () => {
+  const state1 = state(0);
+
+  setTimeout(() => registry.deregister(state1.config.id), 10);
+
+  const id = await registry.events.deregistered;
+  expect(registry.nodes).not.includes(state1);
+  expect(id).toBe(state1.config.id);
+});

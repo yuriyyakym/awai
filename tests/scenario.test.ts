@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 
-import { SystemTag, action, delay, flush, rejectAfter, scenario } from '../src';
+import { SystemTag, action, delay, flush, registry, rejectAfter, scenario } from '../src';
 
 test('runs scenario on event', async () => {
   const click = action();
@@ -194,4 +194,33 @@ test('uses `cyclic` strategy if plain promise provided', async () => {
   expect(tick.mock.calls.length).toBe(0);
   await delay(10);
   expect(tick.mock.calls.length).toBe(1);
+});
+
+test('deregisters from registry when stopped', async () => {
+  const onStop = vi.fn();
+
+  const testScenario = scenario(delay(5), () => undefined);
+
+  setTimeout(testScenario.stop, 5);
+
+  const id = await registry.events.deregistered;
+
+  expect(id).toEqual(testScenario.config.id);
+});
+
+test('is stoppable', async () => {
+  const tick = vi.fn();
+  const onStop = vi.fn();
+
+  const testScenario = scenario(() => delay(20), tick);
+
+  testScenario.events.stopped.then(onStop);
+
+  await delay(50);
+  expect(tick.mock.calls.length).toBe(2);
+  expect(onStop.mock.calls.length).toEqual(0);
+  testScenario.stop();
+  await delay(30);
+  expect(tick.mock.calls.length).toBe(2);
+  expect(onStop.mock.calls.length).toEqual(1);
 });

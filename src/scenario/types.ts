@@ -21,10 +21,12 @@ export interface StartedEvent<T> {
 }
 
 export interface Scenario<T, R> {
+  stop(): void;
   events: {
     completed: AwaiEvent<CompletedEvent<T, R>>;
     failed: AwaiEvent<unknown>;
     started: AwaiEvent<StartedEvent<T>>;
+    stopped: AwaiEvent<void>;
   };
   get config(): Config;
 }

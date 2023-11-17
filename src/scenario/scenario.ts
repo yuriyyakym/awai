@@ -54,7 +54,10 @@ function scenario<T, R>(
     completed: new AwaiEvent(),
     failed: new AwaiEvent(),
     started: new AwaiEvent(),
+    stopped: new AwaiEvent(),
   };
+
+  let stopped = false;
 
   const getEventPromise = () => {
     if (!trigger) {
@@ -67,6 +70,10 @@ function scenario<T, R>(
   const run = async () => {
     getEventPromise().then(
       (event) => {
+        if (stopped) {
+          return;
+        }
+
         events.started.emit({ config, event });
 
         try {
@@ -91,6 +98,10 @@ function scenario<T, R>(
         }
       },
       () => {
+        if (stopped) {
+          return;
+        }
+
         if (config.strategy !== 'once') {
           run();
         }
@@ -98,7 +109,13 @@ function scenario<T, R>(
     );
   };
 
-  const scenarioNode: Scenario<T, R> = { config, events };
+  const stop = () => {
+    stopped = true;
+    events.stopped.emit();
+    registry.deregister(config.id);
+  };
+
+  const scenarioNode: Scenario<T, R> = { config, events, stop };
 
   registry.register(scenarioNode);
 

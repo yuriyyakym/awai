@@ -1,7 +1,7 @@
 import { SystemTag } from '../constants';
-import { AwaiEvent } from '../core';
+import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isObject } from '../lib';
+import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
 
 import type { Callback, Config, Scenario, Trigger } from './types';
 
@@ -25,6 +25,7 @@ const getConfig = (
   hasDependencies: boolean,
   customConfig: Partial<Config> = {},
 ): Config => ({
+  ...customConfig,
   id: customConfig.id ?? getUniqueId(scenario.name),
   strategy: customConfig.strategy ?? getDefaultStrategy(isPlainPromiseTrigger, hasDependencies),
   tags: [SystemTag.SCENARIO, ...(customConfig.tags ?? [])],
@@ -49,15 +50,32 @@ function scenario<T, R>(
     : ([, ...args] as [undefined, Callback<T, R>, Partial<Config>]);
 
   const config = getConfig(isPlainPromiseTrigger, hasDependencies, customConfig);
+  const { repeatUntil, strategy } = config;
+  let { repeat = Infinity } = config;
+  let runningCallbacksCount = 0;
+  let shouldExpire = false;
+  let expired = false;
 
   const events: Scenario<T, R>['events'] = {
     completed: new AwaiEvent(),
+    expired: new AwaiEvent(),
     failed: new AwaiEvent(),
     started: new AwaiEvent(),
-    stopped: new AwaiEvent(),
   };
 
-  let stopped = false;
+  const checkShouldExpire = () =>
+    repeat <= 0 ||
+    strategy === 'once' ||
+    shouldExpire ||
+    (isFunction(repeatUntil) && repeatUntil());
+
+  const expire = async () => {
+    expired = true;
+    await flush();
+    await events.expired.emit({ config });
+    await flush();
+    await registry.deregister(config.id);
+  };
 
   const getEventPromise = () => {
     if (!trigger) {
@@ -67,55 +85,66 @@ function scenario<T, R>(
     return isFunction(trigger) ? trigger() : trigger;
   };
 
+  if (isPromiseLike(repeatUntil)) {
+    Promise.resolve(repeatUntil).then(() => {
+      shouldExpire = true;
+
+      if (runningCallbacksCount === 0) {
+        expire();
+      }
+    });
+  }
+
   const run = async () => {
     getEventPromise().then(
       (event) => {
-        if (stopped) {
+        repeat--;
+
+        if (expired) {
           return;
         }
 
+        runningCallbacksCount++;
         events.started.emit({ config, event });
 
         try {
           Promise.resolve(callback(event))
             .then((result) => {
-              events.completed.emit({ config, event, result });
+              flush().then(() => {
+                events.completed.emit({ config, event, result });
+              });
             })
             .catch((error) => {
               events.failed.emit(error);
             })
             .finally(() => {
-              if (config.strategy === 'cyclic') {
+              runningCallbacksCount--;
+
+              if (checkShouldExpire() && runningCallbacksCount === 0) {
+                expire();
+                return;
+              }
+
+              if (strategy === 'cyclic') {
                 queueMicrotask(run);
               }
             });
         } catch (error) {
+          runningCallbacksCount--;
           events.failed.emit(error);
         }
 
-        if (config.strategy === 'fork') {
+        if (strategy === 'fork') {
           queueMicrotask(run);
         }
       },
       () => {
-        if (stopped) {
-          return;
-        }
-
-        if (config.strategy !== 'once') {
-          run();
-        }
+        queueMicrotask(run);
       },
     );
   };
 
-  const stop = () => {
-    stopped = true;
-    events.stopped.emit();
-    registry.deregister(config.id);
-  };
-
-  const scenarioNode: Scenario<T, R> = { config, events, stop };
+  const scenarioNode: Scenario<T, R> = { config, events };
 
   registry.register(scenarioNode);
 

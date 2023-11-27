@@ -3,22 +3,8 @@ import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
 
+import { getDefaultStrategy } from './lib';
 import type { Callback, Config, Scenario, Trigger } from './types';
-
-const getDefaultStrategy = (
-  isPlainPromiseTrigger: boolean,
-  hasDependencies: boolean,
-): Config['strategy'] => {
-  if (isPlainPromiseTrigger) {
-    return 'once';
-  }
-
-  if (hasDependencies) {
-    return 'fork';
-  }
-
-  return 'cyclic';
-};
 
 const getConfig = (
   isPlainPromiseTrigger: boolean,

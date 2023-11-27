@@ -3,7 +3,7 @@ import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
 
-import { getDefaultStrategy } from './lib';
+import { getDefaultStrategy, getTriggerPromise } from './lib';
 import type { Callback, Config, Scenario, Trigger } from './types';
 
 const getConfig = (
@@ -63,14 +63,6 @@ function scenario<T, R>(
     await registry.deregister(config.id);
   };
 
-  const getEventPromise = () => {
-    if (!trigger) {
-      return Promise.resolve(undefined as T);
-    }
-
-    return isFunction(trigger) ? trigger() : trigger;
-  };
-
   if (isPromiseLike(repeatUntil)) {
     Promise.resolve(repeatUntil).then(() => {
       shouldExpire = true;
@@ -82,7 +74,7 @@ function scenario<T, R>(
   }
 
   const run = async () => {
-    getEventPromise().then(
+    getTriggerPromise(trigger).then(
       (event) => {
         repeat--;
 

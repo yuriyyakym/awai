@@ -205,36 +205,32 @@ test('deregisters from registry when expired', async () => {
   expect(id).toEqual(testScenario.config.id);
 });
 
-test('`repeatUntil` handles promise', async () => {
+test('handles expiration by promise', async () => {
   const tick = vi.fn();
-  const testScenario = scenario(() => delay(20), tick, { repeatUntil: delay(50) });
+  const testScenario = scenario(() => delay(20), delay(50), tick);
   await testScenario.events.expired;
   expect(tick.mock.calls.length).toBe(2);
 });
 
-test('`repeatUntil` handles AwaiEvent', async () => {
+test('handles expiration by AwaiEvent', async () => {
   const stop = action();
   const tick = vi.fn();
-  const testScenario = scenario(() => delay(20), tick, { repeatUntil: stop.events.invoked });
+  const testScenario = scenario(() => delay(20), stop.events.invoked, tick);
   setTimeout(stop, 50);
   await testScenario.events.expired;
   expect(tick.mock.calls.length).toBe(2);
 });
 
-test('`repeatUntil` handles predicate', async () => {
-  let counter = 0;
-  const tick1 = vi.fn();
-  const counterScenario = scenario(tick1, { repeatUntil: () => ++counter === 3 });
-  await counterScenario.events.expired;
-  expect(tick1.mock.calls.length).toBe(3);
-
+test('handles expiration by predicate', async () => {
   const timestamp = Date.now();
-  const tick2 = vi.fn();
-  const dateScenario = scenario(() => delay(20), tick2, {
-    repeatUntil: () => Date.now() >= timestamp + 50,
-  });
+  const tick = vi.fn();
+  const dateScenario = scenario(
+    () => delay(20),
+    () => Date.now() >= timestamp + 50,
+    tick,
+  );
   await dateScenario.events.expired;
-  expect(tick2.mock.calls.length).toBe(3);
+  expect(tick.mock.calls.length).toBe(3);
 });
 
 test('repeats scenario specified amount of times', async () => {
@@ -248,7 +244,7 @@ test('repeats scenario specified amount of times', async () => {
 
 test('emits `expired` event after last scenario callback evaluated (once)', async () => {
   const tick = vi.fn();
-  const testScenario = scenario(delay(20), tick, { repeatUntil: delay(50) });
+  const testScenario = scenario(delay(20), delay(50), tick);
   await testScenario.events.completed;
   await testScenario.events.expired;
   expect(tick.mock.calls.length).toBe(1);
@@ -258,11 +254,11 @@ test('emits `expired` event after last scenario callback evaluated (failure)', a
   const tick = vi.fn();
   const testScenario = scenario(
     () => delay(20),
+    delay(50),
     () => {
       tick();
       throw new Error('test');
     },
-    { repeatUntil: delay(50) },
   );
   await testScenario.events.failed;
   expect(tick.mock.calls.length).toBe(1);
@@ -321,9 +317,18 @@ test('emits `expired` event after last scenario callback evaluated (cyclic)', as
   expect(tick.mock.calls.length).toBe(3);
 });
 
+test('expires `expired` event with even value', async () => {
+  const expire = action<[value: string]>();
+  const tick = vi.fn();
+  const testScenario = scenario(() => delay(10), expire.events.invoked, tick);
+  setTimeout(expire, 0, 'Awai');
+  const { event } = await testScenario.events.expired;
+  expect(event?.arguments[0]).toEqual('Awai');
+});
+
 test('handles both `repeat` and `repeatUntil` if both specified', async () => {
   const tick1 = vi.fn();
-  const testScenario1 = scenario(() => delay(10), tick1, { repeat: 2, repeatUntil: delay(50) });
+  const testScenario1 = scenario(() => delay(10), delay(50), tick1, { repeat: 2 });
   await testScenario1.events.completed;
   expect(tick1.mock.calls.length).toBe(1);
   await testScenario1.events.completed;
@@ -331,7 +336,7 @@ test('handles both `repeat` and `repeatUntil` if both specified', async () => {
   expect(tick1.mock.calls.length).toBe(2);
 
   const tick2 = vi.fn();
-  const testScenario2 = scenario(() => delay(20), tick2, { repeat: 10, repeatUntil: delay(50) });
+  const testScenario2 = scenario(() => delay(20), delay(50), tick2, { repeat: 10 });
   await testScenario2.events.completed;
   expect(tick2.mock.calls.length).toBe(1);
   await testScenario2.events.expired;

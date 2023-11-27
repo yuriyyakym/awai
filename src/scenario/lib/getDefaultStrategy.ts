@@ -2,13 +2,13 @@ import type { Config } from '../types';
 
 const getDefaultStrategy = (
   isPlainPromiseTrigger: boolean,
-  hasDependencies: boolean,
+  hasTrigger: boolean,
 ): Config['strategy'] => {
   if (isPlainPromiseTrigger) {
     return 'once';
   }
 
-  if (hasDependencies) {
+  if (hasTrigger) {
     return 'fork';
   }
 

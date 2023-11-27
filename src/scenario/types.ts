@@ -3,13 +3,13 @@ import type { BaseConfig } from '../types';
 
 export type Trigger<T> = AwaiEvent<T> | PromiseLike<T> | (() => PromiseLike<T>);
 
-export type Callback<T = never, R = any> = (value: T) => R;
+type ShouldExpirePredicate = () => boolean;
+export type ExpirationTrigger<T> = AwaiEvent<T> | PromiseLike<T> | ShouldExpirePredicate;
 
-type RepeatUntilPredicate = () => boolean;
+export type Callback<T = never, R = any> = (value: T) => R;
 
 export interface Config extends BaseConfig {
   repeat?: number;
-  repeatUntil?: AwaiEvent | PromiseLike<unknown> | RepeatUntilPredicate;
   strategy: 'fork' | 'cyclic' | 'once';
 }
 
@@ -19,7 +19,8 @@ export interface CompletedEvent<T, R> {
   config: Config;
 }
 
-export interface ExpiredEvent {
+export interface ExpiredEvent<T> {
+  event?: T;
   config: Config;
 }
 
@@ -28,10 +29,10 @@ export interface StartedEvent<T> {
   config: Config;
 }
 
-export interface Scenario<T, R> {
+export interface Scenario<T, R, E> {
   events: {
     completed: AwaiEvent<CompletedEvent<T, R>>;
-    expired: AwaiEvent<ExpiredEvent>;
+    expired: AwaiEvent<ExpiredEvent<E>>;
     failed: AwaiEvent<unknown>;
     started: AwaiEvent<StartedEvent<T>>;
   };

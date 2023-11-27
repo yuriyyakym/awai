@@ -4,45 +4,60 @@ import { registry } from '../global';
 import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
 
 import { getDefaultStrategy, getTriggerPromise } from './lib';
-import type { Callback, Config, Scenario, Trigger } from './types';
+import type { Callback, Config, ExpirationTrigger, Scenario, Trigger } from './types';
 
 const getConfig = (
   isPlainPromiseTrigger: boolean,
-  hasDependencies: boolean,
+  hasTrigger: boolean,
   customConfig: Partial<Config> = {},
 ): Config => ({
   ...customConfig,
   id: customConfig.id ?? getUniqueId(scenario.name),
-  strategy: customConfig.strategy ?? getDefaultStrategy(isPlainPromiseTrigger, hasDependencies),
+  strategy: customConfig.strategy ?? getDefaultStrategy(isPlainPromiseTrigger, hasTrigger),
   tags: [SystemTag.SCENARIO, ...(customConfig.tags ?? [])],
 });
 
-function scenario<T, R>(callback: Callback, config?: Partial<Config>): Scenario<T, R>;
-
-function scenario<T, R>(
+function scenario<T, R, E>(
   trigger: Trigger<T>,
   callback: Callback<T, R>,
   customConfig?: Partial<Config>,
-): Scenario<T, R>;
+): Scenario<T, R, E>;
 
-function scenario<T, R>(
-  ...args: [Trigger<T>, Callback<T, R>, Partial<Config>?] | [Callback, Partial<Config>?]
+function scenario<T, R, E>(
+  trigger: Trigger<T>,
+  expirationTrigger: ExpirationTrigger<E>,
+  callback: Callback<T, R>,
+  customConfig?: Partial<Config>,
+): Scenario<T, R, E>;
+
+function scenario<T, R, E = unknown>(
+  callback: Callback,
+  config?: Partial<Config>,
+): Scenario<T, R, E>;
+
+function scenario<T, R, E>(
+  ...args:
+    | [Trigger<T>, Callback<T, R>, Partial<Config>?]
+    | [Trigger<T>, ExpirationTrigger<E>, Callback<T, R>, Partial<Config>?]
+    | [Callback, Partial<Config>?]
 ) {
-  const hasDependencies = args.length === 3 || isFunction(args[1]);
-  const isPlainPromiseTrigger =
-    hasDependencies && isObject(args[0]) && args[0].constructor === Promise;
-  const [trigger, callback, customConfig] = hasDependencies
-    ? (args as [Trigger<T>, Callback<T, R>, Partial<Config>])
-    : ([, ...args] as [undefined, Callback<T, R>, Partial<Config>]);
+  const hasTrigger = isFunction(args[1]) || isFunction(args[2]);
+  const hasExpirationTrigger = isFunction(args[2]);
 
-  const config = getConfig(isPlainPromiseTrigger, hasDependencies, customConfig);
-  const { repeatUntil, strategy } = config;
+  const trigger = hasTrigger ? (args[0] as Trigger<T>) : undefined;
+  const expirationTrigger = hasExpirationTrigger ? (args[1] as ExpirationTrigger<E>) : undefined;
+  const callback = args.findLast(isFunction) as Callback<T, R>;
+  const customConfig = args.at(args.indexOf(callback) + 1) as Partial<Config> | undefined;
+  const isPlainPromiseTrigger = hasTrigger && isObject(args[0]) && args[0].constructor === Promise;
+
+  const config = getConfig(isPlainPromiseTrigger, hasTrigger, customConfig);
+  const { strategy } = config;
   let { repeat = Infinity } = config;
   let runningCallbacksCount = 0;
   let shouldExpire = false;
   let expired = false;
 
-  const events: Scenario<T, R>['events'] = {
+  const events: Scenario<T, R, E>['events'] = {
     completed: new AwaiEvent(),
     expired: new AwaiEvent(),
     failed: new AwaiEvent(),
@@ -53,22 +68,22 @@ function scenario<T, R>(
     repeat <= 0 ||
     strategy === 'once' ||
     shouldExpire ||
-    (isFunction(repeatUntil) && repeatUntil());
+    (isFunction(expirationTrigger) && expirationTrigger());
 
-  const expire = async () => {
+  const expire = async (event?: E) => {
     expired = true;
     await flush();
-    await events.expired.emit({ config });
+    await events.expired.emit({ event, config });
     await flush();
     await registry.deregister(config.id);
   };
 
-  if (isPromiseLike(repeatUntil)) {
-    Promise.resolve(repeatUntil).then(() => {
+  if (isPromiseLike(expirationTrigger)) {
+    Promise.resolve(expirationTrigger).then((event) => {
       shouldExpire = true;
 
       if (runningCallbacksCount === 0) {
-        expire();
+        expire(event);
       }
     });
   }
@@ -122,7 +137,7 @@ function scenario<T, R>(
     );
   };
 
-  const scenarioNode: Scenario<T, R> = { config, events };
+  const scenarioNode: Scenario<T, R, E> = { config, events };
 
   registry.register(scenarioNode);
 

@@ -342,3 +342,27 @@ test('handles both `repeat` and `repeatUntil` if both specified', async () => {
   await testScenario2.events.expired;
   expect(tick2.mock.calls.length).toBe(2);
 });
+
+test('is thennable and resolves along with `expired` event', async () => {
+  const expire = action<[value: string]>();
+  const tick = vi.fn();
+  const testScenario = scenario(() => delay(10), expire.events.invoked, tick);
+  setTimeout(expire, 0, 'Awai');
+  const { event } = await testScenario;
+  expect(event?.arguments[0]).toEqual('Awai');
+});
+
+test('warns when infinite scenario is awaited', async () => {
+  const originalWarn = console.warn;
+  const warnMock = vi.fn();
+  console.warn = warnMock;
+  const tick = vi.fn();
+
+  const testScenario = scenario(() => delay(10), tick);
+  setTimeout(async () => {
+    await testScenario;
+  }, 0);
+  await delay(10);
+  expect(warnMock.mock.calls.length).toEqual(1);
+  console.warn = originalWarn;
+});

@@ -37,4 +37,5 @@ export interface Scenario<T, R, E> {
     started: AwaiEvent<StartedEvent<T>>;
   };
   get config(): Config;
+  then: AwaiEvent<ExpiredEvent<E>>['then'];
 }

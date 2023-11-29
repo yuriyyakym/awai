@@ -4,7 +4,7 @@ import { registry } from '../global';
 import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
 
 import { getDefaultStrategy, getTriggerPromise } from './lib';
-import type { Callback, Config, ExpirationTrigger, Scenario, Trigger } from './types';
+import type { Callback, Config, ExpirationTrigger, ExpiredEvent, Scenario, Trigger } from './types';
 
 const getConfig = (
   isPlainPromiseTrigger: boolean,
@@ -49,6 +49,8 @@ function scenario<T, R, E>(
   const callback = args.findLast(isFunction) as Callback<T, R>;
   const customConfig = args.at(args.indexOf(callback) + 1) as Partial<Config> | undefined;
   const isPlainPromiseTrigger = hasTrigger && isObject(args[0]) && args[0].constructor === Promise;
+  const isFiniteScenario =
+    isPlainPromiseTrigger || hasExpirationTrigger || typeof customConfig?.repeat !== 'undefined';
 
   const config = getConfig(isPlainPromiseTrigger, hasTrigger, customConfig);
   const { strategy } = config;
@@ -137,7 +139,17 @@ function scenario<T, R, E>(
     );
   };
 
-  const scenarioNode: Scenario<T, R, E> = { config, events };
+  const then: AwaiEvent<ExpiredEvent<E>>['then'] = (...args) => {
+    if (!isFiniteScenario) {
+      console.warn(
+        'You seem to await an infinite scenario. This causes a memory leak in your application.',
+      );
+    }
+
+    return events.expired.then(...args);
+  };
+
+  const scenarioNode: Scenario<T, R, E> = { config, events, then };
 
   registry.register(scenarioNode);
 

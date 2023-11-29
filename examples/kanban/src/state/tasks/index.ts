@@ -1,6 +1,5 @@
 import { action, state } from 'awai';
 import { useStateValue } from 'awai-react';
-import { useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { Category, Task } from '../../types';
@@ -30,7 +29,7 @@ export const moveTask = action((taskId: Task['id'], categoryId: Category['id']) 
 
 export const useTask = (id: Task['id']) => {
   const allTasks = useStateValue(tasks);
-  const task = useMemo(() => allTasks.find((task) => task.id === id), [allTasks, id]);
+  const task = allTasks.find((task) => task.id === id);
 
   if (!task) {
     throw new Error('Task does not exist');

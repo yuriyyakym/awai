@@ -7,4 +7,5 @@ export const createTaskModalState = state<{ categoryId: Category['id'] } | null>
 export const openCreateTaskModal = action((categoryId: Category['id']) =>
   createTaskModalState.set({ categoryId }),
 );
+
 export const closeCreateTaskModal = action(() => createTaskModalState.set(null));

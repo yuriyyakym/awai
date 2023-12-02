@@ -1,7 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { asyncState, delay, SystemTag } from '../src';
-import { AsyncStatus, state } from '../dist';
+import { asyncState, AsyncStatus, delay, SystemTag } from '../src';
 
 test('resolves immediately if non-async value is set', async () => {
   const greeting = asyncState<string>('Async state');

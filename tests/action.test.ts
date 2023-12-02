@@ -22,6 +22,17 @@ test('passes arguments to a callback and emits them in `invoked` event payload',
   greet('Awai');
 });
 
+test('passes arguments to `invoked` event even action is empty', async () => {
+  const greet = action<[greeting: string, name: string]>();
+
+  expect(greet.events.invoked).resolves.toStrictEqual({
+    arguments: ['Hello', 'Awai'],
+    config: greet.config,
+  });
+
+  greet('Hello', 'Awai');
+});
+
 test('returns Promise of a value returned by callback', async () => {
   const greet = action((name) => `Hello ${name}`);
   const result = greet('Awai');
@@ -29,10 +40,10 @@ test('returns Promise of a value returned by callback', async () => {
   expect(result).resolves.toEqual('Hello Awai');
 });
 
-test('emits result of callback in `resolved` event payload', async () => {
+test('emits result of callback in `fulfilled` event payload', async () => {
   const greet = action((name) => `Hello ${name}`);
 
-  expect(greet.events.resolved).resolves.toStrictEqual({
+  expect(greet.events.fulfilled).resolves.toStrictEqual({
     arguments: ['Awai'],
     result: 'Hello Awai',
     config: greet.config,

@@ -15,6 +15,19 @@ test('runs effect immediately with sync states', async () => {
   expect(callback.mock.calls.length).toEqual(1);
 });
 
+test('does not run effect until all the states are fullfilled', async () => {
+  const state1 = state<number>(1);
+  const state2 = asyncState<number>(delay(20).then(() => 2));
+  const callback = vi.fn();
+
+  effect([state1, state2], callback);
+
+  await delay(5);
+  expect(callback).not.toBeCalled();
+  await delay(20);
+  expect(callback).toBeCalledTimes(1);
+});
+
 test('does not emit `cleared` event when no cleanup function returned', async () => {
   const state1 = state<number>(1);
   const state2 = state<number>(2);
@@ -93,6 +106,16 @@ test('registers effect before running', async () => {
   await flush();
 
   expect(history).toEqual(['registration-scenario', 'effect-callback', 'sub-scenario']);
+
+  await state1.set(2);
+
+  expect(history).toEqual([
+    'registration-scenario',
+    'effect-callback',
+    'sub-scenario',
+    'effect-callback',
+    'sub-scenario',
+  ]);
 });
 
 test('automatically assigns id when not provided', () => {

@@ -8,15 +8,19 @@ export default class AwaiEvent<T = void> {
   private _awaiters: Resolver<T>[] = [];
 
   then: PromiseLike<T>['then'] = (onfulfilled) => {
-    return new Promise<any>((resolve) => {
+    return new Promise<any>((resolve, reject) => {
       this._awaiters.push((value: T) => {
-        const result = isFunction(onfulfilled) ? onfulfilled(value) : value;
-        resolve(result);
+        try {
+          const result = isFunction(onfulfilled) ? onfulfilled(value) : value;
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
       });
     });
   };
 
-  abortable(abortController: AbortController): PromiseLike<T> {
+  abortable(abortController: AbortController): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       this._awaiters.push(resolve);
 
@@ -37,9 +41,7 @@ export default class AwaiEvent<T = void> {
       this._awaiters = [];
 
       for (const resolve of awaiters) {
-        try {
-          resolve(value);
-        } catch {}
+        resolve(value);
       }
     });
   }

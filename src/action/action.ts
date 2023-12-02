@@ -50,7 +50,11 @@ function action<Args extends any[], Return = void>(
       events.resolved?.emit({ arguments: invokeArgs, config, result: value });
       return value;
     } catch (error) {
-      events.rejected?.emit(error);
+      events.rejected?.emit({
+        arguments: invokeArgs,
+        config,
+        error,
+      });
       throw error;
     }
   };

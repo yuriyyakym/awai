@@ -7,17 +7,34 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [20.x]
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm i
-    - run: npm test
+      - uses: actions/checkout@v3
+      - name: Run tests
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:ci
+  coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Get coverage output
+        id: coverage
+        run: echo "::set-output name=value::$(jq -r '.total.lines.pct|tostring + "%"' coverage/coverage-summary.json)"
+      - name: Update coverage badge json gist
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ba8810278ef57a8ae9243e3edf9f43b8
+          filename: coverage-master.json
+          label: Coverage
+          message: ${{ steps.coverage.outputs.value }}
+          color: green
+          namedLogo: vitest

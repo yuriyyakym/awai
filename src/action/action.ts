@@ -34,7 +34,7 @@ function action<Args extends any[], Return = void>(
   const events = {
     invoked: new AwaiEvent(),
     rejected: hasCallback ? new AwaiEvent() : undefined,
-    resolved: hasCallback ? new AwaiEvent() : undefined,
+    fulfilled: hasCallback ? new AwaiEvent() : undefined,
   } satisfies Action['events'];
 
   const invoke = async (...invokeArgs: Args) => {
@@ -47,7 +47,7 @@ function action<Args extends any[], Return = void>(
 
       const value = await valueOrPromise;
       await flush();
-      events.resolved?.emit({ arguments: invokeArgs, config, result: value });
+      events.fulfilled?.emit({ arguments: invokeArgs, config, result: value });
       return value;
     } catch (error) {
       events.rejected?.emit({

@@ -27,7 +27,7 @@ export type BaseEvents<Args> = {
 };
 
 export type EventsWithCallback<Args, Return> = BaseEvents<Args> & {
-  resolved: AwaiEvent<ActionResolvedEvent<Args, Return>>;
+  fulfilled: AwaiEvent<ActionResolvedEvent<Args, Return>>;
   rejected: AwaiEvent<ActionRejectedEvent<Args>>;
 };
 

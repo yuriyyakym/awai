@@ -3,7 +3,7 @@ import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction, isPromiseOrFunction } from '../lib';
 
-import type { AsyncState, Config, InitialValue } from './types';
+import type { VersionIgnoredEvent, AsyncState, Config, InitialValue, Version } from './types';
 
 const getConfig = (customConfig: Partial<Config> = {}): Config => ({
   ...customConfig,
@@ -17,7 +17,8 @@ const asyncState = <T>(
 ): AsyncState<T> => {
   const config = getConfig(customConfig);
   const isInitialValueAsync = isPromiseOrFunction(initialValue);
-  let version = 0;
+  let version: Version = isInitialValueAsync ? 0 : 1;
+  let lastPendingVersion: Version = version;
   let status: AsyncStatus = AsyncStatus.LOADED;
   let error: unknown = null;
   let value: T | undefined = isInitialValueAsync ? undefined : initialValue;
@@ -25,13 +26,15 @@ const asyncState = <T>(
   const events: AsyncState<T>['events'] = {
     changed: new AwaiEvent<T>(),
     failed: new AwaiEvent<unknown>(),
+    ignored: new AwaiEvent<VersionIgnoredEvent<T>>(),
     requested: new AwaiEvent<void>(),
   };
 
   const getStatus: AsyncState<T>['getStatus'] = () => status;
 
   const set: AsyncState<T>['set'] = async (nextValueOrResolver) => {
-    const lastVersion = version;
+    const currentPendingVersion: Version = (lastPendingVersion + 1) % Number.MAX_SAFE_INTEGER;
+    lastPendingVersion = currentPendingVersion;
 
     try {
       if (isPromiseOrFunction(nextValueOrResolver)) {
@@ -43,23 +46,34 @@ const asyncState = <T>(
         ? await nextValueOrResolver(value)
         : await nextValueOrResolver;
 
-      if (lastVersion !== version) {
-        // Emit some abortion event?
+      if (currentPendingVersion !== lastPendingVersion) {
+        queueMicrotask(() => {
+          events.ignored.emit({ value: newValue, version: currentPendingVersion });
+        });
         return;
       }
 
+      error = null;
       value = newValue;
       status = AsyncStatus.LOADED;
       queueMicrotask(() => {
         events.changed.emit(newValue);
       });
     } catch (e) {
-      status = AsyncStatus.FAILURE;
+      if (currentPendingVersion !== lastPendingVersion) {
+        events.ignored.emit({ error: e, version: currentPendingVersion });
+        return;
+      }
+
       error = e;
-      events.failed.emit(error);
+      value = undefined;
+      status = AsyncStatus.FAILURE;
+      queueMicrotask(() => {
+        events.failed.emit(error);
+      });
     }
 
-    version = (version + 1) % Number.MAX_SAFE_INTEGER;
+    version = lastPendingVersion;
     await flush();
   };
 

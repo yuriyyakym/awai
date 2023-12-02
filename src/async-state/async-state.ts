@@ -95,15 +95,14 @@ const asyncState = <T>(
 
   const then: AsyncState<T>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
-      return undefined as any;
+      throw new Error('You have to pass callback argument when using `then` method');
     }
 
     return resolve(await getPromise());
   };
 
   if (isInitialValueAsync) {
-    const initialValuePromise = isFunction(initialValue) ? initialValue() : initialValue;
-    set(initialValuePromise);
+    set(initialValue);
   }
 
   const asyncStateNode: AsyncState<T> = {

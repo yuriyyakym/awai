@@ -7,7 +7,8 @@
 
   <div>
     <img src="https://github.com/yuriyyakym/awai/actions/workflows/tests.yml/badge.svg" />
-    <img src="https://img.shields.io/badge/stability-experimental-blue.svg" />
+    <img src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yuriyyakym/ba8810278ef57a8ae9243e3edf9f43b8/raw/cdab3f537a02b9680ac36a46d2240bc51faf92e0/coverage-master.json" />
+    <img src="https://img.shields.io/badge/Stability-experimental-blue.svg" />
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
   </div>
 

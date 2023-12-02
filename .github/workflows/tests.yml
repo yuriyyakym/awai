@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Get coverage output
         id: coverage
-        run: echo "::set-output name=value::$(jq -r '.total.lines.pct|tostring + "%"' coverage/coverage-summary.json)"
+        run: echo "value=$(jq -r '.total.lines.pct|tostring + "%"' coverage/coverage-summary.json)" >> $GITHUB_OUTPUT
       - name: Update coverage badge json gist
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:

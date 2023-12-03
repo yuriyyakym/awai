@@ -24,9 +24,10 @@ const asyncState = <T>(
   let value: T | undefined = isInitialValueAsync ? undefined : initialValue;
 
   const events: AsyncState<T>['events'] = {
-    changed: new AwaiEvent<T>(),
-    failed: new AwaiEvent<unknown>(),
+    changed: new AwaiEvent<T | undefined>(),
+    fulfilled: new AwaiEvent<T>(),
     ignored: new AwaiEvent<VersionIgnoredEvent<T>>(),
+    rejected: new AwaiEvent<unknown>(),
     requested: new AwaiEvent<void>(),
   };
 
@@ -47,18 +48,16 @@ const asyncState = <T>(
         : await nextValueOrResolver;
 
       if (currentPendingVersion !== lastPendingVersion) {
-        queueMicrotask(() => {
-          events.ignored.emit({ value: newValue, version: currentPendingVersion });
-        });
+        events.ignored.emit({ value: newValue, version: currentPendingVersion });
         return;
       }
 
       error = null;
       value = newValue;
       status = AsyncStatus.LOADED;
-      queueMicrotask(() => {
-        events.changed.emit(newValue);
-      });
+
+      events.fulfilled.emit(newValue);
+      events.changed.emit(value);
     } catch (e) {
       if (currentPendingVersion !== lastPendingVersion) {
         events.ignored.emit({ error: e, version: currentPendingVersion });
@@ -68,9 +67,9 @@ const asyncState = <T>(
       error = e;
       value = undefined;
       status = AsyncStatus.FAILURE;
-      queueMicrotask(() => {
-        events.failed.emit(error);
-      });
+
+      events.rejected.emit(error);
+      events.changed.emit(value);
     }
 
     version = lastPendingVersion;

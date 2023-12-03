@@ -5,8 +5,9 @@ import AsyncValue from './AsyncValue';
 
 export default interface ReadableAsyncState<T = any> {
   events: {
-    changed: AwaiEvent<T>;
-    failed: AwaiEvent<unknown>;
+    changed: AwaiEvent<T | undefined>;
+    fulfilled: AwaiEvent<T>;
+    rejected: AwaiEvent<unknown>;
     requested: AwaiEvent<void>;
   };
   get: () => T | undefined;

@@ -16,14 +16,27 @@ test('`requested` event is not emited when non-async initial value is set', asyn
   expect(value).toBe('not emited');
 });
 
-test('emits `requested` and `loaded` events in proper order', async () => {
+test('`requested` event is not emited when non-async initial value is set', async () => {
+  const fruit = asyncState<string>('apple');
+  const value = await Promise.race([
+    fruit.events.requested.then(() => 'emited'),
+    delay(10).then(() => 'not emited'),
+  ]);
+  expect(value).toBe('not emited');
+});
+
+test('emits `requested`, `fulfilled` and `changed` events in proper order', async () => {
   const greeting = asyncState<string>();
 
   setTimeout(greeting.set, 10, Promise.resolve('Magic message'));
 
   expect(greeting.get()).toBe(undefined);
-  const value = await greeting.events.changed;
-  expect(value).toBe('Magic message');
+  const [fullfilledValue, changedValue] = await Promise.all([
+    greeting.events.fulfilled,
+    greeting.events.changed,
+  ]);
+  expect(fullfilledValue).toBe('Magic message');
+  expect(changedValue).toBe('Magic message');
   expect(greeting.get()).toBe('Magic message');
 });
 
@@ -42,6 +55,16 @@ test('ignores previous resolved promises if newer promise was set', async () => 
   expect(state.get()).toBeUndefined();
   const value = await state.events.changed;
   expect(value).toBe(4);
+  expect(state.get()).toBe(4);
+});
+
+test('ignores previous rejected promises if newer promise was set', async () => {
+  const state = asyncState(delay(3).then(() => 1));
+  state.set(delay(5).then(() => 2));
+  state.set(delay(15).then(() => Promise.reject(3)));
+  state.set(delay(10).then(() => 4));
+  await state.events.changed;
+  expect(state.events.ignored).resolves.toEqual({ error: 3, version: 3 });
   expect(state.get()).toBe(4);
 });
 
@@ -140,7 +163,7 @@ test('`getAsync` returns proper async value', async () => {
     error: null,
     isLoading: true,
   });
-  await state.events.failed;
+  await state.events.rejected;
   expect(state.getAsync()).toStrictEqual({
     value: undefined,
     error: 'Awai',

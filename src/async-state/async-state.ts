@@ -101,9 +101,9 @@ const asyncState = <T>(
     }
   };
 
-  const then: AsyncState<T>['then'] = async (resolve) => {
+  const then: PromiseLike<T>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
-      throw new Error('You have to pass callback argument when using `then` method');
+      return getPromise() as any;
     }
 
     return resolve(await getPromise());

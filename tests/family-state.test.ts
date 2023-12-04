@@ -12,6 +12,13 @@ test('creates states using initializer', async () => {
   expect(node2.get()).toEqual('2-test');
 });
 
+test('is thennable', async () => {
+  const family = familyState((id) => `${id}-test`);
+  const node = family.getNode('node');
+  expect(family.then()).resolves.toEqual({ node });
+  await family.then((record) => expect(record).toEqual({ node }));
+});
+
 test('creates async states using initializer', async () => {
   const family = familyState((id) => delay(30).then(() => `${id}-test`));
 

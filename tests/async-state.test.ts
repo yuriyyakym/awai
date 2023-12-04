@@ -133,9 +133,10 @@ test('applies custom config', () => {
   expect(config.tags).toContain(SystemTag.ASYNC_STATE);
 });
 
-test('throws when no callback is passed to `then` method', async () => {
+test('is thennable', () => {
   const state = asyncState('Awai');
-  expect(() => state.then()).rejects.toBeInstanceOf(Error);
+  expect(state.then()).resolves.toEqual('Awai');
+  expect(state.then((name) => name.repeat(2))).resolves.toEqual('AwaiAwai');
 });
 
 test('`getAsync` returns proper async value', async () => {

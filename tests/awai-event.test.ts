@@ -8,6 +8,13 @@ test('registers awaiter and resolves it when emitted', () => {
   event.emit('Awai');
 });
 
+test('is thennable', () => {
+  const event = new AwaiEvent<string>();
+  expect(event.then()).resolves.toEqual('Awai');
+  expect(event.then((name) => name.repeat(2))).resolves.toEqual('AwaiAwai');
+  event.emit('Awai');
+});
+
 test('registers multiple awaiters and resolves them when emitted', async () => {
   const event = new AwaiEvent<string>();
   expect(event).resolves.toBe('Awai');

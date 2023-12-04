@@ -39,7 +39,7 @@ const state = <T>(initialValue: T, customConfig?: Partial<Config>): State<T> => 
 
   const then: State<T>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
-      return undefined as any;
+      return value as any;
     }
 
     return resolve(value);

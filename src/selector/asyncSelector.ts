@@ -136,12 +136,12 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
       states.map((state) => (isReadableAsyncState(state) ? state.getPromise() : state.get())),
     )) as StatesValues;
 
-    return await predicate(...values);
+    return predicate(...values);
   };
 
   const then: AsyncSelector<U>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
-      return undefined as any;
+      return getPromise() as any;
     }
 
     return resolve(await getPromise());

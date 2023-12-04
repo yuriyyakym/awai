@@ -2,11 +2,17 @@ import { expect, test, vi } from 'vitest';
 
 import { SystemTag, flush, scenario, state } from '../src';
 
-test('is updated asynchronously', async () => {
+test('stored value is updated', async () => {
   const greeting = state<string>('Hi');
 
   await greeting.set('Hello');
   expect(greeting.get()).toEqual('Hello');
+});
+
+test('is thennable', async () => {
+  const nameState = state('Awai');
+  expect(nameState.then()).resolves.toEqual('Awai');
+  expect(nameState.then((name) => name.repeat(2))).resolves.toEqual('AwaiAwai');
 });
 
 test('has `changed` AwaiEvent event', async () => {

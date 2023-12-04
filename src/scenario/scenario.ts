@@ -139,14 +139,18 @@ function scenario<T, R, E>(
     );
   };
 
-  const then: AwaiEvent<ExpiredEvent<E>>['then'] = (...args) => {
+  const then: AwaiEvent<ExpiredEvent<E>>['then'] = (resolve) => {
     if (!isFiniteScenario) {
       console.warn(
         'You seem to await an infinite scenario. This causes a memory leak in your application.',
       );
     }
 
-    return events.expired.then(...args);
+    if (!isFunction(resolve)) {
+      return Promise.resolve(events.expired) as any;
+    }
+
+    return events.expired.then(resolve);
   };
 
   const scenarioNode: Scenario<T, R, E> = { config, events, then };

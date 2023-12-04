@@ -73,7 +73,7 @@ const familyState = <
 
   const then: FamilyState<NodeType>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
-      return undefined as any;
+      return family as any;
     }
 
     return resolve(family);

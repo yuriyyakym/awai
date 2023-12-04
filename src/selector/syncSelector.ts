@@ -33,7 +33,7 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
 
   const then: SyncSelector<U>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
-      return undefined as any;
+      return get() as any;
     }
 
     return resolve(get());

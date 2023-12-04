@@ -19,7 +19,7 @@ const asyncState = <T>(
   const isInitialValueAsync = isPromiseOrFunction(initialValue);
   let version: Version = isInitialValueAsync ? 0 : 1;
   let lastPendingVersion: Version = version;
-  let status: AsyncStatus = AsyncStatus.LOADED;
+  let status: AsyncStatus = AsyncStatus.FULFILLED;
   let error: unknown = null;
   let value: T | undefined = isInitialValueAsync ? undefined : initialValue;
 
@@ -39,7 +39,7 @@ const asyncState = <T>(
 
     try {
       if (isPromiseOrFunction(nextValueOrResolver)) {
-        status = AsyncStatus.LOADING;
+        status = AsyncStatus.PENDING;
         events.requested.emit();
       }
 
@@ -54,7 +54,7 @@ const asyncState = <T>(
 
       error = null;
       value = newValue;
-      status = AsyncStatus.LOADED;
+      status = AsyncStatus.FULFILLED;
 
       events.fulfilled.emit(newValue);
       events.changed.emit(value);
@@ -66,7 +66,7 @@ const asyncState = <T>(
 
       error = e;
       value = undefined;
-      status = AsyncStatus.FAILURE;
+      status = AsyncStatus.REJECTED;
 
       events.rejected.emit(error);
       events.changed.emit(value);
@@ -80,7 +80,7 @@ const asyncState = <T>(
 
   const getAsync: AsyncState<T>['getAsync'] = () => ({
     error,
-    isLoading: status === AsyncStatus.LOADING,
+    isLoading: status === AsyncStatus.PENDING,
     value,
   });
 

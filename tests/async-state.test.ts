@@ -104,14 +104,14 @@ test('automatically assigns id when not provided', () => {
 
 test('`getPromise` resolves immediately if sync initial value is set', () => {
   const state = asyncState('Awai');
-  expect(state.getStatus()).toBe(AsyncStatus.LOADED);
+  expect(state.getStatus()).toBe(AsyncStatus.FULFILLED);
   expect(state.getPromise()).resolves.toEqual('Awai');
 });
 
 test('`getPromise` resolves when async initial value is set', () => {
   const state = asyncState(delay(10).then(() => 'Awai'));
   expect(state.get()).toBeUndefined();
-  expect(state.getStatus()).toBe(AsyncStatus.LOADING);
+  expect(state.getStatus()).toBe(AsyncStatus.PENDING);
   expect(state.getPromise()).resolves.toEqual('Awai');
 });
 
@@ -119,7 +119,7 @@ test('`getPromise` rejects if initial value callback throws', () => {
   const state = asyncState(() => {
     throw 'Awai';
   });
-  expect(state.getStatus()).toBe(AsyncStatus.FAILURE);
+  expect(state.getStatus()).toBe(AsyncStatus.REJECTED);
   expect(state.get()).toBeUndefined();
   expect(state.getPromise()).resolves.toEqual(undefined);
   expect(state.getAsync().error).toEqual('Awai');

@@ -24,7 +24,7 @@ Properties and methods:
 * `get` method that returns current value
 * `getAsync` method that returns async state `{ isLoading, error, value }`
 * `getPromise` method that returns promise of a value. This is especially helpful when you want to use value of an async state being initialized. If initialized, promise is resolved with current value right away.
-* `getStatus` method that returns AsyncStatus ('loading', 'loaded', 'failure')
+* `getStatus` method that returns AsyncStatus ('pending', 'fulfilled', 'rejected')
 * `set` A method that sets new value
 * `events` A record of [re-resolvable](/re-resolvable) events:
   - changed

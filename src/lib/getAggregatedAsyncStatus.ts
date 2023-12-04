@@ -10,19 +10,19 @@ const getAggregatedAsyncStatus = <
 ): AsyncStatus => {
   const asyncStates = states.filter(isReadableAsyncState);
 
-  const hasError = asyncStates.some((state) => state.getStatus() === AsyncStatus.FAILURE);
+  const hasError = asyncStates.some((state) => state.getStatus() === AsyncStatus.REJECTED);
 
   if (hasError) {
-    return AsyncStatus.FAILURE;
+    return AsyncStatus.REJECTED;
   }
 
-  const hasLoading = asyncStates.some((state) => state.getStatus() === AsyncStatus.LOADING);
+  const isPending = asyncStates.some((state) => state.getStatus() === AsyncStatus.PENDING);
 
-  if (hasLoading) {
-    return AsyncStatus.LOADING;
+  if (isPending) {
+    return AsyncStatus.PENDING;
   }
 
-  return AsyncStatus.LOADED;
+  return AsyncStatus.FULFILLED;
 };
 
 export default getAggregatedAsyncStatus;

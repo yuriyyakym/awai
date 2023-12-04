@@ -34,7 +34,7 @@ const effect = <
     const values = states.map((state) => state.get()) as V;
     const status = getAggregatedAsyncStatus(states);
 
-    if (status !== AsyncStatus.LOADED) {
+    if (status !== AsyncStatus.FULFILLED) {
       return;
     }
 

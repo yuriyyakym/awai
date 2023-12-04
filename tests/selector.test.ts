@@ -31,9 +31,9 @@ test('only calls callback when all async dependencies are fullfilled', async () 
     return `${greeting} ${name}`;
   });
   expect(mergedState.get()).toBeUndefined();
-  expect(mergedState.getStatus()).toBe(AsyncStatus.LOADING);
+  expect(mergedState.getStatus()).toBe(AsyncStatus.PENDING);
   expect(await mergedState.getPromise()).toBe('Hello Awai');
-  expect(mergedState.getStatus()).toBe(AsyncStatus.LOADED);
+  expect(mergedState.getStatus()).toBe(AsyncStatus.FULFILLED);
 });
 
 test('emits `changed` event properly', async () => {

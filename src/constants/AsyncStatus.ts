@@ -1,7 +1,7 @@
 enum AsyncStatus {
-  LOADING = 'loading',
-  LOADED = 'loaded',
-  FAILURE = 'failure',
+  FULFILLED = 'fulfilled',
+  PENDING = 'pending',
+  REJECTED = 'rejected',
 }
 
 export default AsyncStatus;

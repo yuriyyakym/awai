@@ -55,14 +55,14 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     if (errors.length > 0) {
       error = new AggregateError(errors);
       value = undefined;
-      isLoading = status === AsyncStatus.LOADING;
+      isLoading = status === AsyncStatus.PENDING;
       version = lastPendingVersion;
       events.rejected.emit(error);
       events.changed.emit(value);
       return;
     }
 
-    if (status === AsyncStatus.LOADED) {
+    if (status === AsyncStatus.FULFILLED) {
       const values = states.map((state) => state.get()) as StatesValues;
 
       fork(async () => {

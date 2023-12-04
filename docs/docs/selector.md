@@ -44,7 +44,7 @@ interface ReadableAsyncState<T> {
   get: () => T | undefined;
   getAsync: () => AsyncValue<T>; // { isLoading, error, value }
   getPromise: () => Promise<T>;
-  getStatus: () => AsyncStatus;
+  getStatus: () => AsyncStatus; // 'pending' | 'fulfilled' | 'rejected'
   then: (resolver: Resolver<T>) => Promise<T>;
 }
 ```

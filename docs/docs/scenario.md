@@ -8,19 +8,29 @@ Conceptually, `Scenario` is a sequence of events, that are described by a piece 
 
 Scenario may start instantly or may be triggered by promise-like objects.
 
+Scenario may be infinite or finite, if `expirationTrigger` is specified.
+
 ```ts
 type Trigger<T> = PromiseLike<T> | (() => PromiseLike<T>);
 type Callback<T, R> = (value: T) => R;
 
-interface Config {
-  id: string;
-  tags: [];
-  strategy: 'fork' | 'cyclic' | 'once';
-}
+function scenario<T, R, E>(
+  trigger: Trigger<T>,
+  callback: Callback<T, R>,
+  customConfig?: Partial<Config>,
+): Scenario<T, R, E>;
 
-function scenario<T, R>(callback: Callback<T, R>, config?: Partial<Config>): Scenario<T, R>;
+function scenario<T, R, E>(
+  trigger: Trigger<T>,
+  expirationTrigger: ExpirationTrigger<E>,
+  callback: Callback<T, R>,
+  customConfig?: Partial<Config>,
+): Scenario<T, R, E>;
 
-function scenario<T, R>(trigger: Trigger<T>, callback: Callback<T, R>, config?: Partial<Config>): Scenario<T, R>;
+function scenario<T, R, E = unknown>(
+  callback: Callback,
+  config?: Partial<Config>,
+): Scenario<T, R, E>;
 ```
 
 
@@ -29,6 +39,13 @@ function scenario<T, R>(trigger: Trigger<T>, callback: Callback<T, R>, config?: 
 - **fork** - runs scenarios in parallel
 - **cyclic** - runs scenario only if previous one is completed
 - **once** - run scenario only one time
+
+## Events
+
+- **started** - emitted on every scenario callback run
+- **fulfilled** - emitted when scenario callback finished running
+- **rejected** - emitted when callback throws
+- **settled** - emitted when no more callbacks will be run
 
 :::info Default strategy
 By default instant scenarios use `cyclic` strategy, whereas scenarios with trigger use `fork` strategy. Exceptionally, if a trigger is a plain promise, default strategy is `once`, but this is a very unlikely case.
@@ -56,7 +73,7 @@ const dataRevalidateScenario = scenario(
 ```
 
 ```ts title="Scenario has its events, which may be used to trigger another scenario"
-scenario(dataRevalidateScenario.events.completed, () => {
+scenario(dataRevalidateScenario.events.fulfilled, () => {
   console.log('Data revalidated')
 });
 ```
@@ -64,9 +81,23 @@ scenario(dataRevalidateScenario.events.completed, () => {
 #### Other types
 
 ```ts title="Other types"
-export interface CompletedEvent<T, R> {
+interface Config {
+  id: string;
+  tags: [];
+  strategy: 'fork' | 'cyclic' | 'once';
+}
+
+type ShouldExpirePredicate = () => boolean;
+export type ExpirationTrigger<T> = AwaiEvent<T> | PromiseLike<T> | ShouldExpirePredicate;
+
+export interface FulfilledEvent<T, R> {
   event: T;
   result: R;
+  config: Config;
+}
+
+export interface SettledEvent<T> {
+  event?: T;
   config: Config;
 }
 
@@ -75,11 +106,12 @@ export interface StartedEvent<T> {
   config: Config;
 }
 
-export interface Scenario<T, R> {
+export interface Scenario<T, R, E> {
   events: {
-    completed: AwaiEvent<CompletedEvent<T, R>>;
-    failed: AwaiEvent<unknown>;
+    fulfilled: AwaiEvent<FulfilledEvent<T, R>>;
+    rejected: AwaiEvent<unknown>;
+    settled: AwaiEvent<ExpiredEvent<E>>;
     started: AwaiEvent<StartedEvent<T>>;
-  };
+  }
 }
 ```

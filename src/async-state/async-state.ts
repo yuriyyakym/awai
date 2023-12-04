@@ -1,7 +1,7 @@
 import { AsyncStatus, SystemTag } from '../constants';
 import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isPromiseOrFunction } from '../lib';
+import { getUniqueId, isFunction, isPromiseOrFunction, noop } from '../lib';
 
 import type { VersionIgnoredEvent, AsyncState, Config, InitialValue, Version } from './types';
 
@@ -85,11 +85,20 @@ const asyncState = <T>(
   });
 
   const getPromise: AsyncState<T>['getPromise'] = async () => {
-    if (version > 0) {
+    if (version === lastPendingVersion) {
       return value!;
     }
 
-    return await events.changed;
+    const abortController = new AbortController();
+
+    try {
+      return await new Promise((resolve, reject) => {
+        events.fulfilled.abortable(abortController).then(resolve).catch(noop);
+        events.rejected.abortable(abortController).then(reject).catch(noop);
+      });
+    } finally {
+      abortController.abort();
+    }
   };
 
   const then: AsyncState<T>['then'] = async (resolve) => {

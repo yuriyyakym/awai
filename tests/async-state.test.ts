@@ -16,6 +16,18 @@ test('`requested` event is not emited when non-async initial value is set', asyn
   expect(value).toBe('not emited');
 });
 
+test('should initialize with `FULFILLED` status if non-async value is used as initialValue', async () => {
+  const fruit = asyncState<string>('apple');
+  expect(fruit.getStatus()).toBe(AsyncStatus.FULFILLED);
+});
+
+test('should initialize with `PENDING` status if non-async value is used as initialValue', async () => {
+  const fruit = asyncState<string>(async () => 'apple');
+  const vegetable = asyncState<string>(delay(10).then(() => 'tomato'));
+  expect(fruit.getStatus()).toBe(AsyncStatus.PENDING);
+  expect(vegetable.getStatus()).toBe(AsyncStatus.PENDING);
+});
+
 test('`requested` event is not emited when non-async initial value is set', async () => {
   const fruit = asyncState<string>('apple');
   const value = await Promise.race([

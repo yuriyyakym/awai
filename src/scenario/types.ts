@@ -19,7 +19,7 @@ export interface CompletedEvent<T, R> {
   config: Config;
 }
 
-export interface ExpiredEvent<T> {
+export interface SettledEvent<T> {
   event?: T;
   config: Config;
 }
@@ -31,11 +31,11 @@ export interface StartedEvent<T> {
 
 export interface Scenario<T, R, E> {
   events: {
-    completed: AwaiEvent<CompletedEvent<T, R>>;
-    expired: AwaiEvent<ExpiredEvent<E>>;
-    failed: AwaiEvent<unknown>;
+    fulfilled: AwaiEvent<CompletedEvent<T, R>>;
+    rejected: AwaiEvent<unknown>;
+    settled: AwaiEvent<SettledEvent<E>>;
     started: AwaiEvent<StartedEvent<T>>;
   };
   get config(): Config;
-  then: AwaiEvent<ExpiredEvent<E>>['then'];
+  then: AwaiEvent<SettledEvent<E>>['then'];
 }

@@ -60,9 +60,9 @@ function scenario<T, R, E>(
   let expired = false;
 
   const events: Scenario<T, R, E>['events'] = {
-    completed: new AwaiEvent(),
-    expired: new AwaiEvent(),
-    failed: new AwaiEvent(),
+    fulfilled: new AwaiEvent(),
+    rejected: new AwaiEvent(),
+    settled: new AwaiEvent(),
     started: new AwaiEvent(),
   };
 
@@ -75,7 +75,7 @@ function scenario<T, R, E>(
   const expire = async (event?: E) => {
     expired = true;
     await flush();
-    await events.expired.emit({ event, config });
+    await events.settled.emit({ event, config });
     await flush();
     await registry.deregister(config.id);
   };
@@ -106,11 +106,11 @@ function scenario<T, R, E>(
           Promise.resolve(callback(event))
             .then((result) => {
               flush().then(() => {
-                events.completed.emit({ config, event, result });
+                events.fulfilled.emit({ config, event, result });
               });
             })
             .catch((error) => {
-              events.failed.emit(error);
+              events.rejected.emit(error);
             })
             .finally(() => {
               runningCallbacksCount--;
@@ -126,7 +126,7 @@ function scenario<T, R, E>(
             });
         } catch (error) {
           runningCallbacksCount--;
-          events.failed.emit(error);
+          events.rejected.emit(error);
         }
 
         if (strategy === 'fork') {
@@ -147,10 +147,10 @@ function scenario<T, R, E>(
     }
 
     if (!isFunction(resolve)) {
-      return Promise.resolve(events.expired) as any;
+      return Promise.resolve(events.settled) as any;
     }
 
-    return events.expired.then(resolve);
+    return events.settled.then(resolve);
   };
 
   const scenarioNode: Scenario<T, R, E> = { config, events, then };

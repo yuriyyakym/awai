@@ -36,7 +36,7 @@ test('handles trigger factory', async () => {
   expect(onTick.mock.calls.length).toEqual(3);
 });
 
-test('continues handling scenarioq after trigger rejected', async () => {
+test('continues handling scenarios after rejected', async () => {
   const tick = vi.fn();
   const resolve = action();
   const reject = action();
@@ -348,6 +348,10 @@ test('is thennable and resolves along with `expired` event', async () => {
   const tick = vi.fn();
   const testScenario = scenario(() => delay(10), expire.events.invoked, tick);
   setTimeout(expire, 0, 'Awai');
+  expect(testScenario.then()).resolves.toMatchObject({ event: { arguments: ['Awai'] } });
+  expect(testScenario.then(({ event }) => event?.arguments[0].repeat(2))).resolves.toEqual(
+    'AwaiAwai',
+  );
   const { event } = await testScenario;
   expect(event?.arguments[0]).toEqual('Awai');
 });

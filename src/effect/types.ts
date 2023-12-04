@@ -5,7 +5,7 @@ export type CleanupCallback = () => void;
 
 export type Config = BaseConfig;
 
-export interface RunEvent<
+export interface StartEvent<
   T extends (ReadableState | ReadableAsyncState)[],
   V extends { [K in keyof T]: InferReadableType<T[K]> },
 > {
@@ -24,6 +24,6 @@ export interface Effect<
   config: Config;
   events: {
     cleared: AwaiEvent<ClearedEvent<T>>;
-    run: AwaiEvent<RunEvent<T, V>>;
+    started: AwaiEvent<StartEvent<T, V>>;
   };
 }

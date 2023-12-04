@@ -27,7 +27,7 @@ const effect = <
 
   const events: Effect<T, V>['events'] = {
     cleared: new AwaiEvent(),
-    run: new AwaiEvent(),
+    started: new AwaiEvent(),
   };
 
   const runEffect = () => {
@@ -38,7 +38,7 @@ const effect = <
       return;
     }
 
-    events.run.emit({ states, values });
+    events.started.emit({ states, values });
 
     cleanup = effect(...values);
   };

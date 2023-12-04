@@ -36,7 +36,7 @@ test('does not emit `cleared` event when no cleanup function returned', async ()
 
   const testEffect = effect([state1, state2], () => undefined);
 
-  scenario(testEffect.events.run, onRun);
+  scenario(testEffect.events.started, onRun);
   scenario(testEffect.events.cleared, onCleanup);
 
   await state1.set(0);
@@ -55,7 +55,7 @@ test('emits `cleared` event when cleanup function returned', async () => {
 
   const testEffect = effect([state1, state2], () => () => undefined);
 
-  scenario(testEffect.events.run, onRun);
+  scenario(testEffect.events.started, onRun);
   scenario(testEffect.events.cleared, onCleanup);
 
   await state1.set(0);
@@ -91,7 +91,7 @@ test('registers effect before running', async () => {
 
   scenario(registry.events.registered, (node) => {
     if (node === testEffect) {
-      scenario((node as typeof testEffect).events.run, () => {
+      scenario((node as typeof testEffect).events.started, () => {
         history.push('sub-scenario');
       });
 

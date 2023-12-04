@@ -87,6 +87,14 @@ test('emits `changed` event when any node changed', async () => {
   expect(onFamilyChanged.mock.calls.length).toBe(2);
 });
 
+test('throws if tries to re-assign node with existing id', async () => {
+  const family = familyState((id) => `${id}-test`);
+  family.setNode('1', state('test'));
+  expect(() => {
+    family.setNode('1', state('another test'));
+  }).toThrow();
+});
+
 test('returns same node for the same key', async () => {
   const family = familyState((id) => `${id}-test`);
   const node1 = family.getNode('1');

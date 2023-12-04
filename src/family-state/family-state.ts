@@ -63,6 +63,10 @@ const familyState = <
   };
 
   const setNode = (id: Id, stateNode: NodeType) => {
+    if (id in family) {
+      throw new Error(`Cannot set node. Node with id "${id}" already exists.`);
+    }
+
     family = { ...family, [id]: stateNode };
     events.changed.emit(family);
   };

@@ -44,9 +44,8 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
       const abortController = new AbortController();
       await Promise.race(states.map((state) => state.events.changed.abortable(abortController)));
       abortController.abort();
-
-      events.changed.emit(get());
     },
+    () => events.changed.emit(get()),
     { tags: [SystemTag.CORE_NODE] },
   );
 

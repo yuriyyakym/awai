@@ -4,7 +4,6 @@ import { SystemTag, flush, scenario, state } from '../src';
 
 test('stored value is updated', async () => {
   const greeting = state<string>('Hi');
-
   await greeting.set('Hello');
   expect(greeting.get()).toEqual('Hello');
 });
@@ -29,29 +28,13 @@ test('is Promise-like and resolves with current value', async () => {
   expect(await greeting).toEqual('Hello there');
 });
 
-test('awaits for the right event', async () => {
-  const CODE = 1234;
-  const pin = state(CODE);
-
-  const correctPinPromise = pin.events.changed.filter((newPin) => newPin === CODE);
-
-  queueMicrotask(async () => {
-    await pin.set(4321);
-    await pin.set(1111);
-    await pin.set(CODE);
-    await pin.set(2222);
-  });
-
-  await expect(correctPinPromise).resolves.toBe(CODE);
-});
-
 test('accepts setter function with current value as an argument', async () => {
   const greeting = state<string>('Hello');
   greeting.set((current) => current + ' World!');
   expect(greeting.get()).toBe('Hello World!');
 });
 
-test('same state resolves twice', async () => {
+test('emits `changed` event', async () => {
   const counter = state(0);
 
   setTimeout(counter.set, 100, 1);

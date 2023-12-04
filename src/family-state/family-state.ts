@@ -53,7 +53,7 @@ const familyState = <
 
     scenario(
       stateNode.events.changed,
-      async () => {
+      () => {
         events.changed.emit(family);
       },
       { tags: [SystemTag.CORE_NODE] },

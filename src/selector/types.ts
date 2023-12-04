@@ -1,14 +1,26 @@
+import type { AwaiEvent } from '../core';
 import type { BaseConfig, ReadableAsyncState, ReadableState } from '../types';
+
+export type Version = number;
 
 export type SyncConfig = BaseConfig;
 
 export type AsyncConfig = BaseConfig;
+
+export type VersionIgnoredEvent<T> = {
+  error?: unknown;
+  value?: T;
+  version: Version;
+};
 
 export type SyncSelector<T> = ReadableState<T> & {
   config: SyncConfig;
 };
 
 export type AsyncSelector<T> = ReadableAsyncState<T> & {
+  events: {
+    ignored: AwaiEvent<VersionIgnoredEvent<T>>;
+  };
   config: AsyncConfig;
 };
 

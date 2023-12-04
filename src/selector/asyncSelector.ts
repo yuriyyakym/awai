@@ -1,5 +1,5 @@
 import { AsyncStatus, SystemTag } from '../constants';
-import { AwaiEvent } from '../core';
+import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
 import {
   fork,
@@ -11,7 +11,7 @@ import {
 import scenario from '../scenario';
 import type { InferReadableType, ReadableAsyncState, ReadableState } from '../types';
 
-import type { AsyncConfig, AsyncSelector } from './types';
+import type { AsyncConfig, AsyncSelector, VersionIgnoredEvent } from './types';
 
 const getConfig = (customConfig: Partial<AsyncConfig> = {}): AsyncConfig => ({
   ...customConfig,
@@ -27,32 +27,38 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   type StatesValues = { [K in keyof T]: InferReadableType<T[K]> };
 
   const config = getConfig(customConfig);
+  const asyncStates = states.filter(isReadableAsyncState);
 
-  let error: AggregateError | undefined;
-  let value: any;
+  let error: AggregateError | unknown | null = null;
+  let value: U | undefined;
   let isLoading: boolean = true;
-  let nextVersion: number = -1;
+  let version = 0;
+  let lastPendingVersion: number = version;
 
-  const events = {
-    failed: new AwaiEvent<unknown>(),
-    changed: new AwaiEvent<U>(),
+  const events: AsyncSelector<U>['events'] = {
+    changed: new AwaiEvent<U | undefined>(),
+    fulfilled: new AwaiEvent<U>(),
+    ignored: new AwaiEvent<VersionIgnoredEvent<U>>(),
+    rejected: new AwaiEvent<unknown>(),
     requested: new AwaiEvent<void>(),
   };
 
   const getStatus = () => getAggregatedAsyncStatus(states);
 
   const determineNextVersion = async () => {
-    nextVersion = (nextVersion + 1) % Number.MAX_SAFE_INTEGER;
+    const currentPendingVersion = (lastPendingVersion + 1) % Number.MAX_SAFE_INTEGER;
+    lastPendingVersion = currentPendingVersion;
 
     const status = getStatus();
-    const asyncStates = states.filter(isReadableAsyncState);
     const errors = asyncStates.map((state) => state.getAsync().error).filter(Boolean);
 
     if (errors.length > 0) {
       error = new AggregateError(errors);
       value = undefined;
       isLoading = status === AsyncStatus.LOADING;
-      queueMicrotask(() => events.changed.emit(value));
+      version = lastPendingVersion;
+      events.rejected.emit(error);
+      events.changed.emit(value);
       return;
     }
 
@@ -61,23 +67,35 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
 
       fork(async () => {
         isLoading = true;
-        let version = nextVersion;
 
         try {
           const newValue = await predicate(...values);
-          if (version === nextVersion && newValue !== value) {
-            error = undefined;
+
+          if (currentPendingVersion !== lastPendingVersion) {
+            events.ignored.emit({ value: newValue, version: currentPendingVersion });
+            return;
+          }
+
+          if (newValue !== value) {
+            error = null;
             value = newValue;
+            events.fulfilled.emit(newValue);
+            events.changed.emit(value);
           }
-        } catch (error) {
-          if (version === nextVersion) {
-            error = undefined;
-            value = undefined;
+        } catch (caughtError) {
+          if (currentPendingVersion !== lastPendingVersion) {
+            events.ignored.emit({ error: caughtError, version: currentPendingVersion });
+            return;
           }
+
+          error = caughtError;
+          value = undefined;
+          events.rejected.emit(caughtError);
+          events.changed.emit(value);
         } finally {
-          if (version === nextVersion) {
+          if (currentPendingVersion === lastPendingVersion) {
+            version = lastPendingVersion;
             isLoading = false;
-            queueMicrotask(() => events.changed.emit(value));
           }
         }
       });
@@ -92,6 +110,21 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     },
     determineNextVersion,
     { tags: [SystemTag.CORE_NODE] },
+  );
+
+  scenario(
+    async () => {
+      const abortController = new AbortController();
+      await Promise.race(
+        asyncStates.map((state) => state.events.requested.abortable(abortController)),
+      );
+      abortController.abort();
+    },
+    async () => {
+      events.requested.emit();
+      await events.fulfilled;
+    },
+    { tags: [SystemTag.CORE_NODE], strategy: 'cyclic' },
   );
 
   const get = () => value;

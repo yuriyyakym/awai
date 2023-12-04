@@ -1,8 +1,18 @@
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 
-import { SystemTag, asyncState, delay, familyState, selector, state } from '../src';
+import {
+  AsyncStatus,
+  SystemTag,
+  asyncState,
+  delay,
+  familyState,
+  flush,
+  scenario,
+  selector,
+  state,
+} from '../src';
 
-test('composes sync states properly', async () => {
+test('composes sync states', async () => {
   const state1 = state<number>(1);
   const state2 = state<number>(2);
   const state3 = state<number>(3);
@@ -12,24 +22,158 @@ test('composes sync states properly', async () => {
   expect(stateSum.get()).toEqual(6);
 });
 
-test('only calls callback when all async dependencies are resolved', async () => {
-  const state = asyncState(delay(10).then(() => 'test'));
-  const duplicatedState = selector([state], (state) => {
-    expect(state).toBe('test');
-    return state!.repeat(2);
+test('only calls callback when all async dependencies are fullfilled', async () => {
+  const greetingState = asyncState(delay(10).then(() => 'Hello'));
+  const nameState = asyncState(delay(20).then(() => 'Awai'));
+  const mergedState = selector([greetingState, nameState], (greeting, name) => {
+    expect(greeting).toBe('Hello');
+    expect(name).toBe('Awai');
+    return `${greeting} ${name}`;
   });
-  expect(await duplicatedState.getPromise()).toBe('testtest');
+  expect(mergedState.get()).toBeUndefined();
+  expect(mergedState.getStatus()).toBe(AsyncStatus.LOADING);
+  expect(await mergedState.getPromise()).toBe('Hello Awai');
+  expect(mergedState.getStatus()).toBe(AsyncStatus.LOADED);
 });
 
-test('Emits `changed` event properly', async () => {
+test('emits `changed` event properly', async () => {
   const state1 = state<number>(1);
   const state2 = asyncState<number>(delay(10).then(() => 2));
   const state3 = state<number>(3);
 
   const stateSum = selector([state1, state2, state3], (a, b, c) => a + b + c);
 
+  expect(stateSum.get()).toEqual(undefined);
   expect(await stateSum.events.changed).toEqual(6);
   expect(stateSum.get()).toEqual(6);
+});
+
+test('emits error when one of dependencies states failed', async () => {
+  const greetingState = state('Hello');
+  const nameState = asyncState<number>(delay(10).then(() => Promise.reject('Awai')));
+  const mergedState = selector(
+    [greetingState, nameState],
+    (greeting, name) => `${greeting} ${name}`,
+  );
+
+  expect(mergedState.get()).toEqual(undefined);
+  const error = await mergedState.events.rejected;
+  expect(error).toBeInstanceOf(AggregateError);
+  expect((error as AggregateError).errors).toEqual(['Awai']);
+});
+
+test('emits error every time async dependency fails', async () => {
+  const reject = vi.fn();
+  const greetingState = asyncState('');
+  const nameState = asyncState();
+  const mergedState = selector(
+    [greetingState, nameState],
+    (greeting, name) => `${greeting} ${name}`,
+  );
+  scenario(mergedState.events.rejected, reject);
+
+  greetingState.set(delay(5).then(() => Promise.reject('Hey')));
+  nameState.set(delay(15).then(() => Promise.reject('Awai')));
+
+  expect(reject).not.toBeCalled();
+  await delay(10);
+  expect(reject).toBeCalledTimes(1);
+  expect(reject).toBeCalledWith(new AggregateError(['Hey']));
+  await delay(20);
+  const finalError = new AggregateError(['Hey', 'Awai']);
+  expect(reject).toBeCalledTimes(2);
+  expect(reject).toBeCalledWith(finalError);
+  expect(mergedState.getAsync()).toStrictEqual({
+    value: undefined,
+    error: finalError,
+    isLoading: false,
+  });
+});
+
+test('emits error when callback throws', async () => {
+  const messageState = asyncState(delay(5).then(() => 'Hello Awai'));
+  const mergedState = selector([messageState], (message): string => {
+    throw new Error('Simple Error');
+  });
+
+  const error = await mergedState.events.rejected;
+  expect(error).not.toBeInstanceOf(AggregateError);
+  expect(error).toBeInstanceOf(Error);
+  expect(error).toEqual(new Error('Simple Error'));
+});
+
+test('emits `requested` event when one of async dependencies is requested', async () => {
+  const greetingState = state('Hello');
+  const nameState = asyncState('Noname');
+
+  const mergedState = selector(
+    [greetingState, nameState],
+    (greeting, name) => `${greeting} ${name}`,
+  );
+
+  expect(mergedState.get()).toEqual(undefined);
+  await flush();
+  expect(mergedState.get()).toEqual('Hello Noname');
+
+  setTimeout(() => {
+    nameState.set(delay(10).then(() => 'Awai'));
+  }, 10);
+
+  expect(mergedState.events.requested).resolves.toBeUndefined();
+  expect(mergedState.events.fulfilled).resolves.toEqual('Hello Awai');
+  expect(mergedState.events.changed).resolves.toEqual('Hello Awai');
+});
+
+test('`requested` event should only be emitted one time before fulfillment', async () => {
+  const tick = vi.fn();
+  const greetingState = asyncState(delay(2).then(() => 'Hello'));
+  const nameState = asyncState(delay(20).then(() => 'Noname'));
+  const mergedState = selector(
+    [greetingState, nameState],
+    (greeting, name) => `${greeting} ${name}`,
+  );
+  scenario(mergedState.events.requested, tick);
+  delay(5).then(() => {
+    greetingState.set(delay(10).then(() => 'Hey'));
+  });
+  expect(tick).toBeCalledTimes(0);
+  await delay(0);
+  expect(tick).toBeCalledTimes(1);
+  await delay(20);
+  expect(tick).toBeCalledTimes(1);
+  delay(5).then(() => {
+    greetingState.set(delay(5).then(() => 'Hey'));
+  });
+  delay(10).then(() => {
+    nameState.set(delay(5).then(() => 'Awai'));
+  });
+  await delay(15);
+  expect(tick).toBeCalledTimes(2);
+});
+
+test('ignores error if outdated promise is rejected', async () => {
+  let callNumber = 0;
+  const greetingState = state('Hello');
+  const nameState = asyncState('Noname');
+
+  const mergedState = selector([greetingState, nameState], async (greeting, name) => {
+    callNumber++;
+    if (callNumber === 1) {
+      await delay(10);
+      throw new Error('Random error');
+    }
+    return `${greeting} ${name}`;
+  });
+
+  setTimeout(nameState.set, 5, 'Awai');
+  expect(mergedState.getPromise()).resolves.toEqual('Hello Noname');
+  expect(mergedState.events.ignored).resolves.toStrictEqual({
+    error: new Error('Random error'),
+    version: 1,
+  });
+  expect(
+    Promise.race([mergedState.events.rejected, delay(20).then(() => 'Not rejected')]),
+  ).resolves.toEqual('Not rejected');
 });
 
 test('handles async predicate', async () => {
@@ -44,7 +188,7 @@ test('handles async predicate', async () => {
   expect(stateSum.getAsync().isLoading).toEqual(true);
   expect(await stateSum.events.changed).toEqual(2);
   expect(stateSum.getAsync().isLoading).toEqual(false);
-  expect(stateSum.getAsync().error).toEqual(undefined);
+  expect(stateSum.getAsync().error).toEqual(null);
 
   state1.set(10);
   await stateSum.events.changed;
@@ -73,4 +217,16 @@ test('applies custom config to async selector', () => {
 
   expect(config.id).toBe('async-selector-id');
   expect(config.tags).toEqual([SystemTag.ASYNC_SELECTOR, 'awai', 'async-selector-test']);
+});
+
+test('asyncSelector is thennable', () => {
+  const asyncSelector = selector([asyncState(Promise.resolve('test'))], (a) => a);
+  expect(asyncSelector.then()).resolves.toEqual('test');
+  expect(asyncSelector.then((name) => name.repeat(2))).resolves.toEqual('testtest');
+});
+
+test('syncSelector is thennable', () => {
+  const syncSelector = selector([state('Awai')], (name) => name);
+  expect(syncSelector.then()).resolves.toEqual('Awai');
+  expect(syncSelector.then((name) => name.repeat(2))).resolves.toEqual('AwaiAwai');
 });

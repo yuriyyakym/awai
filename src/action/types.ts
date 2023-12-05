@@ -1,7 +1,7 @@
 import { type AwaiEvent } from '../core';
 import type { BaseConfig } from '../types';
 
-export type Config = BaseConfig;
+export type Config = BaseConfig & Record<string, any>;
 
 export type AnyCallback = (...args: any) => any;
 

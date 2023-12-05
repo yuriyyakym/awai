@@ -2,7 +2,6 @@ import { SystemTag } from '../constants';
 import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction } from '../lib';
-import type { BaseConfig } from '../types';
 
 import type { CallbackAction, Config, EmptyAction } from './types';
 
@@ -13,21 +12,21 @@ const getConfig = (customConfig: Partial<Config> = {}): Config => ({
 });
 
 function action<Args extends any[] = []>(): EmptyAction<Args>;
-function action<Args extends any[] = []>(config?: Partial<BaseConfig>): EmptyAction<Args>;
+function action<Args extends any[] = []>(config?: Partial<Config>): EmptyAction<Args>;
 function action<Args extends any[], Return = void>(
   callback: (...args: Args) => Return,
-  config?: Partial<BaseConfig>,
+  config?: Partial<Config>,
 ): CallbackAction<Args, Return>;
 
 function action<Args extends any[], Return = void>(
-  ...args: [Partial<BaseConfig>?] | [(...args: Args) => Return, Partial<BaseConfig>?]
+  ...args: [Partial<Config>?] | [(...args: Args) => Return, Partial<Config>?]
 ): EmptyAction<Args> | CallbackAction<Args, Return> {
   type Action = EmptyAction<Args> | CallbackAction<Args, Return>;
 
   const hasCallback = isFunction(args[0]);
   const [callback, customConfig] = hasCallback
-    ? (args as [(...args: Args) => Return, Partial<BaseConfig>?])
-    : ([, ...args] as [undefined, Partial<BaseConfig>?]);
+    ? (args as [(...args: Args) => Return, Partial<Config>?])
+    : ([, ...args] as [undefined, Partial<Config>?]);
 
   const config = getConfig(customConfig);
 

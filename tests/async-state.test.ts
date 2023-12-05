@@ -183,3 +183,8 @@ test('`getAsync` returns proper async value', async () => {
     isLoading: false,
   });
 });
+
+test('allows passing custom properties in config', () => {
+  const state = asyncState('test', { lib: 'Awai' });
+  expect(state.config).toMatchObject({ lib: 'Awai' });
+});

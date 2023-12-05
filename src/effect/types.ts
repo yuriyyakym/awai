@@ -3,7 +3,7 @@ import type { BaseConfig, InferReadableType, ReadableAsyncState, ReadableState }
 
 export type CleanupCallback = () => void;
 
-export type Config = BaseConfig;
+export type Config = BaseConfig & Record<string, any>;
 
 export interface StartEvent<
   T extends (ReadableState | ReadableAsyncState)[],

@@ -89,3 +89,8 @@ test('applies custom config to sync selector', () => {
   expect(config.id).toBe('state-test-id');
   expect(config.tags).toEqual([SystemTag.STATE, 'awai', 'state-test']);
 });
+
+test('allows passing custom properties in config for async state', () => {
+  const { config } = state('test', { lib: 'Awai' });
+  expect(config).toMatchObject({ lib: 'Awai' });
+});

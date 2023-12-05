@@ -230,3 +230,13 @@ test('syncSelector is thennable', () => {
   expect(syncSelector.then()).resolves.toEqual('Awai');
   expect(syncSelector.then((name) => name.repeat(2))).resolves.toEqual('AwaiAwai');
 });
+
+test('allows passing custom properties in config for sync state', () => {
+  const { config } = selector([state('Awai')], (name) => name, { lib: 'Awai' });
+  expect(config).toMatchObject({ lib: 'Awai' });
+});
+
+test('allows passing custom properties in config for async state', () => {
+  const { config } = selector([asyncState('Awai')], (name) => name, { lib: 'Awai' });
+  expect(config).toMatchObject({ lib: 'Awai' });
+});

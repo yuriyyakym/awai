@@ -3,9 +3,9 @@ import type { BaseConfig, ReadableAsyncState, ReadableState } from '../types';
 
 export type Version = number;
 
-export type SyncConfig = BaseConfig;
+export type SyncConfig = BaseConfig & Record<string, any>;
 
-export type AsyncConfig = BaseConfig;
+export type AsyncConfig = BaseConfig & Record<string, any>;
 
 export type VersionIgnoredEvent<T> = {
   error?: unknown;

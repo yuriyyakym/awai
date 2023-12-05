@@ -8,7 +8,7 @@ export type ExpirationTrigger<T> = AwaiEvent<T> | PromiseLike<T> | ShouldExpireP
 
 export type Callback<T = never, R = any> = (value: T) => R;
 
-export interface Config extends BaseConfig {
+export interface Config extends BaseConfig, Record<string, any> {
   repeat?: number;
   strategy: 'fork' | 'cyclic' | 'once';
 }

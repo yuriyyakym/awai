@@ -115,3 +115,8 @@ test('applies custom config', () => {
   expect(config.id).toBe('family-test');
   expect(config.tags).toEqual([SystemTag.FAMILY_STATE, 'awai', 'family-test']);
 });
+
+test('allows passing custom properties in config', () => {
+  const { config } = familyState(() => undefined, { lib: 'Awai' });
+  expect(config).toMatchObject({ lib: 'Awai' });
+});

@@ -370,3 +370,8 @@ test('warns when infinite scenario is awaited', async () => {
   expect(warnMock.mock.calls.length).toEqual(1);
   console.warn = originalWarn;
 });
+
+test('allows passing custom properties in config', () => {
+  const { config } = scenario(delay(10), () => undefined, { lib: 'Awai' });
+  expect(config).toMatchObject({ lib: 'Awai' });
+});

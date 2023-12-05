@@ -3,7 +3,7 @@ import type { BaseConfig, ReadableAsyncState, WritableAsyncState } from '../type
 
 export type Version = number;
 
-export type Config = BaseConfig;
+export type Config = BaseConfig & Record<string, any>;
 
 export type InitialValue<T> = T | Promise<T> | (() => Promise<T>);
 

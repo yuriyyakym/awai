@@ -131,3 +131,8 @@ test('applies custom config', () => {
   expect(config.id).toBe('effect-test');
   expect(config.tags).toEqual([SystemTag.EFFECT, 'awai', 'effect-test']);
 });
+
+test('allows passing custom properties in config', () => {
+  const { config } = effect([], () => undefined, { lib: 'Awai' });
+  expect(config).toMatchObject({ lib: 'Awai' });
+});

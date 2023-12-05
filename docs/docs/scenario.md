@@ -40,16 +40,16 @@ function scenario<T, R, E = unknown>(
 - **cyclic** - runs scenario only if previous one is completed
 - **once** - run scenario only one time
 
+:::info Default strategy
+By default instant scenarios use `cyclic` strategy, whereas scenarios with trigger use `fork` strategy. Exceptionally, if a trigger is a plain promise, default strategy is `once`, but this is a very unlikely case.
+:::
+
 ## Events
 
 - **started** - emitted on every scenario callback run
 - **fulfilled** - emitted when scenario callback finished running
 - **rejected** - emitted when callback throws
 - **settled** - emitted when no more callbacks will be run
-
-:::info Default strategy
-By default instant scenarios use `cyclic` strategy, whereas scenarios with trigger use `fork` strategy. Exceptionally, if a trigger is a plain promise, default strategy is `once`, but this is a very unlikely case.
-:::
 
 ## Examples
 

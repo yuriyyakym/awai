@@ -4,7 +4,7 @@ import { registry } from '../global';
 import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
 
 import { getDefaultStrategy, getTriggerPromise } from './lib';
-import type { Callback, Config, ExpirationTrigger, ExpiredEvent, Scenario, Trigger } from './types';
+import type { Callback, Config, ExpirationTrigger, SettledEvent, Scenario, Trigger } from './types';
 
 const getConfig = (
   isPlainPromiseTrigger: boolean,
@@ -139,7 +139,7 @@ function scenario<T, R, E>(
     );
   };
 
-  const then: AwaiEvent<ExpiredEvent<E>>['then'] = (resolve) => {
+  const then: AwaiEvent<SettledEvent<E>>['then'] = (resolve) => {
     if (!isFiniteScenario) {
       console.warn(
         'You seem to await an infinite scenario. This causes a memory leak in your application.',

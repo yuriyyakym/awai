@@ -13,7 +13,7 @@ export interface Config extends BaseConfig, Record<string, any> {
   strategy: 'fork' | 'cyclic' | 'once';
 }
 
-export interface CompletedEvent<T, R> {
+export interface FulfilledEvent<T, R> {
   event: T;
   result: R;
   config: Config;
@@ -31,7 +31,7 @@ export interface StartedEvent<T> {
 
 export interface Scenario<T, R, E> {
   events: {
-    fulfilled: AwaiEvent<CompletedEvent<T, R>>;
+    fulfilled: AwaiEvent<FulfilledEvent<T, R>>;
     rejected: AwaiEvent<unknown>;
     settled: AwaiEvent<SettledEvent<E>>;
     started: AwaiEvent<StartedEvent<T>>;

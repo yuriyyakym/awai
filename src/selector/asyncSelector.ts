@@ -55,6 +55,8 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     const currentPendingVersion = (lastPendingVersion + 1) % Number.MAX_SAFE_INTEGER;
     lastPendingVersion = currentPendingVersion;
 
+    events.requested.emit();
+
     const status = getStatus();
     const errors = asyncStates.map((state) => state.getAsync().error).filter(Boolean);
 
@@ -127,21 +129,6 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     { tags: [SystemTag.CORE_NODE] },
   );
 
-  scenario(
-    async () => {
-      const abortController = new AbortController();
-      await Promise.race(
-        asyncStates.map((state) => state.events.requested.abortable(abortController)),
-      );
-      abortController.abort();
-    },
-    async () => {
-      events.requested.emit();
-      await events.fulfilled;
-    },
-    { tags: [SystemTag.CORE_NODE], strategy: 'cyclic' },
-  );
-
   const get = () => value;
 
   const getAsync = () => ({ error, isLoading, value });
@@ -172,7 +159,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     then,
   };
 
-  determineNextVersion();
+  queueMicrotask(determineNextVersion);
 
   registry.register(selectorNode);
 

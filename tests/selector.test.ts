@@ -175,6 +175,9 @@ test('emits `requested` event when one of async dependencies is requested', asyn
     (greeting, name) => `${greeting} ${name}`,
   );
 
+  expect(mergedState.events.requested).resolves.toBeUndefined();
+  expect(mergedState.events.fulfilled).resolves.toEqual('Hello Noname');
+
   expect(mergedState.get()).toEqual(undefined);
   await flush();
   expect(mergedState.get()).toEqual('Hello Noname');
@@ -186,33 +189,6 @@ test('emits `requested` event when one of async dependencies is requested', asyn
   expect(mergedState.events.requested).resolves.toBeUndefined();
   expect(mergedState.events.fulfilled).resolves.toEqual('Hello Awai');
   expect(mergedState.events.changed).resolves.toEqual('Hello Awai');
-});
-
-test('`requested` event should only be emitted one time before fulfillment', async () => {
-  const tick = vi.fn();
-  const greetingState = asyncState(delay(2).then(() => 'Hello'));
-  const nameState = asyncState(delay(20).then(() => 'Noname'));
-  const mergedState = selector(
-    [greetingState, nameState],
-    (greeting, name) => `${greeting} ${name}`,
-  );
-  scenario(mergedState.events.requested, tick);
-  delay(5).then(() => {
-    greetingState.set(delay(10).then(() => 'Hey'));
-  });
-  expect(tick).toBeCalledTimes(0);
-  await delay(0);
-  expect(tick).toBeCalledTimes(1);
-  await delay(20);
-  expect(tick).toBeCalledTimes(1);
-  delay(5).then(() => {
-    greetingState.set(delay(5).then(() => 'Hey'));
-  });
-  delay(10).then(() => {
-    nameState.set(delay(5).then(() => 'Awai'));
-  });
-  await delay(15);
-  expect(tick).toBeCalledTimes(2);
 });
 
 test('ignores error if outdated promise is rejected', async () => {

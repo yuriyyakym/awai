@@ -1,22 +1,16 @@
 import { AsyncStatus } from '../constants';
-import type { ReadableAsyncState, ReadableState } from '../types';
+import type { ReadableAsyncState } from '../types';
 
-import isReadableAsyncState from './isReadableAsyncState';
-
-const getAggregatedAsyncStatus = <
-  T extends (ReadableState<any> | ReadableAsyncState<any> | Promise<any>)[],
->(
+const getAggregatedAsyncStatus = <T extends Pick<ReadableAsyncState, 'getStatus'>[]>(
   states: T,
 ): AsyncStatus => {
-  const asyncStates = states.filter(isReadableAsyncState);
-
-  const hasError = asyncStates.some((state) => state.getStatus() === AsyncStatus.REJECTED);
+  const hasError = states.some((state) => state.getStatus() === AsyncStatus.REJECTED);
 
   if (hasError) {
     return AsyncStatus.REJECTED;
   }
 
-  const isPending = asyncStates.some((state) => state.getStatus() === AsyncStatus.PENDING);
+  const isPending = states.some((state) => state.getStatus() === AsyncStatus.PENDING);
 
   if (isPending) {
     return AsyncStatus.PENDING;

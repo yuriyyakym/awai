@@ -1,7 +1,7 @@
 import { AsyncStatus, SystemTag } from '../constants';
 import { AwaiEvent } from '../core';
 import { registry } from '../global';
-import { getAggregatedAsyncStatus, getUniqueId, isFunction } from '../lib';
+import { getAggregatedAsyncStatus, getUniqueId, isFunction, isReadableAsyncState } from '../lib';
 import scenario from '../scenario';
 import { type InferReadableType, type ReadableAsyncState, type ReadableState } from '../types';
 
@@ -22,6 +22,7 @@ const effect = <
   customConfig?: Partial<Config>,
 ): Effect<T, V> => {
   const config = getConfig(customConfig);
+  const asyncStates = states.filter(isReadableAsyncState);
 
   let cleanup: ReturnType<typeof effect>;
 
@@ -32,7 +33,7 @@ const effect = <
 
   const runEffect = () => {
     const values = states.map((state) => state.get()) as V;
-    const status = getAggregatedAsyncStatus(states);
+    const status = getAggregatedAsyncStatus(asyncStates);
 
     if (status !== AsyncStatus.FULFILLED) {
       return;

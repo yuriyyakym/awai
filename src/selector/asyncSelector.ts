@@ -43,7 +43,13 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     requested: new AwaiEvent<void>(),
   };
 
-  const getStatus = () => getAggregatedAsyncStatus(states);
+  const getStatus = () => {
+    const aggregatedStatus = getAggregatedAsyncStatus(asyncStates);
+
+    return error !== null && aggregatedStatus === AsyncStatus.FULFILLED
+      ? AsyncStatus.REJECTED
+      : aggregatedStatus;
+  };
 
   const determineNextVersion = async () => {
     const currentPendingVersion = (lastPendingVersion + 1) % Number.MAX_SAFE_INTEGER;

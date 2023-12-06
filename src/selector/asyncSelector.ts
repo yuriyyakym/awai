@@ -57,7 +57,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
 
     events.requested.emit();
 
-    const status = getStatus();
+    const status = getAggregatedAsyncStatus(asyncStates);
     const errors = asyncStates.map((state) => state.getAsync().error).filter(Boolean);
 
     if (errors.length > 0) {

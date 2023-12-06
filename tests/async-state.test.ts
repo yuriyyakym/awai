@@ -1,6 +1,6 @@
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 
-import { asyncState, AsyncStatus, delay, SystemTag } from '../src';
+import { asyncState, AsyncStatus, delay, flush, scenario, SystemTag } from '../src';
 
 test('resolves immediately if non-async value is set', async () => {
   const greeting = asyncState<string>('Async state');
@@ -78,6 +78,24 @@ test('ignores previous rejected promises if newer promise was set', async () => 
   await state.events.changed;
   expect(state.events.ignored).resolves.toEqual({ error: 3, version: 3 });
   expect(state.get()).toBe(4);
+});
+
+test('does not emit `changed` event if same value is set', async () => {
+  const onChange = vi.fn();
+  const state = asyncState('test');
+
+  scenario(state.events.changed, onChange);
+
+  await flush();
+  expect(state.get()).toEqual('test');
+  expect(onChange).toBeCalledTimes(0);
+  await state.set(Promise.resolve('Awai'));
+  expect(state.get()).toEqual('Awai');
+  expect(onChange).toBeCalledTimes(1);
+  await state.set(delay(10).then(() => 'Awai'));
+  await delay(20);
+  expect(state.get()).toEqual('Awai');
+  expect(onChange).toBeCalledTimes(1);
 });
 
 test('emits `ignored` event if outdated version promise is settled', async () => {

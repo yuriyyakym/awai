@@ -46,6 +46,7 @@ const asyncState = <T>(
       let newValue = isFunction(nextValueOrResolver)
         ? await nextValueOrResolver(value)
         : await nextValueOrResolver;
+      const isChanged = !Object.is(newValue, value);
 
       if (currentPendingVersion !== lastPendingVersion) {
         events.ignored.emit({ value: newValue, version: currentPendingVersion });
@@ -57,19 +58,27 @@ const asyncState = <T>(
       status = AsyncStatus.FULFILLED;
 
       events.fulfilled.emit(newValue);
-      events.changed.emit(value);
+
+      if (isChanged) {
+        events.changed.emit(value);
+      }
     } catch (e) {
       if (currentPendingVersion !== lastPendingVersion) {
         events.ignored.emit({ error: e, version: currentPendingVersion });
         return;
       }
 
+      const isChanged = !Object.is(e, error);
+
       error = e;
       value = undefined;
       status = AsyncStatus.REJECTED;
 
       events.rejected.emit(error);
-      events.changed.emit(value);
+
+      if (isChanged) {
+        events.changed.emit(value);
+      }
     }
 
     version = lastPendingVersion;

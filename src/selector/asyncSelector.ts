@@ -76,16 +76,19 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
 
         try {
           const newValue = await predicate(...values);
+          const isChanged = !Object.is(newValue, value);
 
           if (currentPendingVersion !== lastPendingVersion) {
             events.ignored.emit({ value: newValue, version: currentPendingVersion });
             return;
           }
 
-          if (newValue !== value) {
-            error = null;
-            value = newValue;
-            events.fulfilled.emit(newValue);
+          error = null;
+          value = newValue;
+
+          events.fulfilled.emit(newValue);
+
+          if (isChanged) {
             events.changed.emit(value);
           }
         } catch (caughtError) {
@@ -94,10 +97,16 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
             return;
           }
 
+          const isChanged = typeof value !== 'undefined';
+
           error = caughtError;
           value = undefined;
+
           events.rejected.emit(caughtError);
-          events.changed.emit(value);
+
+          if (isChanged) {
+            events.changed.emit(value);
+          }
         } finally {
           if (currentPendingVersion === lastPendingVersion) {
             version = lastPendingVersion;

@@ -48,7 +48,7 @@ test('emits `changed` event properly', async () => {
   expect(stateSum.get()).toEqual(6);
 });
 
-test('does not emit `changed` event if callback returns same value', async () => {
+test('does not emit `changed` event if callback returns same value (sync)', async () => {
   const onChange = vi.fn();
   const counterState = state<number>(0);
   const isNegativeCounter = selector([counterState], (counter) => counter < 0);
@@ -65,6 +65,51 @@ test('does not emit `changed` event if callback returns same value', async () =>
   await counterState.set(1);
   expect(onChange).toBeCalledTimes(2);
   expect(isNegativeCounter.get()).toEqual(false);
+});
+
+test('does not emit `changed` event if callback returns same value (async)', async () => {
+  const onChange = vi.fn();
+  const counterState = state<number>(0);
+  const isNegativeCounter = selector([counterState], async (counter) => {
+    if (Object.is(counter, -Infinity) || Object.is(counter, Infinity)) {
+      throw new Error('Cannot count that far');
+    }
+
+    return counter < 0;
+  });
+
+  scenario(isNegativeCounter.events.changed, onChange);
+
+  await flush();
+  expect(onChange).toBeCalledTimes(1);
+  expect(isNegativeCounter.get()).toEqual(false);
+
+  counterState.set(-1);
+  await flush();
+  expect(onChange).toBeCalledTimes(2);
+  expect(isNegativeCounter.get()).toEqual(true);
+
+  counterState.set(-2);
+  await flush();
+  expect(onChange).toBeCalledTimes(2);
+  expect(isNegativeCounter.get()).toEqual(true);
+
+  await counterState.set(1);
+  await flush();
+  expect(onChange).toBeCalledTimes(3);
+  expect(isNegativeCounter.get()).toEqual(false);
+
+  await counterState.set(-Infinity);
+  await flush();
+  expect(onChange).toBeCalledTimes(4);
+  expect(isNegativeCounter.get()).toEqual(undefined);
+  expect(isNegativeCounter.getStatus()).toEqual(AsyncStatus.REJECTED);
+
+  await counterState.set(Infinity);
+  await flush();
+  expect(onChange).toBeCalledTimes(4);
+  expect(isNegativeCounter.get()).toEqual(undefined);
+  expect(isNegativeCounter.getStatus()).toEqual(AsyncStatus.REJECTED);
 });
 
 test('emits error when one of dependencies states failed', async () => {

@@ -19,6 +19,7 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   customConfig?: Partial<SyncConfig>,
 ): SyncSelector<U> => {
   const config = getConfig(customConfig);
+  let value: U;
 
   const events = {
     changed: new AwaiEvent<U>(),
@@ -45,9 +46,18 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
       await Promise.race(states.map((state) => state.events.changed.abortable(abortController)));
       abortController.abort();
     },
-    () => events.changed.emit(get()),
+    () => {
+      const newValue = get();
+
+      if (!Object.is(newValue, value)) {
+        value = newValue;
+        events.changed.emit(newValue);
+      }
+    },
     { tags: [SystemTag.CORE_NODE] },
   );
+
+  value = get();
 
   const selectorNode: SyncSelector<U> = { config, events, get, then };
 

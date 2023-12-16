@@ -1,17 +1,13 @@
 ---
 sidebar_position: 100
-slug: /re-resolvable
+slug: /awai-event
 ---
 
-# Re-resolvable
+# Awai Event
 
-Re-resolvable is a promise-like object which has no terminal state and may resolve multiple times.
-
-Re-resolvables play role of event-emitters, and their interface lead to a unique approach of writing logics.
+Awai event is a promise-like object which has no terminal state and may resolve multiple times. It plays role of event-emitter.
 
 ### Example of usage
-
-In this library, re-resolvable is called `AwaiEvent`.
 
 ```ts title="Example of AwaiEvent usage"
 const event = new AwaiEvent();
@@ -25,13 +21,12 @@ const value2 = await event;
 console.log(`${value1} ${value2}`); // hello awai
 ```
 
-Notice how we can await the `event` object multiple times.
+Notice how we can await the `event` object multiple times and receive different values.
 
 
 :::note Hint
- Re-resolvables are promise-like, hence may be combined with other promise-like objects using Promise methods like `any`, `race`, `all`, etc.
+ AwaiEvent is promise-like, hence may be combined with other promise-like objects using Promise methods like `race`, `all` or used in any async function.
 :::
-
 
 ### Example of replacing event-emitter with re-resolvable
 
@@ -42,9 +37,11 @@ const eventHandler = (event) => /* handle event */;
 document.addEventListener('click', eventHandler);
 ```
 
-Assuming that we have click event re-resolvable assigned to `clickEventReResolvable` variable, the same functionality may be achieved by the following code:
+The same functionality may be achieved by the following code:
 
-```ts title="Re-resolvable way of listening to events"
+```ts title="AwaiEvent way of listening to events"
+const clickEvent = new AwaiEvent();
+
 while (true) {
   const event = await clickEventReResolvable;
   /* handle event */

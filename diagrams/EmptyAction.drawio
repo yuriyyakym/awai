@@ -1,0 +1,40 @@
+<mxfile host="app.diagrams.net" modified="2023-12-16T19:25:44.415Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" etag="6FSS7nQrXlgvW-Td0uiK" version="22.1.11" type="device">
+  <diagram name="Page-1" id="4qu10_seJTUpNNTkscHy">
+    <mxGraphModel dx="613" dy="378" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="FU6LS3FaX3cMkNHl-JYb-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="FU6LS3FaX3cMkNHl-JYb-3" target="FU6LS3FaX3cMkNHl-JYb-10">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FU6LS3FaX3cMkNHl-JYb-2" value="call" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" vertex="1" connectable="0" parent="FU6LS3FaX3cMkNHl-JYb-1">
+          <mxGeometry x="-0.1166" y="1" relative="1" as="geometry">
+            <mxPoint y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FU6LS3FaX3cMkNHl-JYb-3" value="Empty Action" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="FU6LS3FaX3cMkNHl-JYb-10" value="" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="50" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="FU6LS3FaX3cMkNHl-JYb-11" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;fillColor=#1ba1e2;strokeColor=#006EAF;" edge="1" parent="1" target="FU6LS3FaX3cMkNHl-JYb-13">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="201" y="60" as="sourcePoint" />
+            <mxPoint x="176.40853499869894" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FU6LS3FaX3cMkNHl-JYb-12" value="invoked &lt;font color=&quot;#6e4201&quot; style=&quot;font-size: 12px;&quot;&gt;(ActionInvokedEvent)&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#006EAF;rotation=0;" vertex="1" connectable="0" parent="FU6LS3FaX3cMkNHl-JYb-11">
+          <mxGeometry x="0.2113" relative="1" as="geometry">
+            <mxPoint x="85" y="5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FU6LS3FaX3cMkNHl-JYb-13" value="" style="sketch=0;outlineConnect=0;fontColor=#ffffff;fillColor=#006EAF;strokeColor=#006EAF;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.event;" vertex="1" parent="1">
+          <mxGeometry x="191" y="100" width="20" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

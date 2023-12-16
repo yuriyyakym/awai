@@ -10,7 +10,7 @@ export type ActionInvokedEvent<Args> = {
   config: Config;
 };
 
-export type ActionResolvedEvent<Args, Return> = {
+export type ActionFulfilledEvent<Args, Return> = {
   arguments: Args;
   config: Config;
   result: Return;
@@ -27,7 +27,7 @@ export type BaseEvents<Args> = {
 };
 
 export type EventsWithCallback<Args, Return> = BaseEvents<Args> & {
-  fulfilled: AwaiEvent<ActionResolvedEvent<Args, Return>>;
+  fulfilled: AwaiEvent<ActionFulfilledEvent<Args, Return>>;
   rejected: AwaiEvent<ActionRejectedEvent<Args>>;
 };
 

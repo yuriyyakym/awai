@@ -6,9 +6,10 @@ sidebar_position: 5
 
 Selector is used to combine multiple states into a single value. It is read-only.
 
-If any of dependencies or combining predicate is async, selector becomes async selector.
 
 ![Sync selector visual diagram](/diagrams/SyncSelector.svg "Sync selector visual diagram")
+
+If any of dependencies or combining predicate is async, selector becomes async selector.
 
 ![Async selector visual diagram](/diagrams/AsyncSelector.svg "Async selector visual diagram")
 
@@ -59,9 +60,13 @@ const messageState = selector(
   (greeting, name) => `${greeting} ${name}`
 );
 
+console.log(messageState.getStatus()); // "pending"
+console.log(messageState.get()); // undefined
+
 const message = await messageState.events.changed;
 
 console.log(message); // Hello Awai
+console.log(messageState.get()); // Hello Awai
 ```
 
 ---

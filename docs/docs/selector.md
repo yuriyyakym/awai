@@ -6,7 +6,51 @@ sidebar_position: 5
 
 Selector is used to combine multiple states into a single value. It is read-only.
 
-```ts title="Usage example"
+If any of dependencies or combining predicate is async, selector becomes async selector.
+
+![Sync selector visual diagram](/diagrams/SyncSelector.svg "Sync selector visual diagram")
+
+![Async selector visual diagram](/diagrams/AsyncSelector.svg "Async selector visual diagram")
+
+:::info Info
+If at least one of async dependencies rejects, resulting selector rejects with [AggregateError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError).
+:::
+
+### Properties and methods
+
+#### Sync selector
+- **get** - method that returns current value
+- **events** - record of [AwaiEvent](/awai-event) events
+  - **changed** - is emitted when state value is modified
+
+#### Async selector
+- **config** - resolved config
+- **get** - method that returns current value
+- **getAsync** - method that returns async state `{ isLoading, error, value }`
+- **getPromise** - method that returns promise of a value. This is especially helpful when you want to use value of an async state being initialized. If initialized, promise is resolved with current value right away.
+- **getStatus** - method that returns AsyncStatus ('pending', 'fulfilled', 'rejected')
+- **events** - record of [AwaiEvent](/awai-event) events
+  - **changed** - new value is calculated
+  - **fulfilled** - value is loaded
+  - **rejected** - error occurred while loading a value
+  - **requested** - new value has been requested
+  - **ignored** - promise is resolved, but newer version promise is pending. Emits `VersionIgnoredEvent`.
+
+### Examples
+
+```ts title="Usage example - Sync Selector"
+const number1State = state(1);
+const number2State = state(2);
+
+const sumState = selector(
+  [number1State, number2State],
+  (number1, number2) => number1 + number2
+);
+
+console.log(sumState.get()); // 3
+```
+
+```ts title="Usage example - Async Selector"
 const greetingState = state('Hello');
 const nameState = asyncState(new Promise(resolve => setTimeout(resolve, 100, 'Awai')));
 
@@ -24,27 +68,12 @@ console.log(message); // Hello Awai
 
 ### Types
 
-```ts title="ReadableState - returned when all state dependencies are sync"
-interface ReadableState<T> {
-  events: {
-    changed: AwaiEvent<T>;
-  };
-  get: () => T;
-  then: (resolver: Resolver<T>) => Promise<T>;
-}
-```
+[Source](https://github.com/yuriyyakym/awai/blob/master/src/selector/types.ts)
 
-```ts title="ReadableAsyncState - returned when any dependency is async"
-interface ReadableAsyncState<T> {
-  events: {
-    changed: AwaiEvent<T>;
-    failed: AwaiEvent<unknown>;
-    requested: AwaiEvent<void>;
-  };
-  get: () => T | undefined;
-  getAsync: () => AsyncValue<T>; // { isLoading, error, value }
-  getPromise: () => Promise<T>;
-  getStatus: () => AsyncStatus; // 'pending' | 'fulfilled' | 'rejected'
-  then: (resolver: Resolver<T>) => Promise<T>;
-}
+```ts
+export type VersionIgnoredEvent<T> = {
+  error?: unknown;
+  value?: T;
+  version: number;
+};
 ```

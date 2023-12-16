@@ -4,12 +4,23 @@ sidebar_position: 6
 
 # Action
 
-Action is a wrapper for any function. Action has its `events` object, which makes it useful for controlling [scenarios](/scenario).
+Action is a function that emits events. It may have a callback or be empty.
+Actions are useful for triggering scenarios or controlling async flows.
 
-Action has following events:
-  - `invoked` - emits `ActionInvokedEvent` when action is called
-  - `resolved` - emits `ActionResolvedEvent` when action is finished successfully
-  - `rejected` - emits an error if inner callback throws or returns a rejected promise
+![Empty action visual diagram](/diagrams/EmptyAction.svg "Empty action visual diagram")
+
+![Action visual diagram](/diagrams/Action.svg "Action visual diagram")
+
+:::info Return value
+Action returns a promise which is resolved after callback is finished and all event listeners got notified. If action callback returns a value, promise is resolved with that value.
+:::
+
+### Events:
+  - **invoked** - emits `ActionInvokedEvent` when action is called
+  - **fulfilled** - emits `ActionFulfilledEvent` when action is finished successfully
+  - **rejected** - emits `ActionRejectedEvent` when callback throws or returns a rejected promise
+
+---
 
 ```ts title="Example action"
 const increment = action(() => counter.set(current => current + 1));
@@ -33,7 +44,8 @@ scenario(increment.events.invoked, () => {
 });
 ```
 
-Empty actions may receive arguments which are accessible from events.
+Empty actions can still receive arguments which will be available in event payloads.
+If you use TypeScript, you can specify arguments types:
 
 ```ts title="Passing arguments to an empty action in order to have better control over scenario"
 const createTask = action<[title: string, description: string]>();
@@ -48,26 +60,27 @@ createTask('Task title', 'Task description');
 
 ---
 
-:::info Return value
-Action returns a promise which is resolved after all related awai nodes are updated.
-:::
-
 ### Types
 
 [Source](https://github.com/yuriyyakym/awai/blob/master/src/action/types.ts)
 
 ```ts
-export type ActionInvokedEvent<Args> = {
+type ActionInvokedEvent<Args> = {
   arguments: Args;
   config: Config;
 };
 
-export type ActionResolvedEvent<Args, Return> = {
+type ActionFulfilledEvent<Args, Return> = {
   arguments: Args;
   config: Config;
   result: Return;
 };
+
+type ActionRejectedEvent<Args> = {
+  arguments: Args;
+  config: Config;
+  error: unknown;
+};
 ```
 
 ---
-

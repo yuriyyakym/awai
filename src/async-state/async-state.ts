@@ -48,7 +48,7 @@ const asyncState = <T>(
         : await nextValueOrResolver;
       const isChanged = !Object.is(newValue, value);
 
-      if (currentPendingVersion !== lastPendingVersion) {
+      if (currentPendingVersion !== lastPendingVersion || !isChanged) {
         events.ignored.emit({ value: newValue, version: currentPendingVersion });
         return;
       }

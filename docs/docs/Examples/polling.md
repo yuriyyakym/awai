@@ -29,11 +29,12 @@ effect([isOnlineState, syncIntervalState], (isOnline, syncInterval) => {
 ```ts title="Create connectionEffectiveTypeState"
 type EffectiveType = 'slow-2g' | '2g' | '3g' | '4g';
 
+const connectionEffectiveTypeState = state<EffectiveType>(connection.effectiveType);
+
 const navigator = window.navigator as any;
 const connection =
   navigator && (navigator.connection || navigator.mozConnection || navigator.webkitConnection);
 
-const connectionEffectiveTypeState = state<EffectiveType>(connection.effectiveType);
 
 connection.addEventListener('change', () => {
   connectionEffectiveTypeState.set(connection.effectiveType);
@@ -78,5 +79,5 @@ const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(
 ```
 
 :::note
-Most likely, in the future there will be a library created with helpers like `connectionEffectiveTypeState` and `isOnlineState`.
+Most likely, in the future a library with helpers like `connectionEffectiveTypeState` and `isOnlineState` will be created.
 :::

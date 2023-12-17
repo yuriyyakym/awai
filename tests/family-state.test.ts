@@ -48,11 +48,20 @@ test('emits `changed` event when node set', async () => {
   const onFamilyChanged = vi.fn();
   const family = familyState((id) => `${id}-test`);
   scenario(family.events.changed, onFamilyChanged);
-  family.setNode('test', state('test'));
-  await flush();
+  await family.setNode('test', state('test'));
   expect(onFamilyChanged.mock.calls.length).toBe(1);
-  family.setNode('test2', state('test2'));
-  await flush();
+  await family.setNode('test2', state('test2'));
+  expect(onFamilyChanged.mock.calls.length).toBe(2);
+});
+
+test('emits `changed` event when set node changes', async () => {
+  const onFamilyChanged = vi.fn();
+  const testState = state('test');
+  const family = familyState((id) => `${id}-test`);
+  scenario(family.events.changed, onFamilyChanged);
+  await family.setNode('test', testState);
+  expect(onFamilyChanged.mock.calls.length).toBe(1);
+  await testState.set('Awai');
   expect(onFamilyChanged.mock.calls.length).toBe(2);
 });
 
@@ -80,19 +89,17 @@ test('emits `changed` event when any node changed', async () => {
   await flush();
   scenario(family.events.changed, onFamilyChanged);
   await node1.set('3');
-  await flush();
   expect(onFamilyChanged.mock.calls.length).toBe(1);
   await node2.set('4');
-  await flush();
   expect(onFamilyChanged.mock.calls.length).toBe(2);
 });
 
 test('throws if tries to re-assign node with existing id', async () => {
   const family = familyState((id) => `${id}-test`);
   family.setNode('1', state('test'));
-  expect(() => {
-    family.setNode('1', state('another test'));
-  }).toThrow();
+  expect(family.setNode('1', state('another test'))).rejects.toEqual(
+    new Error(`Cannot set node. Node with id "1" already exists.`),
+  );
 });
 
 test('returns same node for the same key', async () => {

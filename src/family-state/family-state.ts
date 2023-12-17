@@ -1,6 +1,6 @@
 import asyncState, { type AsyncState } from '../async-state';
 import { SystemTag } from '../constants';
-import { AwaiEvent } from '../core';
+import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
 import { getUniqueId, isFunction } from '../lib';
 import scenario from '../scenario';
@@ -19,7 +19,9 @@ const familyState = <
   T,
   Initializer extends (id: Id) => T | Promise<T>,
   Family extends Record<Id, NodeType>,
-  NodeType = ReturnType<Initializer> extends PromiseLike<infer Q>
+  NodeType extends State<any> | AsyncState<any> = ReturnType<Initializer> extends PromiseLike<
+    infer Q
+  >
     ? AsyncState<Q>
     : State<ReturnType<Initializer>>,
 >(
@@ -62,13 +64,24 @@ const familyState = <
     return stateNode as NodeType;
   };
 
-  const setNode = (id: Id, stateNode: NodeType) => {
+  const setNode = async (id: Id, stateNode: NodeType) => {
     if (id in family) {
       throw new Error(`Cannot set node. Node with id "${id}" already exists.`);
     }
 
     family = { ...family, [id]: stateNode };
+
+    scenario(
+      stateNode.events.changed,
+      () => {
+        events.changed.emit(family);
+      },
+      { tags: [SystemTag.CORE_NODE] },
+    );
+
     events.changed.emit(family);
+
+    await flush();
   };
 
   const get = () => {

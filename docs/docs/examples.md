@@ -31,7 +31,7 @@ Traditional Todo list example, which shows simple actions and state usage. In co
 
 _Complexity: Simple_
 
-_Uses: [State](/state), [Action](/action), [Scenario](/scenario), [Effect](/effect)_
+_Uses: [State](/state), [Selector](/selector), [Action](/action), [Scenario](/scenario)_
 
 Funny counter application, which prevents user from keeping counter below 0, by automatically incrementing counter every second. Project demonstrates scenarios composition and how additional logics may be handled outside of actions.
 
@@ -41,7 +41,7 @@ Funny counter application, which prevents user from keeping counter below 0, by 
 
 _Complexity: Complex_
 
-_Uses: [State](/state), [Action](/action), [Scenario](/scenario), [Effect](/effect)_
+_Uses: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector](/selector), [Scenario](/scenario), [Effect](/effect)_
 
 Project that demonstrates how to perform user polling with different frequency depending on connection speed.
 In order to test this example, open DevTools and throttle your network connection.

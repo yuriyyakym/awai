@@ -20,6 +20,7 @@ If at least one of async dependencies rejects, resulting selector rejects with [
 ### Properties and methods
 
 #### Sync selector
+- **config** - resolved config
 - **get** - method that returns current value
 - **events** - record of [AwaiEvent](/awai-event) events
   - **changed** - is emitted when state value is modified

@@ -10,9 +10,10 @@ State is a an object which stores data and emits event when it changes.
 
 ### Properties and methods
 
+- **config** - resolved config
+- **events** - record of [AwaiEvent](/awai-event) events
 - **get** - method that returns current value
 - **set** - method that sets new value
-- **events** - record of [AwaiEvent](/awai-event) events
 
 ### Events
 - **changed** - state value is modified

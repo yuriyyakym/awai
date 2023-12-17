@@ -9,12 +9,14 @@ State that handles asynchronous values and emits events required for async manag
 ![AsyncState visual diagram](/diagrams/AsyncState.svg "AsyncState visual diagram")
 
 ### Properties and methods
+
+- **config** - resolved config
+- **events** - record of [AwaiEvent](/awai-event) events
 - **get** - method that returns current value
 - **getAsync** - method that returns async state `{ isLoading, error, value }`
 - **getPromise** - method that returns promise of a value. This is especially helpful when you want to use value of an async state being initialized. If initialized, promise is resolved with current value right away.
 - **getStatus** - method that returns AsyncStatus ('pending', 'fulfilled', 'rejected')
 - **set** - method to set new value/promise
-- **events** - record of [AwaiEvent](/awai-event) events
 
 ### Events
 - **changed** - state value is modified

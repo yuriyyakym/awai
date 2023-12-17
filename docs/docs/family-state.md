@@ -15,16 +15,16 @@ Internally `FamilySate` is a read-only `State` object, hence it may be used in s
 
 ### Properties and methods
 
+- **config** - resolved config
+- **events** - record of [AwaiEvent](/awai-event) events
 - **get** - returns whole family object with with `State`/`AsyncState` values
 - **getNode** - returns existing or creates new `State`/`AsyncState` using initializer
 - **setNode** - is used to manually set a state for specific id. When used, `stateCreated` event is not emitted
-- **events** - record of [AwaiEvent](/awai-event) events
 
 ### Events
 
 - **changed** - state is created or any inner state emitted `changed` event
 - **stateCreated** - new state is created with `getNode` method
-
 
 ### Examples
 

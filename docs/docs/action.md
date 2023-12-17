@@ -15,10 +15,16 @@ Actions are useful for triggering scenarios or controlling async flows.
 Action returns a promise which is resolved after callback is finished and all event listeners got notified. If action callback returns a value, promise is resolved with that value.
 :::
 
+### Properties
+
+- **config** - resolved config
+- **events** - record of [AwaiEvent](/awai-event) events
+
 ### Events:
-  - **invoked** - emits `ActionInvokedEvent` when action is called
-  - **fulfilled** - emits `ActionFulfilledEvent` when action is finished successfully
-  - **rejected** - emits `ActionRejectedEvent` when callback throws or returns a rejected promise
+
+- **invoked** - emits `ActionInvokedEvent` when action is called
+- **fulfilled** - emits `ActionFulfilledEvent` when action is finished successfully
+- **rejected** - emits `ActionRejectedEvent` when callback throws or returns a rejected promise
 
 ---
 

@@ -10,7 +10,7 @@ Predicate should return a cleanup function if cleanup needed.
 
 ![Effect visual diagram](/diagrams/Effect.svg "Effect visual diagram")
 
-### Properties and methods
+### Properties
 
 - **config** - resolved config
 - **events** - record of [AwaiEvent](/awai-event) events

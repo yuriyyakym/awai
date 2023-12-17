@@ -15,6 +15,11 @@ In most cases triggered scenarios are used. Trigger can be:
 - **Promise** - `scenario(promise, callback)` - _callback will run once when promise is resolved_
 - **Promise factory** - `scenario(() => Promise.race([...]), callback)`
 
+### Properties
+
+- **config** - resolved config
+- **events** - record of [AwaiEvent](/awai-event) events
+
 ### Strategies
 
 - **fork** - runs scenarios in parallel

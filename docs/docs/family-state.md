@@ -9,7 +9,7 @@ Helper that creates and aggregates state nodes.
 When creating familyState you have to pass initializer - function used to determine newly created state value.
 When requesting new node with `getNode` method, either [State](/state) or [AsyncState](/async-state) is returned, basing on initializer return type.
 
-Internally `FamilySate` is a read-only `State` object, hence it may be used in selectors, scenarios, effects or combined with promises. When some inner state is being loaded and has no value yet, it does not appear in `get` method result.
+Internally `FamilySate` is a read-only `State` object, hence it may be used in selectors, scenarios, effects or combined with promises.
 
 ![FamilyState visual diagram](/diagrams/FamilyState.svg "FamilyState visual diagram")
 

@@ -45,3 +45,14 @@ _Uses: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector
 
 Project that demonstrates how to perform user polling with different frequency depending on connection speed.
 In order to test this example, open DevTools and throttle your network connection.
+
+## Debounced counter
+
+[Playground](https://codesandbox.io/p/sandbox/awai--debounce-tt97h5?file=%2FREADME.md%3A3%2C23)
+
+_Complexity: Simple_
+
+_Used nodes: [State](/state), [Action](/action), [Scenario](/scenario)_
+
+Project that demonstrates how to implement debouncing using forked scenario.
+

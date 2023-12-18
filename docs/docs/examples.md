@@ -68,6 +68,18 @@ _Used nodes: [State](/state), [Action](/action), [Scenario](/scenario)_
 
 Project that demonstrates how to use cyclic scenario for implementing throttling functionality.
 
+## Persist state
+
+[Playground](https://codesandbox.io/p/sandbox/awai--persist-2kfnxp?file=%2FREADME.md%3A3%2C23)
+
+_Complexity: Simple_
+
+_Used nodes: [State](/state), [Scenario](/scenario), [Registry](/registry)_
+
+---
+
+Project that demonstrates how to persist state in localStorage, and implement shared Awai nodes functionality using [Registry](/registry).
+
 ## Universities search
 
 [Playground](https://codesandbox.io/p/sandbox/awai--universities-search-9n9c5k?file=%2FREADME.md%3A3%2C23)

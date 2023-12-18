@@ -186,7 +186,8 @@ test('emits `requested` event when one of async dependencies is requested', asyn
     nameState.set(delay(10).then(() => 'Awai'));
   }, 10);
 
-  expect(mergedState.events.requested).resolves.toBeUndefined();
+  await mergedState.events.requested;
+  await delay(5);
   expect(mergedState.events.fulfilled).resolves.toEqual('Hello Awai');
   expect(mergedState.events.changed).resolves.toEqual('Hello Awai');
 });

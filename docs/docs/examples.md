@@ -70,6 +70,8 @@ Project that demonstrates how to use cyclic scenario for implementing throttling
 
 ## Universities search
 
+[Playground](https://codesandbox.io/p/sandbox/awai--universities-search-9n9c5k?file=%2FREADME.md%3A3%2C23)
+
 _Complexity: Complex_
 
 _Used nodes: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector](/selector), [Scenario](/scenario)_

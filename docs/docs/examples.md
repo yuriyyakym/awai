@@ -72,7 +72,7 @@ Project that demonstrates how to use cyclic scenario for implementing throttling
 
 _Complexity: Complex_
 
-_Used nodes: [State](/state), [AsyncState](/asyncstate), [Action](/action), [Selector](/selector), [Scenario](/scenario)_
+_Used nodes: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector](/selector), [Scenario](/scenario)_
 
 ---
 

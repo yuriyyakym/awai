@@ -55,10 +55,14 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     const currentPendingVersion = (lastPendingVersion + 1) % Number.MAX_SAFE_INTEGER;
     lastPendingVersion = currentPendingVersion;
 
-    events.requested.emit();
-
     const status = getAggregatedAsyncStatus(asyncStates);
     const errors = asyncStates.map((state) => state.getAsync().error).filter(Boolean);
+
+    if (status === AsyncStatus.PENDING) {
+      isLoading = true;
+    }
+
+    events.requested.emit();
 
     if (errors.length > 0) {
       error = new AggregateError(errors);
@@ -68,10 +72,6 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
       events.rejected.emit(error);
       events.changed.emit(value);
       return;
-    }
-
-    if (status === AsyncStatus.PENDING) {
-      isLoading === true;
     }
 
     if (status === AsyncStatus.FULFILLED) {

@@ -183,11 +183,12 @@ test('emits `requested` event when one of async dependencies is requested', asyn
   expect(mergedState.get()).toEqual('Hello Noname');
 
   setTimeout(() => {
-    nameState.set(delay(10).then(() => 'Awai'));
+    nameState.set(delay(20).then(() => 'Awai'));
   }, 10);
 
   await mergedState.events.requested;
   expect(mergedState.getStatus()).toEqual(AsyncStatus.PENDING);
+  expect(mergedState.getAsync()).toMatchObject({ isLoading: true });
   await delay(5);
   expect(mergedState.events.fulfilled).resolves.toEqual('Hello Awai');
   expect(mergedState.events.changed).resolves.toEqual('Hello Awai');

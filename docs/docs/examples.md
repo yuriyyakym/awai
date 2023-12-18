@@ -68,3 +68,13 @@ _Used nodes: [State](/state), [Action](/action), [Scenario](/scenario)_
 
 Project that demonstrates how to use cyclic scenario for implementing throttling functionality.
 
+## Universities search
+
+_Complexity: Complex_
+
+_Used nodes: [State](/state), [AsyncState](/asyncstate), [Action](/action), [Selector](/selector), [Scenario](/scenario)_
+
+---
+
+Project that demonstrates how to implement debounced search with sorting.
+It shows advanced Scenario and AsyncSelector usage. It also features error and loading states handling.

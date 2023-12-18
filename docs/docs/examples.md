@@ -56,3 +56,15 @@ _Used nodes: [State](/state), [Action](/action), [Scenario](/scenario)_
 
 Project that demonstrates how to implement debouncing using forked scenario.
 
+## Throttled counter
+
+[Playground](https://codesandbox.io/p/sandbox/awai--throttle-k38s9h?file=%2FREADME.md%3A3%2C23)
+
+_Complexity: Simple_
+
+_Used nodes: [State](/state), [Action](/action), [Scenario](/scenario)_
+
+---
+
+Project that demonstrates how to use cyclic scenario for implementing throttling functionality.
+

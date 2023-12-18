@@ -1,5 +1,5 @@
 import { AsyncStatus, SystemTag } from '../constants';
-import { AwaiEvent, flush } from '../core';
+import { AwaiEvent } from '../core';
 import { registry } from '../global';
 import {
   fork,

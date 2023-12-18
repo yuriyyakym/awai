@@ -70,6 +70,10 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
       return;
     }
 
+    if (status === AsyncStatus.PENDING) {
+      isLoading === true;
+    }
+
     if (status === AsyncStatus.FULFILLED) {
       const values = states.map((state) => state.get()) as StatesValues;
 

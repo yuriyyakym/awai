@@ -14,15 +14,33 @@
 
   <br />
   
-  <p>| <a href="https://awai.vercel.app/">Documentation</a> | <a href="https://github.com/yuriyyakym/awai-react">Awai-React</a> |</p>
+  <p>| <a href="https://awai.vercel.app/">Documentation</a> | <a href="https://www.npmjs.com/package/awai">NPM</a> | <a href="https://github.com/yuriyyakym/awai-react">Awai-React</a> |</p>
 </div>
 
 ---
 
-## Examples
+## About
 
-- Paint - [Playground](https://codesandbox.io/p/github/yuriyyakym/awai-paint/master) | [Repository](https://github.com/yuriyyakym/awai-paint) | [Demo](https://awai-paint.vercel.app/)
+Full-featured state management library, which suggests a unique [architectural approach](https://awai.store/architecture), where every event is a re-resolvable promise-like [AwaiEvent](https://awai.store/awai-event) with no terminal state.
 
-- Todo list - [Playground](https://codesandbox.io/p/sandbox/awai--todo-list-wqyjfz?file=%2FREADME.md%3A3%2C23)
+Every Awai node has its events, which can be mixed into any async logics, or used as trigger for [Scenarios](https://awai.store/scenario).
 
-- Safe counter - [Playground](https://codesandbox.io/p/sandbox/awai--cunter-qk7h6p?file=%2FREADME.md%3A3%2C23)
+For better understanding have a look at [documentation](https://awai.store) and [examples](https://awai.store/examples).
+
+## Documentation
+
+- [Motivation](https://awai.store/motivation)
+- [Architecture](https://awai.store/architecture)
+- [Examples](https://awai.store/examples)
+- Awai nodes: [State](https://awai.store/state), [AsyncState](https://awai.store/async-state), [Selector](https://awai.store/selector), [Action](https://awai.store/action), [Scenario](https://awai.store/scenario), [FamilyState](https://awai.store/family-state), [Effect](https://awai.store/effect)
+- Other
+  - [AwaiEvent](https://awai.store/awai-event)
+  - [Registry](https://awai.store/registry)
+
+## Integrations
+
+- **React** - [NPM](https://www.npmjs.com/package/awai-react), [Repository](https://github.com/yuriyyakym/awai-react)
+
+## Name meaning
+
+The name comes from a Thai phrase [เอาไว้](https://www.thai2english.com/dictionary/1457374.html) which means "to keep/save/store for later".

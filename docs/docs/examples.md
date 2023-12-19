@@ -35,17 +35,6 @@ _Uses: [State](/state), [Selector](/selector), [Action](/action), [Scenario](/sc
 
 Funny counter application, which prevents user from keeping counter below 0, by automatically incrementing counter every second. Project demonstrates scenarios composition and how additional logics may be handled outside of actions.
 
-## User polling
-
-[Playground](https://codesandbox.io/p/sandbox/awai--polling-63572c?file=%2FREADME.md%3A3%2C23)
-
-_Complexity: Complex_
-
-_Uses: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector](/selector), [Scenario](/scenario), [Effect](/effect)_
-
-Project that demonstrates how to perform user polling with different frequency depending on connection speed.
-In order to test this example, open DevTools and throttle your network connection.
-
 ## Debounced counter
 
 [Playground](https://codesandbox.io/p/sandbox/awai--debounce-tt97h5?file=%2FREADME.md%3A3%2C23)
@@ -79,6 +68,17 @@ _Used nodes: [State](/state), [Scenario](/scenario), [Registry](/registry)_
 ---
 
 Project that demonstrates how to persist state in localStorage, and implement shared Awai nodes functionality using [Registry](/registry).
+
+## User polling
+
+[Playground](https://codesandbox.io/p/sandbox/awai--polling-63572c?file=%2FREADME.md%3A3%2C23)
+
+_Complexity: Complex_
+
+_Uses: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector](/selector), [Scenario](/scenario), [Effect](/effect)_
+
+Project that demonstrates how to perform user polling with different frequency depending on connection speed.
+In order to test this example, open DevTools and throttle your network connection.
 
 ## Universities search
 

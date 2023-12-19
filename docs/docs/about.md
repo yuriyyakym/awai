@@ -15,11 +15,12 @@ It provides variety of utils helping to write declarative and well-structured co
 npm install awai
 ```
 
-## Integrations
+### Integrations
 
 - **React** - [NPM](https://www.npmjs.com/package/awai-react), [Repository](https://github.com/yuriyyakym/awai-react)
 
-## Name meaning
+
+### Name meaning
 
 The name comes from a Thai phrase [เอาไว้](https://www.thai2english.com/dictionary/1457374.html) which means "to keep/save/store for later".
 

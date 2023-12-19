@@ -21,21 +21,21 @@
 
 ## About
 
-Full-featured state management library, which suggests a unique [architectural approach](https://awai.store/architecture), where every event is a re-resolvable promise-like [AwaiEvent](https://awai.store/awai-event) with no terminal state.
+Full-featured state management library, which suggests a unique [architectural approach](https://awai.js.org/architecture), where every event is a re-resolvable promise-like [AwaiEvent](https://awai.js.org/awai-event) with no terminal state.
 
-Every Awai node has its events, which can be mixed into any async logics, or used as trigger for [Scenarios](https://awai.store/scenario).
+Every Awai node has its events, which can be mixed into any async logics, or used as trigger for [Scenarios](https://awai.js.org/scenario).
 
-For better understanding have a look at [documentation](https://awai.store) and [examples](https://awai.store/examples).
+For better understanding have a look at [documentation](https://awai.js.org) and [examples](https://awai.js.org/examples).
 
 ## Documentation
 
-- [Motivation](https://awai.store/motivation)
-- [Architecture](https://awai.store/architecture)
-- [Examples](https://awai.store/examples)
-- Awai nodes: [State](https://awai.store/state), [AsyncState](https://awai.store/async-state), [Selector](https://awai.store/selector), [Action](https://awai.store/action), [Scenario](https://awai.store/scenario), [FamilyState](https://awai.store/family-state), [Effect](https://awai.store/effect)
+- [Motivation](https://awai.js.org/motivation)
+- [Architecture](https://awai.js.org/architecture)
+- [Examples](https://awai.js.org/examples)
+- Awai nodes: [State](https://awai.js.org/state), [AsyncState](https://awai.js.org/async-state), [Selector](https://awai.js.org/selector), [Action](https://awai.js.org/action), [Scenario](https://awai.js.org/scenario), [FamilyState](https://awai.js.org/family-state), [Effect](https://awai.js.org/effect)
 - Other
-  - [AwaiEvent](https://awai.store/awai-event)
-  - [Registry](https://awai.store/registry)
+  - [AwaiEvent](https://awai.js.org/awai-event)
+  - [Registry](https://awai.js.org/registry)
 
 ## Integrations
 

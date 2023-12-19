@@ -7,7 +7,7 @@ slug: /
 
 Dependency-free state management library written in TypeScript.
 
-This library suggests a unique [architectural approach](/architecture), where every event is a promise-like [AwaiEvent](/awai-event).
+This library suggests a unique [architectural approach](/architecture), where every event is a re-resolvable promise-like [AwaiEvent](/awai-event) with no terminal state.
 
 It provides variety of utils helping to write declarative and well-structured code.
 
@@ -15,15 +15,11 @@ It provides variety of utils helping to write declarative and well-structured co
 npm install awai
 ```
 
-## Examples
-- Paint - [Playground](https://codesandbox.io/p/github/yuriyyakym/awai-paint/master) | [Repository](https://github.com/yuriyyakym/awai-paint) | [Demo](https://awai-paint.vercel.app/)
+## Integrations
 
-- Todo list - [Playground](https://codesandbox.io/p/sandbox/awai--todo-list-wqyjfz?file=%2FREADME.md%3A3%2C23)
+- **React** - [NPM](https://www.npmjs.com/package/awai-react), [Repository](https://github.com/yuriyyakym/awai-react)
 
-- Safe counter - [Playground](https://codesandbox.io/p/sandbox/awai--cunter-qk7h6p?file=%2FREADME.md%3A3%2C23)
-
-
-### Name meaning
+## Name meaning
 
 The name comes from a Thai phrase [เอาไว้](https://www.thai2english.com/dictionary/1457374.html) which means "to keep/save/store for later".
 

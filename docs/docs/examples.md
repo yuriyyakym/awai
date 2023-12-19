@@ -15,6 +15,8 @@ _Uses: [State](/state), [Action](/action), [Scenario](/scenario)_
 
 Basic painting application that demonstrates how to write logics declaratively by composing actions and scenarios. It is also a proof that Awai works great with real-time actions.
 
+---
+
 ## Todo list
 
 [Playground](https://codesandbox.io/p/sandbox/awai--todo-list-wqyjfz?file=%2FREADME.md%3A3%2C23)
@@ -24,6 +26,8 @@ _Complexity: Simple_
 _Uses: [State](/state), [Action](/action)_
 
 Traditional Todo list example, which shows simple actions and state usage. In contrast to the Paint example, logics are handled inside of actions, not in scenarios, which is a good approach for simple projects.
+
+---
 
 ## Safe counter
 
@@ -35,6 +39,8 @@ _Uses: [State](/state), [Selector](/selector), [Action](/action), [Scenario](/sc
 
 Funny counter application, which prevents user from keeping counter below 0, by automatically incrementing counter every second. Project demonstrates scenarios composition and how additional logics may be handled outside of actions.
 
+---
+
 ## Debounced counter
 
 [Playground](https://codesandbox.io/p/sandbox/awai--debounce-tt97h5?file=%2FREADME.md%3A3%2C23)
@@ -45,6 +51,8 @@ _Used nodes: [State](/state), [Action](/action), [Scenario](/scenario)_
 
 Project that demonstrates how to implement debouncing using forked scenario.
 
+---
+
 ## Throttled counter
 
 [Playground](https://codesandbox.io/p/sandbox/awai--throttle-k38s9h?file=%2FREADME.md%3A3%2C23)
@@ -53,9 +61,9 @@ _Complexity: Simple_
 
 _Used nodes: [State](/state), [Action](/action), [Scenario](/scenario)_
 
----
-
 Project that demonstrates how to use cyclic scenario for implementing throttling functionality.
+
+---
 
 ## Persist state
 
@@ -65,9 +73,9 @@ _Complexity: Simple_
 
 _Used nodes: [State](/state), [Scenario](/scenario), [Registry](/registry)_
 
----
-
 Project that demonstrates how to persist state in localStorage, and implement shared Awai nodes functionality using [Registry](/registry).
+
+---
 
 ## User polling
 
@@ -80,6 +88,8 @@ _Uses: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector
 Project that demonstrates how to perform user polling with different frequency depending on connection speed.
 In order to test this example, open DevTools and throttle your network connection.
 
+---
+
 ## Universities search
 
 [Playground](https://codesandbox.io/p/sandbox/awai--universities-search-9n9c5k?file=%2FREADME.md%3A3%2C23)
@@ -87,8 +97,6 @@ In order to test this example, open DevTools and throttle your network connectio
 _Complexity: Complex_
 
 _Used nodes: [State](/state), [AsyncState](/async-state), [Action](/action), [Selector](/selector), [Scenario](/scenario)_
-
----
 
 Project that demonstrates how to implement debounced search with sorting.
 It shows advanced Scenario and AsyncSelector usage. It also features error and loading states handling.

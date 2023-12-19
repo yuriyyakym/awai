@@ -4,7 +4,7 @@ const config = {
   tagline: 'Dependency-free state management library written in TypeScript',
   favicon: '/logo.svg',
   staticDirectories: ['static'],
-  url: 'https://...',
+  url: 'https://awai.js.org',
   baseUrl: '/',
   organizationName: 'yuriyyakym',
   projectName: 'awai',

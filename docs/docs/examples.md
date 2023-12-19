@@ -13,7 +13,7 @@ _Complexity: Medium_
 
 _Uses: [State](/state), [Action](/action), [Scenario](/scenario)_
 
-This examples shows how to compose actions and scenarios, and also suggests unique architectural approach. It is also a proof that Awai works great with real-time logics.
+This examples shows how write logics declaratively by composing actions and scenarios. It is also a proof that Awai works great with real-time applications.
 
 ## Todo list
 

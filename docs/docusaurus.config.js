@@ -34,7 +34,16 @@ const config = {
       ],
     },
   },
-  plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [
+    require.resolve('docusaurus-lunr-search'),
+    [
+      '@docusaurus/plugin-google-gtag',
+      {
+        trackingID: process.env.GA_TRACKING_ID,
+        anonymizeIP: true,
+      },
+    ],
+  ],
   presets: [
     [
       'classic',

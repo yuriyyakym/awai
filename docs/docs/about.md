@@ -46,13 +46,6 @@ npm install awai
 
 - **React** - [NPM](https://www.npmjs.com/package/awai-react), [GitHub](https://github.com/yuriyyakym/awai-react)
 
-### Example
-
-```ts
-
-```
-
-
 ### Name meaning
 
 The name comes from a Thai phrase [เอาไว้](https://www.thai2english.com/dictionary/1457374.html) which means "to keep/save/store for later".

@@ -45,9 +45,21 @@ Awai helps with organizing asynchronous logics and handling race conditions with
 npm install awai
 ```
 
-### Integrations
+### How AwaiEvent works
 
-- **React** - [GitHub](https://github.com/yuriyyakym/awai-react), [NPM](https://www.npmjs.com/package/awai-react)
+You are not likely to use it directly, the code is just for demonstration purposes.
+
+```ts
+const event = new AwaiEvent();
+
+setTimeout(event.emit, 100, 'hello');
+setTimeout(event.emit, 200, 'awai');
+
+const value1 = await event;
+const value2 = await event;
+
+console.log(`${value1} ${value2}`); // hello awai
+```
 
 ### Basic example
 
@@ -59,7 +71,7 @@ import TabItem from '@theme/TabItem';
 
 <TabItem value="js" label="JavaScript">
 
-```ts title="Todo list state management"
+```js title="Todo list state management"
 import { action, state } from 'awai';
 import { getUniqueId } from './utils';
 
@@ -123,6 +135,10 @@ export const toggleTaskIsCompleted = action((id: Task['id']) => {
 </TabItem>
 
 </Tabs>
+
+### Integrations
+
+- **React** - [GitHub](https://github.com/yuriyyakym/awai-react), [NPM](https://www.npmjs.com/package/awai-react)
 
 ### Name meaning
 

@@ -23,20 +23,23 @@ hide_title: true
 
   <br />
   
-  <p>| <a href="https://github.com/yuriyyakym/awai">GitHub</a> | <a href="https://github.com/yuriyyakym/awai-react">Awai-React</a> |</p>
+  <p>| <a href="https://github.com/yuriyyakym/awai">GitHub</a> | <a href="/examples">Examples</a> | <a href="https://github.com/yuriyyakym/awai-react">Awai-React</a> |</p>
 </div>
 
 ---
 
-This library suggests an [architectural approach](/architecture), where every event is a promise-like [AwaiEvent](/awai-event) with no terminal state.
+This library suggests an [architectural approach](/architecture), where every event is a promise-like (thennable) [AwaiEvent](/awai-event) with no terminal state.
 
-AwaiEvent is a fundamental part of this library. It can re-resolve infinite amount of times, and if you await this event in a loop, you have an event listener replacement.
+AwaiEvent is a fundamental part of this library. It can re-resolve infinite amount of times, and if you await it in a loop, you have an event listener replacement.
 
-Every Awai node has its events, which can be mixed into any async logics, or used as trigger for [Scenarios](https://awai.js.org/scenario).
+Awai provides variety of nodes which were design to help with handling complex logics.
+Every Awai node has its events, which can be mixed into any async logics, or used as trigger for [Scenarios](/scenario).
 
-Awai helps with organizing asynchronous logics and handling race conditions with ease.
+[Scenario](/scenario) is a powerful helper which helps to describe complex logics and events sequences using async functions.
 
-[Scenarios](/scenario) helps to describe logics in saga-like way, using promises or AwaiEvents.
+Awai helps with organizing asynchronous logics and handling race conditions with ease, and it's main goal is to completely extract business logics from UI layer.
+
+### Installation
 
 ```bash title="Installation"
 npm install awai
@@ -44,7 +47,7 @@ npm install awai
 
 ### Integrations
 
-- **React** - [NPM](https://www.npmjs.com/package/awai-react), [GitHub](https://github.com/yuriyyakym/awai-react)
+- **React** - [GitHub](https://github.com/yuriyyakym/awai-react), [NPM](https://www.npmjs.com/package/awai-react)
 
 ### Name meaning
 

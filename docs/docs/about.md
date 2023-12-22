@@ -49,6 +49,81 @@ npm install awai
 
 - **React** - [GitHub](https://github.com/yuriyyakym/awai-react), [NPM](https://www.npmjs.com/package/awai-react)
 
+### Basic example
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+<Tabs>
+
+<TabItem value="js" label="JavaScript">
+
+```ts title="Todo list state management"
+import { action, state } from 'awai';
+import { getUniqueId } from './utils';
+
+export const tasksState = state([]);
+
+export const createTask = action((title) => {
+  tasksState.set((tasks) => [
+    ...tasks,
+    { id: getUniqueId(), isCompleted: false, title },
+  ]);
+});
+
+export const deleteTask = action((id) => {
+  tasksState.set((tasks) => tasks.filter((task) => task.id !== id));
+});
+
+export const toggleTaskIsCompleted = action((id) => {
+  tasksState.set((tasks) => {
+    return tasks.map((task) => {
+      return task.id === id
+        ? { ...task, isCompleted: !task.isCompleted }
+        : task;
+    });
+  });
+});
+```
+
+</TabItem>
+
+<TabItem value="ts" label="TypeScript">
+
+```ts title="Todo list state management"
+import { action, state } from 'awai';
+import type { Task } from './types';
+import { getUniqueId } from './utils';
+
+export const tasksState = state<Task[]>([]);
+
+export const createTask = action((title: Task['title']) => {
+  tasksState.set((tasks) => [
+    ...tasks,
+    { id: getUniqueId(), isCompleted: false, title },
+  ]);
+});
+
+export const deleteTask = action((id: Task['id']) => {
+  tasksState.set((tasks) => tasks.filter((task) => task.id !== id));
+});
+
+export const toggleTaskIsCompleted = action((id: Task['id']) => {
+  tasksState.set((tasks) => {
+    return tasks.map((task) => {
+      return task.id === id
+        ? { ...task, isCompleted: !task.isCompleted }
+        : task;
+    });
+  });
+});
+```
+
+</TabItem>
+
+</Tabs>
+
 ### Name meaning
 
 The name comes from a Thai phrase [เอาไว้](https://www.thai2english.com/dictionary/1457374.html) which means "to keep/save/store for later".

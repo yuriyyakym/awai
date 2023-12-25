@@ -30,7 +30,7 @@ Every Awai node has its events, which can be mixed into any async logics, or use
 
 [Scenario](/scenario) is a powerful helper which helps to describe complex logics and events sequences using async functions.
 
-Awai helps with organizing asynchronous logics and handling race conditions with ease, and it's main goal is to completely extract business logics from UI layer.
+Awai helps with organizing asynchronous logics and handling race conditions with ease, and its main goal is to completely extract business logics from UI layer.
 
 ## Installation
 

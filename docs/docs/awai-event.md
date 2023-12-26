@@ -20,8 +20,8 @@ Awai event is a promise-like object which has no terminal state and may resolve 
 ```ts title="Example of AwaiEvent usage"
 const event = new AwaiEvent();
 
-setTimeout(event.emit, 100, 'hello');
-setTimeout(event.emit, 200, 'awai');
+setTimeout(() => event.emit('hello'), 100);
+setTimeout(() => event.emit('awai'), 200);
 
 const value1 = await event;
 const value2 = await event;

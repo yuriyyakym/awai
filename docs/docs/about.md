@@ -52,8 +52,8 @@ You are not likely to use it directly, the code is just for demonstration purpos
 ```ts
 const event = new AwaiEvent();
 
-setTimeout(event.emit, 100, 'hello');
-setTimeout(event.emit, 200, 'awai');
+setTimeout(() => event.emit('hello'), 100);
+setTimeout(() => event.emit('awai'), 200);
 
 const value1 = await event;
 const value2 = await event;

@@ -29,22 +29,19 @@ Awai provides variety of tools helping with organizing asynchronous logic, handl
 npm install awai
 ```
 
-## Available tools
-
-- **State** - simple node which stores data
-- **AsyncState** - helps with storing data loaded asynchronously protecting against race conditions
-- **Selector** - combines multiple states (States/AsyncStates/Selectors) into a single value. Handles async loading and protects against race conditions
-- **Scenario** - kind of event composable event listener, which allows to declaratively write logic in a saga-like way using async functions
-- **Action** - function wrapper which emits events, and is helpful for triggering scenarios
-- **FamilyState** - aggregator of multiple states of the same type; handles both sync and async states
-- **Effect** - runs callback on dependency states change and cleans up previous effects
-
 ## Documentation
 
 - [Quick start](https://awai.js.org/quick-start)
 - [Architecture](https://awai.js.org/architecture)
 - [Examples](https://awai.js.org/examples)
-- Tools: [State](https://awai.js.org/state), [AsyncState](https://awai.js.org/async-state), [Selector](https://awai.js.org/selector), [Action](https://awai.js.org/action), [Scenario](https://awai.js.org/scenario), [FamilyState](https://awai.js.org/family-state), [Effect](https://awai.js.org/effect)
+- Tools:
+  - [State](https://awai.js.org/state) - simple node which stores data
+  - [AsyncState](https://awai.js.org/async-state) - helps with storing data loaded asynchronously protecting against race conditions
+  - [Selector](https://awai.js.org/selector) - combines multiple states into a single value. Handles async loading and protects against race conditions
+  - [Action](https://awai.js.org/action) - function wrapper which emits events; is helpful for controlling scenarios
+  - [Scenario](https://awai.js.org/scenario) - composable event listener which allows to declaratively write logic in a saga-like way using async functions
+  - [FamilyState](https://awai.js.org/family-state) - aggregator of multiple states of the same type; handles both sync and async states
+  - [Effect](https://awai.js.org/effect) - runs callback on dependency states change and cleans up previous effects
 - Other
   - [AwaiEvent](https://awai.js.org/awai-event)
   - [Registry](https://awai.js.org/registry)

@@ -20,7 +20,7 @@ const state = <T>(initialValue: T, customConfig?: Partial<Config>): State<T> => 
     changed: new AwaiEvent<T>(),
   };
 
-  const set: State<T>['set'] = async (nextValueOrResolver) => {
+  const set: State<T>['set'] = (nextValueOrResolver) => {
     let newValue = isFunction(nextValueOrResolver)
       ? nextValueOrResolver(value)
       : nextValueOrResolver;
@@ -30,9 +30,7 @@ const state = <T>(initialValue: T, customConfig?: Partial<Config>): State<T> => 
       events.changed.emit(newValue);
     }
 
-    await flush();
-
-    return newValue;
+    return flush().then(() => newValue);
   };
 
   const get = () => value;

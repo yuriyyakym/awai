@@ -13,7 +13,7 @@ export type ActionInvokedEvent<Args> = {
 export type ActionFulfilledEvent<Args, Return> = {
   arguments: Args;
   config: Config;
-  result: Return;
+  result: Awaited<Return>;
 };
 
 export type ActionRejectedEvent<Args> = {

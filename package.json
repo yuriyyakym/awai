@@ -4,9 +4,16 @@
   "author": "Yuriy Yakym",
   "description": "State management library",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "type": "module",
   "files": [
     "dist"

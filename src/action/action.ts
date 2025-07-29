@@ -37,7 +37,9 @@ function action<Args extends any[], Return = void>(
   } satisfies Action['events'];
 
   const invoke = async (...invokeArgs: Args) => {
-    events.invoked.emit({ arguments: invokeArgs, config });
+    const invocationId = getUniqueId('invocation');
+
+    events.invoked.emit({ arguments: invokeArgs, config, invocationId });
 
     try {
       const valueOrPromise: Return | Promise<Return> = isFunction(callback)
@@ -46,13 +48,14 @@ function action<Args extends any[], Return = void>(
 
       const value = await valueOrPromise;
       await flush();
-      events.fulfilled?.emit({ arguments: invokeArgs, config, result: value });
+      events.fulfilled?.emit({ arguments: invokeArgs, config, result: value, invocationId });
       return value;
     } catch (error) {
       events.rejected?.emit({
         arguments: invokeArgs,
         config,
         error,
+        invocationId,
       });
       throw error;
     }

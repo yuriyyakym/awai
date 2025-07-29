@@ -8,18 +8,21 @@ export type AnyCallback = (...args: any) => any;
 export type ActionInvokedEvent<Args> = {
   arguments: Args;
   config: Config;
+  invocationId: string;
 };
 
 export type ActionFulfilledEvent<Args, Return> = {
   arguments: Args;
   config: Config;
   result: Awaited<Return>;
+  invocationId: string;
 };
 
 export type ActionRejectedEvent<Args> = {
   arguments: Args;
   config: Config;
   error: unknown;
+  invocationId: string;
 };
 
 export type BaseEvents<Args> = {

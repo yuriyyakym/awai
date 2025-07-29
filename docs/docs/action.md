@@ -74,18 +74,21 @@ createTask('Task title', 'Task description');
 type ActionInvokedEvent<Args> = {
   arguments: Args;
   config: Config;
+  invocationId: string;
 };
 
 type ActionFulfilledEvent<Args, Return> = {
   arguments: Args;
   config: Config;
   result: Return;
+  invocationId: string;
 };
 
 type ActionRejectedEvent<Args> = {
   arguments: Args;
   config: Config;
   error: unknown;
+  invocationId: string;
 };
 ```
 

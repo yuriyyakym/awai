@@ -209,7 +209,7 @@ test('ignores error if outdated promise is rejected', async () => {
   });
 
   setTimeout(nameState.set, 5, 'Awai');
-  expect(mergedState.getPromise()).resolves.toEqual('Hello Noname');
+  expect(mergedState.getPromise()).resolves.toEqual('Hello Awai');
   expect(mergedState.events.ignored).resolves.toStrictEqual({
     error: new Error('Random error'),
     version: 1,

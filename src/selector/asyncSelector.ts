@@ -7,6 +7,7 @@ import {
   getUniqueId,
   isFunction,
   isReadableAsyncState,
+  race,
 } from '../lib';
 import scenario from '../scenario';
 import type { InferReadableType, ReadableAsyncState, ReadableState } from '../types';
@@ -152,11 +153,15 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   const getAsync = () => ({ error, isLoading, value });
 
   const getPromise = async (): Promise<U> => {
-    const values = (await Promise.all(
-      states.map((state) => (isReadableAsyncState(state) ? state.getPromise() : state.get())),
-    )) as StatesValues;
+    while (isLoading) {
+      await race([events.fulfilled, events.rejected]);
+    }
 
-    return predicate(...values);
+    if (error) {
+      throw error;
+    }
+
+    return value!;
   };
 
   const then: AsyncSelector<U>['then'] = async (resolve) => {

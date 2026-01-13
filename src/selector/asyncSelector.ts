@@ -44,6 +44,10 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   };
 
   const getStatus = () => {
+    if (isLoading) {
+      return AsyncStatus.PENDING;
+    }
+
     const aggregatedStatus = getAggregatedAsyncStatus(asyncStates);
 
     return error !== null && aggregatedStatus === AsyncStatus.FULFILLED

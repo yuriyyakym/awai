@@ -132,13 +132,12 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     async () => {
       const abortController = new AbortController();
       await Promise.race(
-        states.flatMap((state) => {
+        states.map((state) => {
           return isReadableAsyncState(state)
-            ? [
-                state.events.requested.abortable(abortController),
-                state.events.rejected.abortable(abortController),
-                state.events.fulfilled.abortable(abortController),
-              ]
+            ? race(
+                [state.events.requested, state.events.rejected, state.events.fulfilled],
+                abortController,
+              )
             : state.events.changed.abortable(abortController);
         }),
       );

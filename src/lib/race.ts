@@ -1,4 +1,5 @@
-import { AwaiEvent } from '../core';
+import isPromiseLike from './isPromiseLike';
+import isFunction from './isFunction';
 
 const race = async <T extends readonly unknown[] | []>(
   promises: T,
@@ -14,12 +15,15 @@ const race = async <T extends readonly unknown[] | []>(
   abortSignal?.addEventListener('abort', abort);
 
   const abortablePromises = promises.map((promise) => {
-    return promise instanceof AwaiEvent
-      ? promise.abortable(internalAbortController.signal)
-      : promise;
+    return isAbortable(promise) ? promise.abortable(internalAbortController.signal) : promise;
   }) as Promise<T[number]>[];
 
   return await Promise.race(abortablePromises).finally(abort);
 };
 
 export default race;
+
+type AbortablePromise<T> = Promise<T> & { abortable: (signal: AbortSignal) => Promise<T> };
+
+const isAbortable = <T>(promise: unknown): promise is AbortablePromise<T> =>
+  isPromiseLike<T>(promise) && 'abortable' in promise && isFunction(promise.abortable);

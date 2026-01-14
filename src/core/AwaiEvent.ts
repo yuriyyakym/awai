@@ -20,7 +20,7 @@ export default class AwaiEvent<T = void> {
     });
   };
 
-  abortable(abortController: AbortController): Promise<T> {
+  abortable(abortSignal: AbortSignal): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       this._awaiters.push(resolve);
 
@@ -28,10 +28,10 @@ export default class AwaiEvent<T = void> {
         this._awaiters = this._awaiters.filter((awaiter) => awaiter !== resolve);
         reject('Aborted');
 
-        abortController.signal.removeEventListener('abort', abortionHandler);
+        abortSignal.removeEventListener('abort', abortionHandler);
       };
 
-      abortController.signal.addEventListener('abort', abortionHandler);
+      abortSignal.addEventListener('abort', abortionHandler);
     });
   }
 

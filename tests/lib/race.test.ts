@@ -59,7 +59,7 @@ test('aborts internal AbortController when external AbortController is aborted',
   await delay(10);
   abortController.abort();
 
-  await expect(racePromise).rejects.toBe('Aborted');
+  await expect(racePromise).rejects.toBeInstanceOf(Error);
 });
 
 test('cleans up abort listeners after completion', async () => {

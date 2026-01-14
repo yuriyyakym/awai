@@ -36,14 +36,14 @@ const config = {
   },
   plugins: [
     require.resolve('docusaurus-lunr-search'),
-    [
+    process.env.VERCEL_ENV === 'production' && [
       '@docusaurus/plugin-google-gtag',
       {
         trackingID: process.env.GA_TRACKING_ID,
         anonymizeIP: true,
       },
     ],
-  ],
+  ].filter(Boolean),
   presets: [
     [
       'classic',

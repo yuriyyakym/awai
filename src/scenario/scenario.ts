@@ -1,7 +1,7 @@
 import { SystemTag } from '../constants';
 import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isObject } from '../lib';
+import { getUniqueId, isAbortSignal, isFunction, isObject } from '../lib';
 
 import { getDefaultStrategy, getExpirationPromise, getTriggerPromise } from './lib';
 import type { Callback, Config, Scenario, Trigger } from './types';
@@ -54,12 +54,17 @@ function scenario<T, R, E = unknown>(
     started: new AwaiEvent(),
   };
 
-  const untilPredicate = isFunction(until) ? until : undefined;
-
   const checkShouldExpire = () =>
-    strategy === 'once' || shouldExpire || (untilPredicate ? untilPredicate() : false);
+    strategy === 'once' ||
+    shouldExpire ||
+    (isAbortSignal(until) ? until.aborted : false) ||
+    (isFunction(until) ? until() : false);
 
   const expire = async () => {
+    if (expired) {
+      return;
+    }
+
     expired = true;
     await flush();
     await events.settled.emit({ event: expirationEvent, config });
@@ -120,6 +125,11 @@ function scenario<T, R, E = unknown>(
         }
       },
       () => {
+        if (checkShouldExpire() && runningCallbacksCount === 0) {
+          expire();
+          return;
+        }
+
         queueMicrotask(run);
       },
     );

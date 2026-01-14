@@ -1,6 +1,15 @@
 import { expect, test, vi } from 'vitest';
 
-import { SystemTag, action, delay, flush, registry, rejectAfter, scenario } from '../src';
+import {
+  AwaiEvent,
+  SystemTag,
+  action,
+  delay,
+  flush,
+  registry,
+  rejectAfter,
+  scenario,
+} from '../src';
 
 test('runs scenario on event', async () => {
   const click = action();
@@ -347,6 +356,31 @@ test('expires with AbortSignal', async () => {
   setTimeout(() => abortController.abort(), 10);
   const { event } = await testScenario.events.settled;
   expect(event).toBeUndefined();
+});
+
+test('expires immediately if AbortSignal is already aborted', async () => {
+  const abortController = new AbortController();
+  abortController.abort();
+
+  const trigger = new AwaiEvent();
+  const testScenario = scenario(trigger, () => undefined, { until: abortController.signal });
+
+  const result = await Promise.race([testScenario.events.settled, delay(30).then(() => 'timeout')]);
+  expect(result).not.toBe('timeout');
+});
+
+test('does not reschedule when aborted trigger rejects', async () => {
+  const abortController = new AbortController();
+  const trigger = new AwaiEvent();
+  const triggerFactory = vi.fn(() => trigger.abortable(abortController.signal));
+
+  const testScenario = scenario(triggerFactory, () => undefined, { until: abortController.signal });
+
+  abortController.abort();
+  await testScenario.events.settled;
+  await delay(10);
+
+  expect(triggerFactory.mock.calls.length).toBe(1);
 });
 
 test('expires with event even if expired during callback execution', async () => {

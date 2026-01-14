@@ -288,3 +288,10 @@ test('"getStatus" should return "PENDING" when async selector is just created', 
   const asyncSelector = selector([asyncState('Awai')], (name) => name);
   expect(asyncSelector.getStatus()).toEqual(AsyncStatus.PENDING);
 });
+
+test('"getPromise" should reject if async selector is rejected', async () => {
+  const nameState = asyncState(delay(10).then(() => Promise.reject('Awai rejection')) as any);
+  const asyncSelector = selector([nameState], (name) => name);
+  const expectedError = new AggregateError(['Awai rejection']);
+  await expect(asyncSelector.getPromise()).rejects.toThrow(expectedError);
+});

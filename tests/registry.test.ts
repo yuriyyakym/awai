@@ -11,6 +11,7 @@ import {
   selector,
   state,
 } from '../src';
+import { getUniqueId } from '../src/lib';
 
 test('has `events` and `nodes` property', () => {
   const registry = new Registry();
@@ -66,4 +67,11 @@ test('emits `deregistered` event', async () => {
   const id = await registry.events.deregistered;
   expect(registry.nodes).not.includes(state1);
   expect(id).toBe(state1.config.id);
+});
+
+test('does nothing if node is not found', async () => {
+  const id = getUniqueId();
+  const nodes = registry.nodes;
+  await registry.deregister(id);
+  expect(registry.nodes).toStrictEqual(nodes);
 });

@@ -60,10 +60,6 @@ function scenario<T, R, E = unknown>(
     strategy === 'once' || shouldExpire || (untilPredicate ? untilPredicate() : false);
 
   const expire = async () => {
-    if (expired) {
-      return;
-    }
-
     expired = true;
     await flush();
     await events.settled.emit({ event: expirationEvent, config });

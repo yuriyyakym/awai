@@ -22,7 +22,7 @@ export default class AwaiEvent<T = void> {
 
   abortable(abortSignal: AbortSignal): Promise<T> {
     if (abortSignal.aborted) {
-      return Promise.reject(abortSignal.reason || 'Aborted');
+      return Promise.reject(abortSignal.reason);
     }
 
     return new Promise<T>((resolve, reject) => {
@@ -35,7 +35,7 @@ export default class AwaiEvent<T = void> {
 
       const abortionHandler = () => {
         this._awaiters = this._awaiters.filter((awaiter) => awaiter !== resolveWithCleanup);
-        reject(abortSignal.reason || 'Aborted');
+        reject(abortSignal.reason);
       };
 
       abortSignal.addEventListener('abort', abortionHandler, { once: true });

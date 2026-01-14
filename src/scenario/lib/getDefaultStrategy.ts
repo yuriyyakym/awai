@@ -3,7 +3,7 @@ import type { Config } from '../types';
 const getDefaultStrategy = (
   isPlainPromiseTrigger: boolean,
   hasTrigger: boolean,
-): Config['strategy'] => {
+): Config<unknown>['strategy'] => {
   if (isPlainPromiseTrigger) {
     return 'once';
   }

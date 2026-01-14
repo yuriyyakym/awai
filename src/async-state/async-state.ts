@@ -1,7 +1,7 @@
 import { AsyncStatus, SystemTag } from '../constants';
 import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isPromiseOrFunction, noop } from '../lib';
+import { getUniqueId, isFunction, isPromiseOrFunction, race } from '../lib';
 
 import type { VersionIgnoredEvent, AsyncState, Config, InitialValue, Version } from './types';
 
@@ -98,16 +98,13 @@ const asyncState = <T>(
       return value!;
     }
 
-    const abortController = new AbortController();
+    await race([events.fulfilled, events.rejected]);
 
-    try {
-      return await new Promise((resolve, reject) => {
-        events.fulfilled.abortable(abortController).then(resolve).catch(noop);
-        events.rejected.abortable(abortController).then(reject).catch(noop);
-      });
-    } finally {
-      abortController.abort();
+    if (error) {
+      throw error;
     }
+
+    return value!;
   };
 
   const then: PromiseLike<T>['then'] = async (resolve) => {

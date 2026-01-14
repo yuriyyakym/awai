@@ -57,21 +57,25 @@ test('uses different invocation IDs for different invocations', async () => {
 
   const orderedInvocationsIds: string[] = [];
   const orderedFulfillmentIds: string[] = [];
+  let invokedCount = 0;
+  let fulfilledCount = 0;
 
   const idsReadingScenario = scenario(
     greet.events.invoked,
     (invoked) => {
       orderedInvocationsIds.push(invoked.invocationId);
+      invokedCount++;
     },
-    { repeat: 3 },
+    { until: () => invokedCount >= 3 },
   );
 
   const idsFulfillmentReadingScenario = scenario(
     greet.events.fulfilled,
     (fulfilled) => {
       orderedFulfillmentIds.push(fulfilled.invocationId);
+      fulfilledCount++;
     },
-    { repeat: 3 },
+    { until: () => fulfilledCount >= 3 },
   );
 
   greet(300);

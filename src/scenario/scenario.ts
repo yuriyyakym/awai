@@ -1,60 +1,48 @@
 import { SystemTag } from '../constants';
 import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
+import { getUniqueId, isFunction, isObject } from '../lib';
 
-import { getDefaultStrategy, getTriggerPromise } from './lib';
-import type { Callback, Config, ExpirationTrigger, SettledEvent, Scenario, Trigger } from './types';
+import { getDefaultStrategy, getExpirationPromise, getTriggerPromise } from './lib';
+import type { Callback, Config, Scenario, Trigger } from './types';
 
-const getConfig = (
+const getConfig = <E = unknown>(
   isPlainPromiseTrigger: boolean,
   hasTrigger: boolean,
-  customConfig: Partial<Config> = {},
-): Config => ({
+  customConfig: Partial<Config<E>> = {},
+): Config<E> => ({
   ...customConfig,
   id: customConfig.id ?? getUniqueId(scenario.name),
   strategy: customConfig.strategy ?? getDefaultStrategy(isPlainPromiseTrigger, hasTrigger),
   tags: [SystemTag.SCENARIO, ...(customConfig.tags ?? [])],
 });
 
-function scenario<T, R, E>(
+function scenario<T, R, E = unknown>(
   trigger: Trigger<T>,
   callback: Callback<T, R>,
-  customConfig?: Partial<Config>,
-): Scenario<T, R, E>;
-
-function scenario<T, R, E>(
-  trigger: Trigger<T>,
-  expirationTrigger: ExpirationTrigger<E>,
-  callback: Callback<T, R>,
-  customConfig?: Partial<Config>,
+  customConfig?: Partial<Config<E>>,
 ): Scenario<T, R, E>;
 
 function scenario<T, R, E = unknown>(
-  callback: Callback,
-  config?: Partial<Config>,
+  callback: Callback<T, R>,
+  config?: Partial<Config<E>>,
 ): Scenario<T, R, E>;
 
-function scenario<T, R, E>(
-  ...args:
-    | [Trigger<T>, Callback<T, R>, Partial<Config>?]
-    | [Trigger<T>, ExpirationTrigger<E>, Callback<T, R>, Partial<Config>?]
-    | [Callback, Partial<Config>?]
-) {
-  const hasTrigger = isFunction(args[1]) || isFunction(args[2]);
-  const hasExpirationTrigger = isFunction(args[2]);
+function scenario<T, R, E = unknown>(
+  ...args: [Trigger<T>, Callback<T, R>, Partial<Config<E>>?] | [Callback<T, R>, Partial<Config<E>>?]
+): Scenario<T, R, E> {
+  const hasTrigger = isFunction(args[1]);
 
   const trigger = hasTrigger ? (args[0] as Trigger<T>) : undefined;
-  const expirationTrigger = hasExpirationTrigger ? (args[1] as ExpirationTrigger<E>) : undefined;
-  const callback = args.findLast(isFunction) as Callback<T, R>;
-  const customConfig = args.at(args.indexOf(callback) + 1) as Partial<Config> | undefined;
+  const callback = (hasTrigger ? args[1] : args[0]) as Callback<T, R>;
+  const customConfig = (hasTrigger ? args[2] : args[1]) as Partial<Config<E>> | undefined;
   const isPlainPromiseTrigger = hasTrigger && isObject(args[0]) && args[0].constructor === Promise;
-  const isFiniteScenario =
-    isPlainPromiseTrigger || hasExpirationTrigger || typeof customConfig?.repeat !== 'undefined';
 
-  const config = getConfig(isPlainPromiseTrigger, hasTrigger, customConfig);
-  const { strategy } = config;
-  let { repeat = Infinity } = config;
+  const config = getConfig<E>(isPlainPromiseTrigger, hasTrigger, customConfig);
+  const { strategy, until } = config;
+  const isFiniteScenario =
+    isPlainPromiseTrigger || strategy === 'once' || typeof until !== 'undefined';
+  let expirationEvent: E | undefined;
   let runningCallbacksCount = 0;
   let shouldExpire = false;
   let expired = false;
@@ -66,26 +54,30 @@ function scenario<T, R, E>(
     started: new AwaiEvent(),
   };
 
-  const checkShouldExpire = () =>
-    repeat <= 0 ||
-    strategy === 'once' ||
-    shouldExpire ||
-    (isFunction(expirationTrigger) && expirationTrigger());
+  const untilPredicate = isFunction(until) ? until : undefined;
 
-  const expire = async (event?: E) => {
+  const checkShouldExpire = () =>
+    strategy === 'once' || shouldExpire || (untilPredicate ? untilPredicate() : false);
+
+  const expire = async () => {
+    if (expired) {
+      return;
+    }
+
     expired = true;
     await flush();
-    await events.settled.emit({ event, config });
+    await events.settled.emit({ event: expirationEvent, config });
     await flush();
     await registry.deregister(config.id);
   };
 
-  if (isPromiseLike(expirationTrigger)) {
-    Promise.resolve(expirationTrigger).then((event) => {
+  if (until && !isFunction(until)) {
+    getExpirationPromise<E>(until).then((event) => {
       shouldExpire = true;
+      expirationEvent = event as E;
 
       if (runningCallbacksCount === 0) {
-        expire(event);
+        expire();
       }
     });
   }
@@ -93,8 +85,6 @@ function scenario<T, R, E>(
   const run = async () => {
     getTriggerPromise(trigger).then(
       (event) => {
-        repeat--;
-
         if (expired) {
           return;
         }
@@ -139,7 +129,7 @@ function scenario<T, R, E>(
     );
   };
 
-  const then: AwaiEvent<SettledEvent<E>>['then'] = (resolve) => {
+  const then: Scenario<T, R, E>['then'] = (resolve) => {
     if (!isFiniteScenario) {
       console.warn(
         'You seem to await an infinite scenario. This causes a memory leak in your application.',

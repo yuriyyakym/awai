@@ -1,7 +1,7 @@
 import { SystemTag } from '../constants';
 import { AwaiEvent } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction } from '../lib';
+import { getUniqueId, isFunction, race } from '../lib';
 import scenario from '../scenario';
 import type { InferReadableType, ReadableAsyncState, ReadableState } from '../types';
 
@@ -41,11 +41,7 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   };
 
   scenario(
-    async () => {
-      const abortController = new AbortController();
-      await Promise.race(states.map((state) => state.events.changed.abortable(abortController)));
-      abortController.abort();
-    },
+    () => race(states.map((state) => state.events.changed)),
     () => {
       const newValue = get();
 

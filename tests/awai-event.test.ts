@@ -41,7 +41,7 @@ test('returns promise even if no callback is passed to `then` method', async () 
 test('rejects when aborted', async () => {
   const event = new AwaiEvent<string>();
   const abortController = new AbortController();
-  expect(event.abortable(abortController)).rejects.toBe('Aborted');
+  expect(event.abortable(abortController.signal)).rejects.toBeInstanceOf(Error);
   await delay(0);
   abortController.abort();
 });
@@ -52,7 +52,7 @@ test('removes callback from awaiters when aborted', async () => {
   const event = new AwaiEvent();
   const abortController = new AbortController();
   event.then(resolve);
-  event.abortable(abortController).catch(reject);
+  event.abortable(abortController.signal).catch(reject);
   abortController.abort();
   event.emit();
   await delay(0);
@@ -98,4 +98,11 @@ test('filters out non-applicable events', async () => {
 
   const numberPromise = number.filter((n) => n === awaitedNumber);
   expect(numberPromise).resolves.toBe(awaitedNumber);
+});
+
+test('rejects immediately if abort signal is passed', async () => {
+  const event = new AwaiEvent();
+  const abortController = new AbortController();
+  abortController.abort(new Error('Awai event aborted'));
+  expect(event.abortable(abortController.signal)).rejects.toEqual(new Error('Awai event aborted'));
 });

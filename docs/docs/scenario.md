@@ -8,7 +8,7 @@ Conceptually, `Scenario` is a sequence of events, that are described by a piece 
 
 Scenario may start instantly or may be triggered by promise-like objects.
 
-Scenario may be infinite or finite, if `expirationTrigger` argument or `repeat` config property is specified.
+Scenario may be infinite or finite. It becomes finite if `until` config property is specified, or if a plain promise is used as a trigger (default strategy is `once`).
 
 In most cases triggered scenarios are used. Trigger can be:
 - **[AwaiEvent](/awai-event)** - `scenario(state.events.change, callback)`
@@ -33,6 +33,20 @@ In most cases triggered scenarios are used. Trigger can be:
 - **rejected** - emitted when callback throws
 - **settled** - emits `SettledEvent` when no more callbacks will be run
 
+### Until
+
+Use `config.until` to stop a scenario after the current callback finishes. It accepts:
+- **[AwaiEvent](/awai-event)**
+- **Promise**
+- **Predicate** - `() => boolean`
+- **AbortSignal** (for example, `AbortController.signal`)
+
+```ts
+const controller = new AbortController();
+
+scenario(trigger, callback, { until: controller.signal });
+```
+
 ### Diagrams
 
 **Fork scenario** may be useful when you want to handle every event. Be careful of race conditions when using this strategy.
@@ -43,7 +57,7 @@ In most cases triggered scenarios are used. Trigger can be:
 
 ![Infinite cyclic scenario visual diagram](/diagrams/InfiniteScenarioCyclic.svg "Infinite cyclic scenario visual diagram")
 
-**Finite scenario** may be useful when useful when you want scenario to run specific amount of times, or until some event is emitted/promise resolved.
+**Finite scenario** may be useful when you want scenario to run specific amount of times, or until some event is emitted/promise resolved.
 For example, in [Paint example](https://github.com/yuriyyakym/awai-paint/blob/master/src/state/scenarios/draw-line.ts), subscenario is listening to `draw` event, until `stopDraw` event is emitted.
 
 ![Finite cyclic scenario visual diagram](/diagrams/FiniteScenario.svg "Finite cyclic scenario visual diagram")
@@ -56,15 +70,9 @@ scenario(callback, config?)
 ```
 Default strategy: **cyclic**
 
-#### Infinite scenario
+#### Triggered scenario
 ```ts
 scenario(trigger, callback, config?)
-```
-Default strategy: **fork**
-
-#### Finite scenario
-```ts
-scenario(trigger, expirationTrigger, callback, config?)
 ```
 Default strategy: **fork**
 
@@ -74,8 +82,8 @@ Default strategy: **fork**
 If a trigger is a plain promise, default strategy is `once`.
 :::
 
-:::note Repeat config
-Every scenario may become finite if `repeat` config property is specified.
+:::note Until config
+Every scenario may become finite if `until` config property is specified.
 :::
 
 :::note Thennable scenario
@@ -112,33 +120,40 @@ scenario(dataRevalidateScenario.events.fulfilled, () => {
 ```
 
 ```ts title="Scenario that logs 'Hello Awai' 3 times every one second"
+let count = 0;
+
 scenario(
   () => new Promise(resolve => setTimeout(resolve, 1000)),
   () => {
     console.log('Hello Awai')
+    count++;
   },
-  { repeat: 3 },
+  { until: () => count >= 3 },
 );
 ```
 
-### Types types
+### Types
  
 [Source](https://github.com/yuriyyakym/awai/blob/master/src/scenario/types.ts)
 
 ```ts title="Other types"
-type Trigger<T> = PromiseLike<T> | (() => PromiseLike<T>);
+type Trigger<T> = AwaiEvent<T> | PromiseLike<T> | (() => PromiseLike<T>);
 
 type Callback<T, R> = (value: T) => R;
 
-interface Config {
+type ShouldExpirePredicate = () => boolean;
+type UntilTrigger<T> =
+  | AwaiEvent<T>
+  | PromiseLike<T>
+  | ShouldExpirePredicate
+  | AbortSignal;
+
+interface Config<T = unknown> {
   id: string;
-  repeat?: number;
   strategy: 'fork' | 'cyclic' | 'once';
+  until?: UntilTrigger<T>;
   tags: [];
 }
-
-type ShouldExpirePredicate = () => boolean;
-type ExpirationTrigger<T> = AwaiEvent<T> | PromiseLike<T> | ShouldExpirePredicate;
 
 export interface FulfilledEvent<T, R> {
   event: T;

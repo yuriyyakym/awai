@@ -131,14 +131,15 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   scenario(
     async () => {
       const abortController = new AbortController();
+      const abortSignal = abortController.signal;
       await Promise.race(
         states.map((state) => {
           return isReadableAsyncState(state)
             ? race(
                 [state.events.requested, state.events.rejected, state.events.fulfilled],
-                abortController,
+                abortSignal,
               )
-            : state.events.changed.abortable(abortController);
+            : state.events.changed.abortable(abortSignal);
         }),
       );
       abortController.abort();

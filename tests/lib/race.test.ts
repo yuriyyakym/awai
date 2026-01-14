@@ -54,12 +54,12 @@ test('aborts internal AbortController when external AbortController is aborted',
   const event1 = new AwaiEvent<string>();
   const event2 = new AwaiEvent<string>();
 
-  const racePromise = race([event1, event2], abortController);
+  const racePromise = race([event1, event2], abortController.signal);
 
   await delay(10);
   abortController.abort();
 
-  await expect(racePromise).rejects.toBe('Aborted');
+  await expect(racePromise).rejects.toBeInstanceOf(Error);
 });
 
 test('cleans up abort listeners after completion', async () => {
@@ -68,7 +68,7 @@ test('cleans up abort listeners after completion', async () => {
 
   const removeEventListenerSpy = vi.spyOn(abortController.signal, 'removeEventListener');
 
-  const racePromise = race([event], abortController);
+  const racePromise = race([event], abortController.signal);
 
   await delay(10);
   event.emit('value');

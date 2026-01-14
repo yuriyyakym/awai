@@ -1,10 +1,11 @@
 import isPromiseLike from './isPromiseLike';
 import isFunction from './isFunction';
 
-const race = async <T extends readonly unknown[] | []>(
-  promises: T,
-  abortSignal?: AbortSignal,
-): Promise<Awaited<T[number]>> => {
+const race = async <T extends readonly unknown[] | []>(promises: T, abortSignal?: AbortSignal) => {
+  if (abortSignal?.aborted) {
+    return Promise.reject(abortSignal.reason);
+  }
+
   const internalAbortController = new AbortController();
 
   const abort = () => {

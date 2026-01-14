@@ -62,6 +62,22 @@ test('aborts internal AbortController when external AbortController is aborted',
   await expect(racePromise).rejects.toBeInstanceOf(Error);
 });
 
+test('rejects when AbortSignal is already aborted', async () => {
+  const abortController = new AbortController();
+  abortController.abort();
+  const event = new AwaiEvent<string>();
+
+  const result = await Promise.race([
+    race([event], abortController.signal).then(
+      () => 'resolved',
+      () => 'rejected',
+    ),
+    delay(30).then(() => 'timeout'),
+  ]);
+
+  expect(result).toBe('rejected');
+});
+
 test('cleans up abort listeners after completion', async () => {
   const abortController = new AbortController();
   const event = new AwaiEvent<string>();

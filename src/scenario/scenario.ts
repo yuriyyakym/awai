@@ -1,10 +1,10 @@
 import { SystemTag } from '../constants';
 import { AwaiEvent, flush } from '../core';
 import { registry } from '../global';
-import { getUniqueId, isFunction, isObject, isPromiseLike } from '../lib';
+import { getUniqueId, isFunction, isObject } from '../lib';
 
 import { getDefaultStrategy, getExpirationPromise, getTriggerPromise } from './lib';
-import type { Callback, Config, SettledEvent, Scenario, Trigger, UntilTrigger } from './types';
+import type { Callback, Config, Scenario, Trigger } from './types';
 
 const getConfig = <E = unknown>(
   isPlainPromiseTrigger: boolean,

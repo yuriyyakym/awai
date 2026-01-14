@@ -11,6 +11,7 @@ export {
   getAggregatedAsyncStatus,
   isPromiseLike,
   isReadableAsyncState,
+  race,
   rejectAfter,
   SyncQueue,
 } from './lib';

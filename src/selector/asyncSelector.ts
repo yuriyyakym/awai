@@ -7,6 +7,7 @@ import {
   getUniqueId,
   isFunction,
   isReadableAsyncState,
+  race,
 } from '../lib';
 import scenario from '../scenario';
 import type { InferReadableType, ReadableAsyncState, ReadableState } from '../types';
@@ -44,6 +45,10 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   };
 
   const getStatus = () => {
+    if (isLoading) {
+      return AsyncStatus.PENDING;
+    }
+
     const aggregatedStatus = getAggregatedAsyncStatus(asyncStates);
 
     return error !== null && aggregatedStatus === AsyncStatus.FULFILLED
@@ -127,13 +132,12 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     async () => {
       const abortController = new AbortController();
       await Promise.race(
-        states.flatMap((state) => {
+        states.map((state) => {
           return isReadableAsyncState(state)
-            ? [
-                state.events.requested.abortable(abortController),
-                state.events.rejected.abortable(abortController),
-                state.events.fulfilled.abortable(abortController),
-              ]
+            ? race(
+                [state.events.requested, state.events.rejected, state.events.fulfilled],
+                abortController,
+              )
             : state.events.changed.abortable(abortController);
         }),
       );
@@ -148,11 +152,15 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   const getAsync = () => ({ error, isLoading, value });
 
   const getPromise = async (): Promise<U> => {
-    const values = (await Promise.all(
-      states.map((state) => (isReadableAsyncState(state) ? state.getPromise() : state.get())),
-    )) as StatesValues;
+    while (isLoading) {
+      await race([events.fulfilled, events.rejected]);
+    }
 
-    return predicate(...values);
+    if (error) {
+      throw error;
+    }
+
+    return value!;
   };
 
   const then: AsyncSelector<U>['then'] = async (resolve) => {

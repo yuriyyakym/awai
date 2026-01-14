@@ -209,7 +209,7 @@ test('ignores error if outdated promise is rejected', async () => {
   });
 
   setTimeout(nameState.set, 5, 'Awai');
-  expect(mergedState.getPromise()).resolves.toEqual('Hello Noname');
+  expect(mergedState.getPromise()).resolves.toEqual('Hello Awai');
   expect(mergedState.events.ignored).resolves.toStrictEqual({
     error: new Error('Random error'),
     version: 1,
@@ -282,4 +282,9 @@ test('allows passing custom properties in config for sync state', () => {
 test('allows passing custom properties in config for async state', () => {
   const { config } = selector([asyncState('Awai')], (name) => name, { lib: 'Awai' });
   expect(config).toMatchObject({ lib: 'Awai' });
+});
+
+test('"getStatus" should return "PENDING" when async selector is just created', () => {
+  const asyncSelector = selector([asyncState('Awai')], (name) => name);
+  expect(asyncSelector.getStatus()).toEqual(AsyncStatus.PENDING);
 });

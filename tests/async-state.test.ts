@@ -206,3 +206,9 @@ test('allows passing custom properties in config', () => {
   const state = asyncState('test', { lib: 'Awai' });
   expect(state.config).toMatchObject({ lib: 'Awai' });
 });
+
+test('`getPromise` rejects if latest version is rejected', () => {
+  const state = asyncState(delay(10).then(() => 'Awai'));
+  state.set(delay(5).then(() => Promise.reject('Rejected Awai')));
+  expect(state.getPromise()).rejects.toBe('Rejected Awai');
+});

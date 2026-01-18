@@ -77,6 +77,13 @@ test('uses custom compare to skip updates', async () => {
   expect(counter.get()).toEqual({ count: 2 });
 });
 
+test('comparator can force update for undefined values', async () => {
+  const compare = vi.fn(() => false);
+  const counter = state<number | undefined>(undefined, { compare });
+  await counter.set(undefined);
+  expect(compare).toHaveBeenCalledWith(undefined, undefined);
+});
+
 test('should catch fast state changes', async () => {
   const counter = state(-1);
   const values: number[] = [];

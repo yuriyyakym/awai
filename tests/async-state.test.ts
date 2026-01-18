@@ -115,6 +115,13 @@ test('uses custom compare to skip async updates', async () => {
   expect(counter.get()).toBe(initial);
 });
 
+test('comparator can force update for undefined values', async () => {
+  const compare = vi.fn(() => false);
+  const counter = asyncState<number | undefined>(undefined, { compare });
+  await counter.set(undefined);
+  expect(compare).toHaveBeenCalledWith(undefined, undefined);
+});
+
 test('emits `ignored` event if outdated version promise is settled', async () => {
   const state = asyncState(delay(5).then(() => 'a'));
   state.set(delay(5).then(() => 'b'));

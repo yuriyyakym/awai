@@ -1,5 +1,10 @@
 import type { AwaiEvent } from '../core';
-import type { BaseConfig, Comparator, ReadableAsyncState, ReadableState } from '../types';
+import type {
+  BaseConfig,
+  Comparator,
+  ReadableAsyncState,
+  ReadableState,
+} from '../types';
 
 export type Version = number;
 
@@ -8,7 +13,7 @@ export type SyncConfig<T> = BaseConfig & Record<string, any> & {
 };
 
 export type AsyncConfig<T> = BaseConfig & Record<string, any> & {
-  compare?: Comparator<T>;
+  compare?: Comparator<T | undefined, T | undefined>;
 };
 
 export type VersionIgnoredEvent<T> = {

@@ -38,6 +38,9 @@ If at least one of async dependencies rejects, resulting selector rejects with [
   - **requested** - new value has been requested
   - **ignored** - promise is resolved, but newer version promise is pending. Emits `VersionIgnoredEvent`.
 
+### Config
+- **compare** - optional comparator used to skip updates.
+
 ### Examples
 
 ```ts title="Usage example - Sync Selector"
@@ -77,6 +80,18 @@ console.log(messageState.get()); // Hello Awai
 [Source](https://github.com/yuriyyakym/awai/blob/master/src/selector/types.ts)
 
 ```ts
+export type SyncConfig<T> = {
+  id: string;
+  tags: string[];
+  compare?: (next: T, previous: T) => boolean
+};
+
+export type AsyncConfig<T> = {
+  id: string;
+  tags: string[];
+  compare?: (next: T | undefined, previous: T | undefined) => boolean;
+};
+
 export type VersionIgnoredEvent<T> = {
   error?: unknown;
   value?: T;

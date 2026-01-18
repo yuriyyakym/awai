@@ -1,10 +1,15 @@
 import type { AwaiEvent } from '../core';
-import type { BaseConfig, Comparator, ReadableAsyncState, WritableAsyncState } from '../types';
+import type {
+  BaseConfig,
+  Comparator,
+  ReadableAsyncState,
+  WritableAsyncState,
+} from '../types';
 
 export type Version = number;
 
 export type Config<T> = BaseConfig & Record<string, any> & {
-  compare?: Comparator<T>;
+  compare?: Comparator<T | undefined, T | undefined>;
 };
 
 export type InitialValue<T> = T | Promise<T> | (() => Promise<T>);

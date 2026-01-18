@@ -45,7 +45,7 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     () => race(states.map((state) => state.events.changed)),
     () => {
       const newValue = computeValue();
-      const isChanged = typeof value === 'undefined' || !compare(newValue, value);
+      const isChanged = !compare(newValue, value);
 
       if (isChanged) {
         value = newValue;

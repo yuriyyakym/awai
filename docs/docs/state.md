@@ -18,6 +18,9 @@ State is a an object which stores data and emits event when it changes.
 ### Events
 - **changed** - state value is modified
 
+### Config
+- **compare** - optional comparator used to skip updates.
+
 ### Examples
 
 ```ts title="State usage"
@@ -50,10 +53,11 @@ console.log(counter.get()); // 2
 [Source](https://github.com/yuriyyakym/awai/blob/master/src/state/types.ts)
 
 ```ts 
-const state = <T>(initialValue: T, config?: Partial<Config>): State<T> => { /* ... */ };
+const state = <T>(initialValue: T, config?: Partial<Config<T>>): State<T> => { /* ... */ };
 
-interface Config {
+type Config<T> = {
   id: string;
   tags: string[];
-}
+  compare?: (next: T, previous: T) => boolean;
+};
 ```

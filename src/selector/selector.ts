@@ -3,7 +3,7 @@ import { type InferReadableType } from '../types';
 
 import asyncSelector from './asyncSelector';
 import syncSelector from './syncSelector';
-import type { Config, Selector } from './types';
+import type { AsyncConfig, Config, Selector, SyncConfig } from './types';
 
 const selector = <T extends any[], U>(
   states: [...T],
@@ -14,8 +14,8 @@ const selector = <T extends any[], U>(
 
   const state =
     isAsyncPredicate || states.some((state) => isReadableAsyncState(state))
-      ? asyncSelector(states, predicate, customConfig)
-      : syncSelector(states, predicate, customConfig);
+      ? asyncSelector(states, predicate, customConfig as Partial<AsyncConfig<U>>)
+      : syncSelector(states, predicate, customConfig as Partial<SyncConfig<U>>);
 
   return state as Selector<T, U>;
 };

@@ -28,6 +28,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   type StatesValues = { [K in keyof T]: InferReadableType<T[K]> };
 
   const config = getConfig(customConfig);
+  const compare = config.compare ?? Object.is;
   const asyncStates = states.filter(isReadableAsyncState);
 
   let error: AggregateError | unknown | null = null;
@@ -87,7 +88,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
 
         try {
           const newValue = await predicate(...values);
-          const isChanged = !Object.is(newValue, value);
+          const isChanged = typeof value === 'undefined' || !compare(newValue, value);
 
           if (currentPendingVersion !== lastPendingVersion) {
             events.ignored.emit({ value: newValue, version: currentPendingVersion });
@@ -136,9 +137,9 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
         states.map((state) => {
           return isReadableAsyncState(state)
             ? race(
-                [state.events.requested, state.events.rejected, state.events.fulfilled],
-                abortSignal,
-              )
+              [state.events.requested, state.events.rejected, state.events.fulfilled],
+              abortSignal,
+            )
             : state.events.changed.abortable(abortSignal);
         }),
       );

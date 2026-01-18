@@ -57,6 +57,26 @@ test('should not emit if same value set', async () => {
   expect(resolve).not.toBeCalled();
 });
 
+test('uses custom compare to skip updates', async () => {
+  const initial = { count: 1 };
+  const counter = state(initial, {
+    compare: (next, prev) => next.count === prev.count,
+  });
+  const onChange = vi.fn();
+
+  scenario(counter.events.changed, onChange);
+
+  await counter.set({ count: 1 });
+
+  expect(onChange).not.toBeCalled();
+  expect(counter.get()).toBe(initial);
+
+  await counter.set({ count: 2 });
+
+  expect(onChange).toBeCalledTimes(1);
+  expect(counter.get()).toEqual({ count: 2 });
+});
+
 test('should catch fast state changes', async () => {
   const counter = state(-1);
   const values: number[] = [];

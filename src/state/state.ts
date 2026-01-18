@@ -5,14 +5,15 @@ import { registry } from '../global';
 
 import type { Config, State } from './types';
 
-const getConfig = (customConfig: Partial<Config> = {}): Config => ({
+const getConfig = <T>(customConfig: Partial<Config<T>> = {}): Config<T> => ({
   ...customConfig,
   id: customConfig.id ?? getUniqueId(state.name),
   tags: [SystemTag.STATE, ...(customConfig.tags ?? [])],
 });
 
-const state = <T>(initialValue: T, customConfig?: Partial<Config>): State<T> => {
+const state = <T>(initialValue: T, customConfig?: Partial<Config<T>>): State<T> => {
   const config = getConfig(customConfig);
+  const compare = config.compare ?? Object.is;
 
   let value = initialValue;
 
@@ -24,8 +25,9 @@ const state = <T>(initialValue: T, customConfig?: Partial<Config>): State<T> => 
     let newValue = isFunction(nextValueOrResolver)
       ? nextValueOrResolver(value)
       : nextValueOrResolver;
+    const isChanged = typeof value === 'undefined' || !compare(newValue, value);
 
-    if (!Object.is(newValue, value)) {
+    if (isChanged) {
       value = newValue;
       events.changed.emit(newValue);
     }

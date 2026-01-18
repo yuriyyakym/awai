@@ -7,7 +7,7 @@ import type { InferReadableType, ReadableAsyncState, ReadableState } from '../ty
 
 import type { SyncConfig, SyncSelector } from './types';
 
-const getConfig = (customConfig: Partial<SyncConfig> = {}): SyncConfig => ({
+const getConfig = <U>(customConfig: Partial<SyncConfig<U>> = {}): SyncConfig<U> => ({
   ...customConfig,
   id: customConfig.id ?? getUniqueId(syncSelector.name),
   tags: [SystemTag.SELECTOR, ...(customConfig.tags ?? [])],
@@ -16,9 +16,10 @@ const getConfig = (customConfig: Partial<SyncConfig> = {}): SyncConfig => ({
 const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   states: [...T],
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
-  customConfig?: Partial<SyncConfig>,
+  customConfig?: Partial<SyncConfig<U>>,
 ): SyncSelector<U> => {
   const config = getConfig(customConfig);
+  const compare = config.compare ?? Object.is;
   let value: U;
 
   const events = {
@@ -44,8 +45,9 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     () => race(states.map((state) => state.events.changed)),
     () => {
       const newValue = computeValue();
+      const isChanged = typeof value === 'undefined' || !compare(newValue, value);
 
-      if (!Object.is(newValue, value)) {
+      if (isChanged) {
         value = newValue;
         events.changed.emit(newValue);
       }

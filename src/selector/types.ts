@@ -1,11 +1,15 @@
 import type { AwaiEvent } from '../core';
-import type { BaseConfig, ReadableAsyncState, ReadableState } from '../types';
+import type { BaseConfig, Comparator, ReadableAsyncState, ReadableState } from '../types';
 
 export type Version = number;
 
-export type SyncConfig = BaseConfig & Record<string, any>;
+export type SyncConfig<T> = BaseConfig & Record<string, any> & {
+  compare?: Comparator<T>;
+};
 
-export type AsyncConfig = BaseConfig & Record<string, any>;
+export type AsyncConfig<T> = BaseConfig & Record<string, any> & {
+  compare?: Comparator<T>;
+};
 
 export type VersionIgnoredEvent<T> = {
   error?: unknown;
@@ -14,14 +18,14 @@ export type VersionIgnoredEvent<T> = {
 };
 
 export type SyncSelector<T> = ReadableState<T> & {
-  config: SyncConfig;
+  config: SyncConfig<T>;
 };
 
 export type AsyncSelector<T> = ReadableAsyncState<T> & {
+  config: AsyncConfig<T>;
   events: {
     ignored: AwaiEvent<VersionIgnoredEvent<T>>;
   };
-  config: AsyncConfig;
 };
 
 export type ContainsAsync<T extends any[]> = T extends [infer First, ...infer Rest]
@@ -33,11 +37,11 @@ export type ContainsAsync<T extends any[]> = T extends [infer First, ...infer Re
 export type Selector<T extends any[], U> = U extends PromiseLike<infer P>
   ? AsyncSelector<P>
   : ContainsAsync<T> extends true
-  ? AsyncSelector<U>
-  : SyncSelector<U>;
+    ? AsyncSelector<U>
+    : SyncSelector<U>;
 
 export type Config<T extends any[], U> = U extends PromiseLike<any>
-  ? AsyncConfig
+  ? AsyncConfig<U>
   : ContainsAsync<T> extends true
-  ? AsyncConfig
-  : SyncConfig;
+    ? AsyncConfig<U>
+    : SyncConfig<U>;

@@ -98,6 +98,23 @@ test('does not emit `changed` event if same value is set', async () => {
   expect(onChange).toBeCalledTimes(1);
 });
 
+test('uses custom compare to skip async updates', async () => {
+  const initial = { count: 1 };
+  const counter = asyncState(initial, {
+    compare: (next, prev) => next.count === prev?.count,
+  });
+  const onChange = vi.fn();
+
+  scenario(counter.events.changed, onChange);
+
+  const ignored = counter.events.ignored;
+  counter.set(Promise.resolve({ count: 1 }));
+
+  expect(await ignored).toMatchObject({ value: { count: 1 } });
+  expect(onChange).not.toBeCalled();
+  expect(counter.get()).toBe(initial);
+});
+
 test('emits `ignored` event if outdated version promise is settled', async () => {
   const state = asyncState(delay(5).then(() => 'a'));
   state.set(delay(5).then(() => 'b'));

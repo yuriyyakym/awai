@@ -68,7 +68,7 @@ const asyncState = <T>(
         return;
       }
 
-      const isChanged = !Object.is(e, error);
+      const isChanged = typeof value !== 'undefined';
 
       error = e;
       value = undefined;

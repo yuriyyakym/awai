@@ -5,7 +5,7 @@ import { getUniqueId, isFunction, isPromiseOrFunction, race } from '../lib';
 
 import type { VersionIgnoredEvent, AsyncState, Config, InitialValue, Version } from './types';
 
-const getConfig = (customConfig: Partial<Config> = {}): Config => ({
+const getConfig = <T>(customConfig: Partial<Config<T>> = {}): Config<T> => ({
   ...customConfig,
   id: customConfig.id ?? getUniqueId(asyncState.name),
   tags: [SystemTag.ASYNC_STATE, ...(customConfig.tags ?? [])],
@@ -13,7 +13,7 @@ const getConfig = (customConfig: Partial<Config> = {}): Config => ({
 
 const asyncState = <T>(
   initialValue?: InitialValue<T>,
-  customConfig?: Partial<Config>,
+  customConfig?: Partial<Config<T>>,
 ): AsyncState<T> => {
   const config = getConfig(customConfig);
   const compare = config.compare ?? Object.is;
@@ -47,7 +47,7 @@ const asyncState = <T>(
       let newValue = isFunction(nextValueOrResolver)
         ? await nextValueOrResolver(value)
         : await nextValueOrResolver;
-      const isChanged = typeof value === 'undefined' || !compare(newValue, value);
+      const isChanged = !compare(newValue, value);
 
       if (currentPendingVersion !== lastPendingVersion || !isChanged) {
         events.ignored.emit({ value: newValue, version: currentPendingVersion });

@@ -14,7 +14,7 @@ import type { InferReadableType, ReadableAsyncState, ReadableState } from '../ty
 
 import type { AsyncConfig, AsyncSelector, VersionIgnoredEvent } from './types';
 
-const getConfig = (customConfig: Partial<AsyncConfig> = {}): AsyncConfig => ({
+const getConfig = <U>(customConfig: Partial<AsyncConfig<U>> = {}): AsyncConfig<U> => ({
   ...customConfig,
   id: customConfig.id ?? getUniqueId(asyncSelector.name),
   tags: [SystemTag.ASYNC_SELECTOR, ...(customConfig.tags ?? [])],
@@ -23,7 +23,7 @@ const getConfig = (customConfig: Partial<AsyncConfig> = {}): AsyncConfig => ({
 const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
   states: T,
   predicate: (...values: { [K in keyof T]: InferReadableType<T[K]> }) => U,
-  customConfig?: Partial<AsyncConfig>,
+  customConfig?: Partial<AsyncConfig<U>>,
 ): AsyncSelector<U> => {
   type StatesValues = { [K in keyof T]: InferReadableType<T[K]> };
 
@@ -88,7 +88,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
 
         try {
           const newValue = await predicate(...values);
-          const isChanged = typeof value === 'undefined' || !compare(newValue, value);
+          const isChanged = !compare(newValue, value);
 
           if (currentPendingVersion !== lastPendingVersion) {
             events.ignored.emit({ value: newValue, version: currentPendingVersion });

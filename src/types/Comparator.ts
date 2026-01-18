@@ -1,1 +1,1 @@
-export type Comparator<T> = (next: T, prev: T) => boolean;
+export type Comparator<N, P = N> = (next: N, prev: P) => boolean;

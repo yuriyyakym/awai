@@ -25,6 +25,9 @@ State that handles asynchronous values and emits events required for async manag
 - **requested** - new value has been requested
 - **ignored** - promise is resolved, but newer version promise is pending
 
+### Config
+- **compare** - optional comparator used to skip updates.
+
 ---
 
 It is possible to set value at any time. You can set plain value or a promise.
@@ -57,13 +60,14 @@ AsyncState is thennable, hence you can use it as a promise. Eg. instead of using
 ```ts 
 const asyncState = <T>(
   initialValue?: InitialValue<T>,
-  config?: Partial<Config>
+  config?: Partial<Config<T>>
 ): AsyncState<T> => { /* ... */ };
 
 type InitialValue<T> = T | Promise<T> | (() => Promise<T>);
 
-interface Config {
+type Config<T> = {
   id: string;
   tags: string[];
-}
+  compare?: (next: T | undefined, previous: T | undefined) => boolean;
+};
 ```

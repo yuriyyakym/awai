@@ -25,7 +25,7 @@ const state = <T>(initialValue: T, customConfig?: Partial<Config<T>>): State<T> 
     let newValue = isFunction(nextValueOrResolver)
       ? nextValueOrResolver(value)
       : nextValueOrResolver;
-    const isChanged = typeof value === 'undefined' || !compare(newValue, value);
+    const isChanged = !compare(newValue, value);
 
     if (isChanged) {
       value = newValue;

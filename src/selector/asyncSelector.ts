@@ -56,7 +56,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
       : aggregatedStatus;
   };
 
-  const determineNextVersion = async () => {
+  const processStateChange = async () => {
     const currentPendingVersion = (lastPendingVersion + 1) % Number.MAX_SAFE_INTEGER;
     lastPendingVersion = currentPendingVersion;
 
@@ -144,7 +144,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
       );
       abortController.abort();
     },
-    determineNextVersion,
+    processStateChange,
     { tags: [SystemTag.CORE_NODE] },
   );
 
@@ -182,7 +182,7 @@ const asyncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     then,
   };
 
-  queueMicrotask(determineNextVersion);
+  queueMicrotask(processStateChange);
 
   registry.register(selectorNode);
 

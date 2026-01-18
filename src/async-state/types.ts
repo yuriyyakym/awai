@@ -1,9 +1,11 @@
 import type { AwaiEvent } from '../core';
-import type { BaseConfig, ReadableAsyncState, WritableAsyncState } from '../types';
+import type { BaseConfig, Comparator, ReadableAsyncState, WritableAsyncState } from '../types';
 
 export type Version = number;
 
-export type Config = BaseConfig & Record<string, any>;
+export type Config<T> = BaseConfig & Record<string, any> & {
+  compare?: Comparator<T>;
+};
 
 export type InitialValue<T> = T | Promise<T> | (() => Promise<T>);
 
@@ -13,11 +15,9 @@ export type VersionIgnoredEvent<T> = {
   version: Version;
 };
 
-export type AsyncState<T> = ReadableAsyncState<T> &
-  WritableAsyncState<T> & {
-    config: Config;
-  } & {
-    events: {
-      ignored: AwaiEvent<VersionIgnoredEvent<T>>;
-    };
+export type AsyncState<T> = ReadableAsyncState<T> & WritableAsyncState<T> & {
+  config: Config<T>;
+  events: {
+    ignored: AwaiEvent<VersionIgnoredEvent<T>>;
   };
+};

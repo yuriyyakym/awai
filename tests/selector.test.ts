@@ -67,6 +67,29 @@ test('does not emit `changed` event if callback returns same value (sync)', asyn
   expect(isNegativeCounter.get()).toEqual(false);
 });
 
+test('uses custom compare for sync selector', async () => {
+  const onChange = vi.fn();
+  const baseState = state(1);
+  const paritySelector = selector(
+    [baseState],
+    (value) => ({ parity: value % 2 }),
+    { compare: (next, prev) => next.parity === prev.parity },
+  );
+
+  scenario(paritySelector.events.changed, onChange);
+
+  const initial = paritySelector.get();
+  await baseState.set(3);
+
+  expect(onChange).not.toBeCalled();
+  expect(paritySelector.get()).toBe(initial);
+
+  await baseState.set(2);
+
+  expect(onChange).toBeCalledTimes(1);
+  expect(paritySelector.get()).toEqual({ parity: 0 });
+});
+
 test('does not emit `changed` event if callback returns same value (async)', async () => {
   const onChange = vi.fn();
   const counterState = state<number>(0);
@@ -258,6 +281,52 @@ test('recomputes async selector only on dependency changes', async () => {
   doubled.get();
   await doubled;
   expect(compute).toBeCalledTimes(2);
+});
+
+test('chains selectors with async state dependency', async () => {
+  const order: string[] = [];
+  let gate: PromiseWithResolvers<void> | null = null;
+  const baseState = state(1);
+  const remoteState = asyncState(delay(10).then(() => 10));
+  const firstCompute = vi.fn((value: number, remote: number) => {
+    order.push(`first:${value}:${remote}`);
+    return value + remote;
+  });
+  const firstSelector = selector([baseState, remoteState], firstCompute);
+  const secondCompute = vi.fn(async (firstValue: number, remote: number) => {
+    order.push(`second:${firstValue}:${remote}`);
+    if (gate) {
+      await gate.promise;
+    }
+    return firstValue * remote;
+  });
+  const secondSelector = selector([firstSelector, remoteState], secondCompute);
+
+  expect(firstSelector.get()).toBeUndefined();
+  expect(secondSelector.get()).toBeUndefined();
+
+  await Promise.all([firstSelector.events.fulfilled, secondSelector.events.fulfilled]);
+
+  expect(firstSelector.get()).toBe(11);
+  expect(secondSelector.get()).toBe(110);
+  expect(order).toEqual(['first:1:10', 'second:11:10']);
+  expect(firstCompute).toBeCalledTimes(1);
+  expect(secondCompute).toBeCalledTimes(1);
+
+  gate = Promise.withResolvers();
+
+  await baseState.set(2);
+
+  expect(firstSelector.get()).toBe(12);
+  expect(secondSelector.get()).toBe(110);
+
+  gate.resolve();
+  await flush();
+
+  expect(secondSelector.get()).toBe(120);
+  expect(order).toEqual(['first:1:10', 'second:11:10', 'first:2:10', 'second:12:10']);
+  expect(firstCompute).toBeCalledTimes(2);
+  expect(secondCompute).toBeCalledTimes(2);
 });
 
 test('updates chained selectors in order (sync third selector)', async () => {

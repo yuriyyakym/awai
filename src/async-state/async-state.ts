@@ -16,6 +16,7 @@ const asyncState = <T>(
   customConfig?: Partial<Config>,
 ): AsyncState<T> => {
   const config = getConfig(customConfig);
+  const compare = config.compare ?? Object.is;
   const isInitialValueAsync = isPromiseOrFunction(initialValue);
   let version: Version = isInitialValueAsync ? 0 : 1;
   let lastPendingVersion: Version = version;
@@ -46,7 +47,7 @@ const asyncState = <T>(
       let newValue = isFunction(nextValueOrResolver)
         ? await nextValueOrResolver(value)
         : await nextValueOrResolver;
-      const isChanged = !Object.is(newValue, value);
+      const isChanged = typeof value === 'undefined' || !compare(newValue, value);
 
       if (currentPendingVersion !== lastPendingVersion || !isChanged) {
         events.ignored.emit({ value: newValue, version: currentPendingVersion });

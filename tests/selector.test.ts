@@ -238,6 +238,84 @@ test('handles async predicate', async () => {
   expect(stateSum.get()).toEqual(20);
 });
 
+test('recomputes async selector only on dependency changes', async () => {
+  const baseState = state(1);
+  const compute = vi.fn(async (value: number) => value * 2);
+  const doubled = selector([baseState], compute);
+
+  expect(await doubled).toBe(2);
+  expect(compute).toBeCalledTimes(1);
+
+  doubled.get();
+  doubled.get();
+  await doubled;
+  expect(compute).toBeCalledTimes(1);
+
+  await baseState.set(2);
+  expect(await doubled).toBe(4);
+  expect(compute).toBeCalledTimes(2);
+
+  doubled.get();
+  await doubled;
+  expect(compute).toBeCalledTimes(2);
+});
+
+test('updates chained selectors in order (sync third selector)', async () => {
+  const order: string[] = [];
+  const baseState = state(1);
+  const secondCompute = vi.fn((value: number) => {
+    order.push(`second:${value}`);
+    return value + 1;
+  });
+  const thirdCompute = vi.fn((value: number, secondValue: number) => {
+    order.push(`third:${value}:${secondValue}`);
+    return value + secondValue;
+  });
+
+  const second = selector([baseState], secondCompute);
+  const third = selector([baseState, second], thirdCompute);
+
+  order.length = 0;
+  secondCompute.mockClear();
+  thirdCompute.mockClear();
+
+  const update = third.events.changed.then((value) => value);
+  await baseState.set(2);
+  await update;
+
+  expect(secondCompute).toBeCalledTimes(1);
+  expect(thirdCompute).toBeCalledTimes(1);
+  expect(order).toEqual(['second:2', 'third:2:3']);
+});
+
+test('updates chained selectors in order (async third selector)', async () => {
+  const order: string[] = [];
+  const baseState = state(1);
+  const secondCompute = vi.fn((value: number) => {
+    order.push(`second:${value}`);
+    return value + 1;
+  });
+  const thirdCompute = vi.fn(async (value: number, secondValue: number) => {
+    order.push(`third:${value}:${secondValue}`);
+    await delay(5);
+    return value + secondValue;
+  });
+
+  const second = selector([baseState], secondCompute);
+  const third = selector([baseState, second], thirdCompute);
+
+  await third.events.fulfilled;
+  order.length = 0;
+  secondCompute.mockClear();
+  thirdCompute.mockClear();
+
+  await Promise.all([baseState.set(2), third.events.fulfilled]);
+
+  expect(secondCompute).toBeCalledTimes(1);
+  expect(thirdCompute).toBeCalledTimes(1);
+  expect(order).toEqual(['second:2', 'third:2:3']);
+});
+
 test('automatically assigns id when not provided', () => {
   expect(selector([], () => undefined).config.id).not.toBeUndefined();
 });

@@ -25,7 +25,7 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     changed: new AwaiEvent<U>(),
   };
 
-  const get = () => {
+  const computeValue = () => {
     const values = states.map((state) => state.get()) as {
       [K in keyof T]: InferReadableType<T[K]>;
     };
@@ -34,16 +34,16 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
 
   const then: SyncSelector<U>['then'] = async (resolve) => {
     if (!isFunction(resolve)) {
-      return get() as any;
+      return value as any;
     }
 
-    return resolve(get());
+    return resolve(value);
   };
 
   scenario(
     () => race(states.map((state) => state.events.changed)),
     () => {
-      const newValue = get();
+      const newValue = computeValue();
 
       if (!Object.is(newValue, value)) {
         value = newValue;
@@ -53,7 +53,9 @@ const syncSelector = <T extends (ReadableState | ReadableAsyncState)[], U>(
     { tags: [SystemTag.CORE_NODE] },
   );
 
-  value = get();
+  value = computeValue();
+
+  const get = () => value;
 
   const selectorNode: SyncSelector<U> = { config, events, get, then };
 
